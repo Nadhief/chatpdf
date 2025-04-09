@@ -1,23 +1,18 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import { Button, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
+import Sidebar from "./components/Sidebar";
 
 function App() {
-  const [count, setCount] = useState(0);
 
   return (
-    <>
-      <div>
-        <Typography variant="h4" gutterBottom>
-          Welcom to chat pdf
-        </Typography>
-        <Button variant="contained" color="primary">
-          Button
-        </Button>
-      </div>
-    </>
+    <Grid container sx={{ backgroundColor:"#EEF0F7", height: "100vh", width: "100vw", overflowX: 'hidden' }}>
+      <Grid size={{md:3, lg:3}} sx={{ alignItems: "start" }}>          
+        <Sidebar/>
+      </Grid>
+      <Grid size={{md:9, lg:9}} maxHeight={'100%'}>
+
+      </Grid>
+  </Grid>
   );
 }
 
