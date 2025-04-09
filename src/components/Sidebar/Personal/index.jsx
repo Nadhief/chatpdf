@@ -49,7 +49,6 @@ const Personal = () => {
                     backgroundColor : '#FFFFFF',
                 }}
             >
-                {/*MAPPING FILE PDF*/}
                 <Stack direction={'column'} spacing={1}>
                     <Box sx={{ backgroundColor: '#F5F5F5', borderRadius: '4px 4px 0 0', paddingX: 1, paddingY: 0.5 }}>
                         <Typography fontSize={14} fontWeight={600} color='#404040'> File Saya </Typography>
@@ -57,20 +56,20 @@ const Personal = () => {
                     <Stack direction={'column'} padding={1.5} spacing={1}>
                         <InputSearchBar/>
                         <Stack direction={'row'} spacing={1} alignItems='center'>
-                            <Box width={200} display="flex" justifyContent="center" paddingY={0.3} paddingX={0.7} borderRadius={100} border={'1px solid #9E9E9E'} 
+                            <Box width={'30%'} display="flex" justifyContent="center" paddingY={0.3} paddingX={0.7} borderRadius={100} border={'1px solid #9E9E9E'} 
                                     onClick={() => setSelected('file')}
                                     sx={{
-                                        cursor: 'pointer',
+                                        cursor: selected === 'file' ? 'default' : 'pointer',
                                         backgroundColor: selected === 'file' ? '#FAFBFD' : 'white',
                                         boxShadow: selected === 'file' ? 'none' : '0px 4px 8px rgba(0, 0, 0, 0.14)',
                                     }}
                                 >
                                     <Typography fontSize={12} fontWeight={400} color='black' > File </Typography>
                             </Box>
-                            <Box width={200} display="flex" justifyContent="center" paddingY={0.3} paddingX={0.7} borderRadius={100} border={'1px solid #9E9E9E'}
+                            <Box width={'30%'} display="flex" justifyContent="center" paddingY={0.3} paddingX={0.7} borderRadius={100} border={'1px solid #9E9E9E'}
                                     onClick={() => setSelected('topik')}
                                     sx={{
-                                        cursor: 'pointer',
+                                        cursor: selected === 'topik' ? 'default' : 'pointer',
                                         backgroundColor: selected === 'topik' ? '#FAFBFD' : 'white',
                                         boxShadow: selected === 'topik' ? 'none' : '0px 4px 8px rgba(0, 0, 0, 0.14)',
                                     }}
@@ -88,12 +87,22 @@ const Personal = () => {
                                 </Box>
                             </Box>
                         </Stack>
+                    {/*MAPPING FILE PDF*/}
                         <Stack direction={'column'} spacing={1}>
                             <Stack direction={'row'} spacing={0.6} padding={0.5} borderRadius={4} alignItems={'center'} sx={{
                                 backgroundColor: '#F5F5F5',
-
                             }}>
-                                <Checkbox size='' sx={{padding:0.8}}/>
+                                <Checkbox
+                                sx={{
+                                    padding: 0.8,
+                                    '&.Mui-checked': {
+                                    color: '#bf2600',
+                                    },
+                                    '& .MuiSvgIcon-root': {
+                                    fontSize: 16,
+                                    },
+                                }}
+                                />
                                 <FileIcon sx={{ color: '#404040', fontSize: 20}} />
                                 <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
                             </Stack>
@@ -101,7 +110,17 @@ const Personal = () => {
                                 backgroundColor: '#F5F5F5',
 
                             }}>
-                                <Checkbox size='' sx={{padding:0.8}}/>
+                                <Checkbox
+                                sx={{
+                                    padding: 0.8,
+                                    '&.Mui-checked': {
+                                    color: '#bf2600',
+                                    },
+                                    '& .MuiSvgIcon-root': {
+                                    fontSize: 16,
+                                    },
+                                }}
+                                />
                                 <FileIcon sx={{ color: '#404040', fontSize: 20}} />
                                 <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
                             </Stack>
@@ -109,7 +128,17 @@ const Personal = () => {
                                 backgroundColor: '#F5F5F5',
 
                             }}>
-                                <Checkbox size='' sx={{padding:0.8}}/>
+                                <Checkbox
+                                sx={{
+                                    padding: 0.8,
+                                    '&.Mui-checked': {
+                                    color: '#bf2600',
+                                    },
+                                    '& .MuiSvgIcon-root': {
+                                    fontSize: 16,
+                                    },
+                                }}
+                                />
                                 <FileIcon sx={{ color: '#404040', fontSize: 20}} />
                                 <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
                             </Stack>
@@ -117,7 +146,17 @@ const Personal = () => {
                                 backgroundColor: '#F5F5F5',
 
                             }}>
-                                <Checkbox size='' sx={{padding:0.8}}/>
+                                <Checkbox
+                                sx={{
+                                    padding: 0.8,
+                                    '&.Mui-checked': {
+                                    color: '#bf2600',
+                                    },
+                                    '& .MuiSvgIcon-root': {
+                                    fontSize: 16,
+                                    },
+                                }}
+                                />
                                 <FileIcon sx={{ color: '#404040', fontSize: 20}} />
                                 <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
                             </Stack>
@@ -125,7 +164,17 @@ const Personal = () => {
                                 backgroundColor: '#F5F5F5',
 
                             }}>
-                                <Checkbox size='' sx={{padding:0.8}}/>
+                                <Checkbox
+                                sx={{
+                                    padding: 0.8,
+                                    '&.Mui-checked': {
+                                    color: '#bf2600',
+                                    },
+                                    '& .MuiSvgIcon-root': {
+                                    fontSize: 16,
+                                    },
+                                }}
+                                />
                                 <FileIcon sx={{ color: '#404040', fontSize: 20}} />
                                 <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
                             </Stack>
@@ -133,7 +182,17 @@ const Personal = () => {
                                 backgroundColor: '#F5F5F5',
 
                             }}>
-                                <Checkbox size='' sx={{padding:0.8}}/>
+                                <Checkbox
+                                sx={{
+                                    padding: 0.8,
+                                    '&.Mui-checked': {
+                                    color: '#bf2600',
+                                    },
+                                    '& .MuiSvgIcon-root': {
+                                    fontSize: 16,
+                                    },
+                                }}
+                                />
                                 <FileIcon sx={{ color: '#404040', fontSize: 20}} />
                                 <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
                             </Stack>
@@ -141,7 +200,17 @@ const Personal = () => {
                                 backgroundColor: '#F5F5F5',
 
                             }}>
-                                <Checkbox size='' sx={{padding:0.8}}/>
+                                <Checkbox
+                                sx={{
+                                    padding: 0.8,
+                                    '&.Mui-checked': {
+                                    color: '#bf2600',
+                                    },
+                                    '& .MuiSvgIcon-root': {
+                                    fontSize: 16,
+                                    },
+                                }}
+                                />
                                 <FileIcon sx={{ color: '#404040', fontSize: 20}} />
                                 <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
                             </Stack>

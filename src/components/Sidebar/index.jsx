@@ -4,6 +4,7 @@ import { Box, Stack, Typography } from "@mui/material";
 import Logo from "../../assets/coofisLogo.svg";
 import ProfilPict from "../../assets/malePict.svg";
 import Personal from "./Personal";
+import Departemen from "./Departemen";
 
 
 const Sidebar = () => {
@@ -68,7 +69,7 @@ const Sidebar = () => {
             {selected === 'personal' ? (
                 <Personal />
             ) : selected === 'departemen' ? (
-                <Typography color="black">IN DEVELOPMENT</Typography>
+                <Departemen />
             ) : null}
         </Stack>
     )
