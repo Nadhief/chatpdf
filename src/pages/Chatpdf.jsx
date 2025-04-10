@@ -95,14 +95,16 @@ const Chatpdf = () => {
     }
   }, [responses]);
 
+  console.log(responses);
+
   return (
     <Grid
-      sx={{height:"95vh", backgroundColor:"#fff", borderRadius:"10px", }}
+      sx={{ height: "95vh", backgroundColor: "#fff", borderRadius: "10px" }}
       direction={"column"}
       justifyContent="spavce-between"
     >
       {responses.length === 0 && (
-        <Grid item xs sx={{ textAlign: "center", pt:10 }}>
+        <Grid item xs sx={{ textAlign: "center", pt: 10 }}>
           <img
             src={ChatbotImage}
             alt="Chatbot"
@@ -134,7 +136,7 @@ const Chatpdf = () => {
             maxWidth: responses.length > 0 ? "70%" : "80%",
             mx: "auto",
             height: "80%",
-            pt:10
+            pt: 10,
           }}
           ref={chatEndRef}
         >
@@ -262,7 +264,10 @@ const Chatpdf = () => {
               </Select>
             </FormControl>
 
-            <FormControl sx={{ m: 1, minWidth: 320, textAlign:'start' }} size="small">
+            <FormControl
+              sx={{ m: 1, minWidth: 320, textAlign: "start" }}
+              size="small"
+            >
               <InputLabel id="vector-label">Vektorisasi</InputLabel>
               <Select
                 labelId="vector-label"
@@ -278,7 +283,9 @@ const Chatpdf = () => {
                 }
               >
                 <MenuItem value="nomic-embed-text">nomic-embed-text</MenuItem>
-                <MenuItem value="paraphrase-ultilingual-mpnet-base-v2">paraphrase-ultilingual-mpnet-base-v2</MenuItem>
+                <MenuItem value="paraphrase-ultilingual-mpnet-base-v2">
+                  paraphrase-ultilingual-mpnet-base-v2
+                </MenuItem>
                 <MenuItem value="all-mpnet-base-v2">all-mpnet-base-v2</MenuItem>
               </Select>
             </FormControl>

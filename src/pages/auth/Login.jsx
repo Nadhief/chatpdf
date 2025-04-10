@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   Link,
+  Stack,
 } from "@mui/material";
 // import { loginUser } from "../../services/authServices";
 import { useNavigate } from "react-router-dom";
@@ -34,11 +35,17 @@ const Login = () => {
       display="flex"
       justifyContent="center"
       alignItems="center"
-      height="89vh"
+      height="100vh"
     >
       <Card sx={{ width: "454px", height: "595px", p: 2, boxShadow: 3 }}>
         <CardContent>
-          <img src={CoofisImage} alt="Chatbot" style={{ marginBottom:"100px" }} />
+          <Stack alignItems={"center"} justifyContent="center">
+            <img
+              src={CoofisImage}
+              alt="Chatbot"
+              style={{ marginBottom: "80px", width: "250px" }}
+            />
+          </Stack>
           <Typography variant="body1" align="start" fontWeight={"bold"}>
             Username
           </Typography>
@@ -69,7 +76,7 @@ const Login = () => {
             margin="normal"
             sx={{ mt: 0 }}
           />
-          <Typography align="start" sx={{ mt: 2, }}>
+          <Typography align="start" sx={{ mt: 2 }}>
             <Link
               href="/register"
               underline="hover"
@@ -79,13 +86,20 @@ const Login = () => {
               Forgot Password
             </Link>
           </Typography>
-          <Button
-            variant="contained"
-            onClick={handleLogin}
-            sx={{ mt: 2, backgroundColor: "#E42313", color: "white", width: "70%" }}
-          >
-            Login
-          </Button>
+          <Stack alignItems="center">
+            <Button
+              variant="contained"
+              onClick={handleLogin}
+              sx={{
+                mt: 2,
+                backgroundColor: "#E42313",
+                color: "white",
+                width: "70%",
+              }}
+            >
+              Login
+            </Button>
+          </Stack>
         </CardContent>
       </Card>
     </Box>
