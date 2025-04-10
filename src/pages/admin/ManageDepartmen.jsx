@@ -1,10 +1,52 @@
-import { Box, Button, Grid, Stack, Typography } from "@mui/material";
-import React from "react";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import React, { useState } from "react";
 import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import InputSearchBar from "../../components/Inputs/InputSearchBar";
-import DataTable from "../../components/Table/DataTable";
+import DataTableDepartment from "../../components/Table/DataTableDepartment";
+import CloseIcon from "@mui/icons-material/Close";
 
 const ManageDepartmen = () => {
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const [kodeDept, setKodeDept] = useState("");
+  const [namaDept, setNamaDept] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!kodeDept || !namaDept) {
+      alert("Mohon isi semua field.");
+      return;
+    }
+
+    const newDepartment = {
+      kode: kodeDept,
+      nama: namaDept,
+    };
+
+    console.log("Departemen baru:", newDepartment);
+
+    setKodeDept("");
+    setNamaDept("");
+
+    handleClose();
+  };
+
   return (
     <Grid
       sx={{
@@ -55,6 +97,7 @@ const ManageDepartmen = () => {
             </Box>
             <Button
               variant="contained"
+              onClick={handleOpen}
               sx={{ backgroundColor: "#474D66", textTransform: "none" }}
             >
               + Add Department
@@ -62,8 +105,59 @@ const ManageDepartmen = () => {
           </Box>
           <InputSearchBar />
         </Box>
-        <DataTable />
+        <DataTableDepartment />
       </Grid>
+
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ m: 0, p: 2 }}>
+          <Typography fontWeight="bold">Tambah Departemen</Typography>
+          <IconButton
+            aria-label="close"
+            onClick={handleClose}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent dividers>
+          <form onSubmit={handleSubmit}>
+            <Typography sx={{ mb: 1 }}>Kode Departemen</Typography>
+            <TextField
+              size="small"
+              fullWidth
+              placeholder="Input placeholder"
+              value={kodeDept}
+              onChange={(e) => setKodeDept(e.target.value)}
+              sx={{ mb: 3 }}
+            />
+            <Typography sx={{ mb: 1 }}>Nama Departemen</Typography>
+            <TextField
+              size="small"
+              fullWidth
+              placeholder="Input placeholder"
+              value={namaDept}
+              onChange={(e) => setNamaDept(e.target.value)}
+              sx={{ mb: 3 }}
+            />
+          </form>
+        </DialogContent>
+
+        <DialogActions>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            sx={{ backgroundColor: "#52BD94", textTransform: "none" }}
+          >
+            Tambahkan
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 };

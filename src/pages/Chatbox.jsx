@@ -95,8 +95,6 @@ const ChatBox = ({role}) => {
     }
   }, [responses]);
 
-  console.log(responses);
-
   return (
     <Grid
       sx={{
@@ -141,7 +139,6 @@ const ChatBox = ({role}) => {
             mx: "auto",
             height: "80%",
             pt: 10,
-            border:'1px solid black',
           }}
           ref={chatEndRef}
         >
