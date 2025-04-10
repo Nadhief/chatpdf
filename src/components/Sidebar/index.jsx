@@ -9,9 +9,10 @@ import Departemen from "./Departemen";
 
 const Sidebar = () => {
     const [selected, setSelected] = useState("personal");
+    const [role, setRole] = useState("admin");
 
     return (
-        <Stack direction='column' backgroundColor='white' alignItems='center' spacing={1} padding={3} width={'100%'} height={'100%'} boxShadow={'5px 0px 10px rgba(0, 0, 0, 0.15)'}>
+        <Stack direction='column' backgroundColor='white' alignItems='center' spacing={2} padding={3} width={'100%'} height={'100%'} boxShadow={'5px 0px 10px rgba(0, 0, 0, 0.15)'}>
             <Box
                 component="img"
                 src={Logo}
@@ -32,6 +33,7 @@ const Sidebar = () => {
                     </Stack>
                 </Stack>
             </Box>
+
             <Box width={'97%'} sx={{
                 backgroundColor: '#EEF0F7',
                 borderRadius: 10,
@@ -66,11 +68,13 @@ const Sidebar = () => {
                     </Box>
                 </Stack>
             </Box>
-            {selected === 'personal' ? (
-                <Personal />
-            ) : selected === 'departemen' ? (
-                <Departemen />
-            ) : null}
+            <Box width={'100%'} paddingTop={1}>
+                {selected === 'personal' ? (
+                    <Personal />
+                ) : selected === 'departemen' ? (
+                    <Departemen />
+                ) : null}
+            </Box>
         </Stack>
     )
 }

@@ -1,9 +1,10 @@
 import React from 'react';
 import { useState } from 'react';
-import { Box, Stack, Typography, Checkbox } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import FolderPlusIcon from '@mui/icons-material/CreateNewFolderOutlined';
 import TrashIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import FileIcon from '@mui/icons-material/InsertDriveFileOutlined'
+import Documents from '../Documents';
+import { documents } from '../Documents/DocumentsConfig';
 import AddIcon from '@mui/icons-material/ControlPoint'
 import InputSearchBar from '../../Inputs/InputSearchBar';
 
@@ -11,9 +12,9 @@ const Personal = () => {
     const [selected, setSelected] = useState('file');
 
     return (
-        <Stack direction='column' backgroundColor='white' height={'100%'} width={'100%'} alignItems='center' spacing={2}>
+        <Stack direction='column' backgroundColor='white' height={'100%'} width={'100%'} alignItems='center' spacing={3}>
             <Box width="100%" textAlign="left">
-                <Typography variant="body2" fontWeight={700} color="#404040">
+                <Typography fontSize={18} fontWeight={700} color="#404040">
                 Unggah Dokumen Personal
                 </Typography>
             </Box>
@@ -25,8 +26,8 @@ const Personal = () => {
                     backgroundColor : '#FAFBFD',
                 }}
             >
-                <Stack direction={'column'} padding={1} spacing={1}>
-                    <Typography fontSize={12} fontWeight={600} color='#404040'> Unggah File </Typography>
+                <Stack direction={'column'} padding={1.5} spacing={1}>
+                    <Typography fontSize={14} fontWeight={600} color='#404040'> Unggah File </Typography>
                     <Typography fontSize={12} fontWeight={400} color='#404040'> Total ukuran berkas yang dapat diproses adalah maksimal 200 MB dengan ekstensi (PDF, JSON) </Typography>
                     <Box display="flex" justifyContent="flex-end" width="100%" color='white'>
                         <Box display="flex" justifyContent="flex-end" color='white' paddingY={0.5} paddingX={1} borderRadius={1} alignItems={'center'}
@@ -50,8 +51,8 @@ const Personal = () => {
                 }}
             >
                 <Stack direction={'column'} spacing={1}>
-                    <Box sx={{ backgroundColor: '#F5F5F5', borderRadius: '4px 4px 0 0', paddingX: 1, paddingY: 0.5 }}>
-                        <Typography fontSize={14} fontWeight={600} color='#404040'> File Saya </Typography>
+                    <Box sx={{ backgroundColor: '#F5F5F5', borderRadius: '4px 4px 0 0', paddingX: 2, paddingY: 0.5 }}>
+                        <Typography fontSize={16} fontWeight={600} color='#404040'> File Saya </Typography>
                     </Box>
                     <Stack direction={'column'} padding={1.5} spacing={1}>
                         <InputSearchBar/>
@@ -87,133 +88,13 @@ const Personal = () => {
                                 </Box>
                             </Box>
                         </Stack>
-                    {/*MAPPING FILE PDF*/}
                         <Stack direction={'column'} spacing={1}>
-                            <Stack direction={'row'} spacing={0.6} padding={0.5} borderRadius={4} alignItems={'center'} sx={{
-                                backgroundColor: '#F5F5F5',
-                            }}>
-                                <Checkbox
-                                sx={{
-                                    padding: 0.8,
-                                    '&.Mui-checked': {
-                                    color: '#bf2600',
-                                    },
-                                    '& .MuiSvgIcon-root': {
-                                    fontSize: 16,
-                                    },
-                                }}
-                                />
-                                <FileIcon sx={{ color: '#404040', fontSize: 20}} />
-                                <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
-                            </Stack>
-                            <Stack direction={'row'} spacing={0.6} padding={0.5} borderRadius={4} alignItems={'center'} sx={{
-                                backgroundColor: '#F5F5F5',
-
-                            }}>
-                                <Checkbox
-                                sx={{
-                                    padding: 0.8,
-                                    '&.Mui-checked': {
-                                    color: '#bf2600',
-                                    },
-                                    '& .MuiSvgIcon-root': {
-                                    fontSize: 16,
-                                    },
-                                }}
-                                />
-                                <FileIcon sx={{ color: '#404040', fontSize: 20}} />
-                                <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
-                            </Stack>
-                            <Stack direction={'row'} spacing={0.6} padding={0.5} borderRadius={4} alignItems={'center'} sx={{
-                                backgroundColor: '#F5F5F5',
-
-                            }}>
-                                <Checkbox
-                                sx={{
-                                    padding: 0.8,
-                                    '&.Mui-checked': {
-                                    color: '#bf2600',
-                                    },
-                                    '& .MuiSvgIcon-root': {
-                                    fontSize: 16,
-                                    },
-                                }}
-                                />
-                                <FileIcon sx={{ color: '#404040', fontSize: 20}} />
-                                <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
-                            </Stack>
-                            <Stack direction={'row'} spacing={0.6} padding={0.5} borderRadius={4} alignItems={'center'} sx={{
-                                backgroundColor: '#F5F5F5',
-
-                            }}>
-                                <Checkbox
-                                sx={{
-                                    padding: 0.8,
-                                    '&.Mui-checked': {
-                                    color: '#bf2600',
-                                    },
-                                    '& .MuiSvgIcon-root': {
-                                    fontSize: 16,
-                                    },
-                                }}
-                                />
-                                <FileIcon sx={{ color: '#404040', fontSize: 20}} />
-                                <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
-                            </Stack>
-                            <Stack direction={'row'} spacing={0.6} padding={0.5} borderRadius={4} alignItems={'center'} sx={{
-                                backgroundColor: '#F5F5F5',
-
-                            }}>
-                                <Checkbox
-                                sx={{
-                                    padding: 0.8,
-                                    '&.Mui-checked': {
-                                    color: '#bf2600',
-                                    },
-                                    '& .MuiSvgIcon-root': {
-                                    fontSize: 16,
-                                    },
-                                }}
-                                />
-                                <FileIcon sx={{ color: '#404040', fontSize: 20}} />
-                                <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
-                            </Stack>
-                            <Stack direction={'row'} spacing={0.6} padding={0.5} borderRadius={4} alignItems={'center'} sx={{
-                                backgroundColor: '#F5F5F5',
-
-                            }}>
-                                <Checkbox
-                                sx={{
-                                    padding: 0.8,
-                                    '&.Mui-checked': {
-                                    color: '#bf2600',
-                                    },
-                                    '& .MuiSvgIcon-root': {
-                                    fontSize: 16,
-                                    },
-                                }}
-                                />
-                                <FileIcon sx={{ color: '#404040', fontSize: 20}} />
-                                <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
-                            </Stack>
-                            <Stack direction={'row'} spacing={0.6} padding={0.5} borderRadius={4} alignItems={'center'} sx={{
-                                backgroundColor: '#F5F5F5',
-
-                            }}>
-                                <Checkbox
-                                sx={{
-                                    padding: 0.8,
-                                    '&.Mui-checked': {
-                                    color: '#bf2600',
-                                    },
-                                    '& .MuiSvgIcon-root': {
-                                    fontSize: 16,
-                                    },
-                                }}
-                                />
-                                <FileIcon sx={{ color: '#404040', fontSize: 20}} />
-                                <Typography fontSize={12} fontWeight={400} color='#404040'> File PDF </Typography>
-                            </Stack>
+                            {/*MAPPING FILE PDF*/}
+                            {documents.map((item) => (
+                                <React.Fragment key={item.id}>
+                                    <Documents label={item.label} />
+                                </React.Fragment>
+                            ))}
                         </Stack>
                     </Stack>
                 </Stack>
