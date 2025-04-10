@@ -5,6 +5,7 @@ import Logo from "../../assets/coofisLogo.svg";
 import ProfilPict from "../../assets/malePict.svg";
 import Personal from "./Personal";
 import Departemen from "./Departemen";
+import { scrollbar } from "../../utils/scrollbar";
 
 
 const Sidebar = () => {
@@ -12,7 +13,7 @@ const Sidebar = () => {
     const [role, setRole] = useState("admin");
 
     return (
-        <Stack direction='column' backgroundColor='white' alignItems='center' spacing={2} padding={3} height={'100%'} boxShadow={'5px 0px 10px rgba(0, 0, 0, 0.15)'}>
+        <Stack direction='column' backgroundColor='white' alignItems='center' spacing={2} padding={3} height={'92vh'} boxShadow={'5px 0px 10px rgba(0, 0, 0, 0.15)'} sx={{ ...scrollbar('#9E9E9E'), overflowX: 'hidden', overflowY: 'auto'}}>
             <Box
                 component="img"
                 src={Logo}
