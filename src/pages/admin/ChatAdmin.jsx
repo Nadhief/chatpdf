@@ -4,7 +4,7 @@ import Sidebar from '../../components/Sidebar'
 import Chatpdf from '../Chatbox'
 // import PdfViewer from '../../components/PdfViewer'
 
-const ChatUser = () => {
+const ChatAdmin = () => {
   return (
     <Grid
         container
@@ -22,7 +22,7 @@ const ChatUser = () => {
             alignItems: "start",
           }}
         >
-          <Sidebar role={'user'} />
+          <Sidebar role={'admin'} />
         </Grid>
         <Grid size={{ xs: 12, sm: 12, md: 12, lg: 6 }} sx={{ padding: "1rem" }}>
           <Chatpdf />
@@ -38,4 +38,4 @@ const ChatUser = () => {
   )
 }
 
-export default ChatUser
+export default ChatAdmin
