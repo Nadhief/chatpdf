@@ -13,7 +13,7 @@ const Sidebar = () => {
     const [role, setRole] = useState("admin");
 
     return (
-        <Stack direction='column' backgroundColor='white' alignItems='center' spacing={2} padding={3} height={'92vh'} boxShadow={'5px 0px 10px rgba(0, 0, 0, 0.15)'} sx={{ ...scrollbar('#9E9E9E'), overflowX: 'hidden', overflowY: 'auto'}}>
+        <Stack direction='column' backgroundColor='white' alignItems='center' spacing={2} padding={3} height={'93vh'} boxShadow={'5px 0px 10px rgba(0, 0, 0, 0.15)'} sx={{ ...scrollbar('#9E9E9E'), overflowX: 'hidden', overflowY: 'auto'}}>
             <Box
                 component="img"
                 src={Logo}

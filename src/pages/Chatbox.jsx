@@ -156,7 +156,9 @@ const Chatpdf = () => {
                 </Box>
               </Box>
 
-              <Box sx={{ display: "flex", alignItems: "flex-start", my: 6 }}>
+              <Box
+                sx={{ display: "flex", alignItems: "flex-start", my: 6 }}
+              >
                 <Box
                   component="img"
                   src={ChatbotImage}
