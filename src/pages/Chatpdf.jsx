@@ -15,34 +15,55 @@ import {
 import ChatbotImage from "../assets/images/Chatbot.png";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { chatPersonal } from "../services";
+import ReactMarkdown from "react-markdown";
+
 const Chatpdf = () => {
   const [model, setModel] = useState("Llama 3.1");
-  const [vectorizer, setVectorizer] = useState(
-    "paraphrase-ultilingual-mpnet-base-v2"
-  );
+  const [vectorizer, setVectorizer] = useState("nomic-embed-text");
   const [question, setQuestion] = useState("");
 
   const [responses, setResponses] = useState([]);
 
   const [displayedText, setDisplayedText] = useState("");
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleModelChange = (event) => setModel(event.target.value);
   const handleVectorizerChange = (event) => setVectorizer(event.target.value);
 
   const handleSend = () => {
-    if (!question) return;
-    console.log(question);
+    if (!question.trim()) return;
+
+    const currentQuestion = question;
+    setQuestion("");
+
+    const placeholder = {
+      user: currentQuestion,
+      bot: "⌛",
+      source: [],
+    };
+    setResponses((prev) => [...prev, placeholder]);
+
     const payload = {
       id: "17",
-      embedding_model: "nomic-embed-text",
+      embedding_model: vectorizer,
       llm_model: model,
-      question: question,
+      question: currentQuestion,
     };
+
     chatPersonal(payload).then((res) => {
-      console.log(res);
+      const updatedEntry = {
+        user: currentQuestion,
+        bot: res.response,
+        source: res.sources || [],
+      };
+
+      setResponses((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = updatedEntry;
+        return updated;
+      });
     });
-    setResponses([...responses, newMessage]);
-    setQuestion("");
   };
 
   const chatEndRef = useRef(null);
@@ -68,7 +89,7 @@ const Chatpdf = () => {
         if (index === fullText.length) {
           clearInterval(typingInterval);
         }
-      }, 30);
+      }, 10);
 
       return () => clearInterval(typingInterval);
     }
@@ -116,9 +137,8 @@ const Chatpdf = () => {
           }}
           ref={chatEndRef}
         >
-          {responses.map((res, idx) => (
+          {responses?.map((res, idx) => (
             <Box key={idx} sx={{ mb: 4, px: 1 }}>
-              {/* Chat dari user */}
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                 <Box
                   sx={{
@@ -133,7 +153,6 @@ const Chatpdf = () => {
                 </Box>
               </Box>
 
-              {/* Respon dari bot */}
               <Box sx={{ display: "flex", alignItems: "flex-start", my: 6 }}>
                 <Box
                   component="img"
@@ -142,26 +161,64 @@ const Chatpdf = () => {
                   sx={{ width: 32, height: 32, mr: 1 }}
                 />
                 <Box>
-                  <Typography textAlign={"start"} sx={{ mb: 1 }}>
-                    {idx === responses.length - 1 ? displayedText : res.bot}
-                  </Typography>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Typography sx={{ fontWeight: 500, mr: 1 }}>
-                      Source :
-                    </Typography>
-                    <Box
-                      sx={{
-                        border: "1px solid #ccc",
-                        borderRadius: "20px",
-                        px: 2,
-                        py: 0.5,
-                        fontSize: "0.9rem",
-                        color: "#666",
-                        backgroundColor: "#fafafa",
-                      }}
-                    >
-                      📄 File PDF
-                    </Box>
+                  <Box sx={{ mb: 1, typography: "body1", textAlign: "start" }}>
+                    {res.bot === "⌛" ? (
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <Box
+                          sx={{
+                            display: "inline-block",
+                            fontSize: "1.2rem",
+                            animation: "spin 1s linear infinite",
+                            "@keyframes spin": {
+                              from: { transform: "rotate(0deg)" },
+                              to: { transform: "rotate(360deg)" },
+                            },
+                          }}
+                        >
+                          ⌛
+                        </Box>
+                        <Typography>Thinking...</Typography>
+                      </Box>
+                    ) : (
+                      <ReactMarkdown>
+                        {idx === responses.length - 1 ? displayedText : res.bot}
+                      </ReactMarkdown>
+                    )}
+                  </Box>
+                  <Box sx={{ display: "flex", alignItems: "start" }}>
+                    {res.source.length > 0 && (
+                      <Box sx={{ display: "flex", alignItems: "start", mt: 2 }}>
+                        <Typography sx={{ fontWeight: 500, mr: 1 }}>
+                          Source :
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 1,
+                          }}
+                        >
+                          {res.source.map((src, i) => (
+                            <Box
+                              key={i}
+                              sx={{
+                                border: "1px solid #ccc",
+                                borderRadius: "20px",
+                                px: 2,
+                                py: 0.5,
+                                fontSize: "0.9rem",
+                                color: "#666",
+                                backgroundColor: "#fafafa",
+                              }}
+                            >
+                              <Typography align="start">📄 {src}</Typography>
+                            </Box>
+                          ))}
+                        </Box>
+                      </Box>
+                    )}
                   </Box>
                 </Box>
               </Box>
@@ -204,7 +261,7 @@ const Chatpdf = () => {
               </Select>
             </FormControl>
 
-            <FormControl sx={{ m: 1, minWidth: 320 }} size="small">
+            <FormControl sx={{ m: 1, minWidth: 320, textAlign:'start' }} size="small">
               <InputLabel id="vector-label">Vektorisasi</InputLabel>
               <Select
                 labelId="vector-label"
@@ -219,10 +276,8 @@ const Chatpdf = () => {
                   />
                 }
               >
-                <MenuItem value="paraphrase-ultilingual-mpnet-base-v2">
-                  paraphrase-ultilingual-mpnet-base-v2
-                </MenuItem>
                 <MenuItem value="nomic-embed-text">nomic-embed-text</MenuItem>
+                <MenuItem value="paraphrase-ultilingual-mpnet-base-v2">paraphrase-ultilingual-mpnet-base-v2</MenuItem>
                 <MenuItem value="all-mpnet-base-v2">all-mpnet-base-v2</MenuItem>
               </Select>
             </FormControl>
@@ -242,7 +297,17 @@ const Chatpdf = () => {
                   handleSend();
                 }
               }}
-              sx={{ m: 1, width: "100%" }}
+              sx={{
+                m: 1,
+                width: "100%",
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "20px",
+                  backgroundColor: "#f5f5f5",
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "black",
+                  },
+                },
+              }}
               InputProps={{
                 sx: {
                   borderRadius: "20px",
