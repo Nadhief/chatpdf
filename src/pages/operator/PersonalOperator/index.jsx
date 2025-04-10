@@ -1,15 +1,15 @@
 import React from 'react';
 import { useState } from 'react';
-import { Box, Stack, Typography, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import FolderPlusIcon from '@mui/icons-material/CreateNewFolderOutlined';
 import TrashIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import CloseIcon from '@mui/icons-material/Close';
-import Documents from '../Documents';
-import { documents } from '../Documents/DocumentsConfig';
+import Documents from '../../../components/Sidebar/Documents';
+import { documents } from '../../../components/Sidebar/Documents/DocumentsConfig';
 import AddIcon from '@mui/icons-material/ControlPoint'
-import InputSearchBar from '../../Inputs/InputSearchBar';
+import InputSearchBar from '../../../components/Inputs/InputSearchBar';
+import AddTopic from '../../../components/Dialog/AddTopic';
 
-const Personal = () => {
+const PersonalOperator = () => {
     const [selected, setSelected] = useState('file');
     const [openPaper, setOpenPaper] = useState(false);
 
@@ -122,47 +122,9 @@ const Personal = () => {
                     <Typography fontSize={12} fontWeight={400}> Summarize </Typography>
                 </Box>
             </Stack>
-            <Dialog open={openPaper} onClose={() => setOpenPaper(false)}>
-                <DialogTitle>
-                    <Stack direction='row' spacing={1} justifyContent={'space-between'} alignItems={'center'}>
-                        <Typography fontSize={18} fontWeight={400} color="#404040"> Nama Topik </Typography>
-                        <CloseIcon onClick={() => setOpenPaper(false)} sx={{ cursor: 'pointer', color: '#A0A3B1' }} />
-                    </Stack>
-                </DialogTitle>
-                <DialogContent>
-                    <TextField placeholder='Tulis nama topik' sx={{
-                        width: '400px',
-                        borderRadius: 2,
-                        border: '1px solid #C2C2C2',
-                        boxShadow: 'inset 0px 2px 4px rgba(0, 0, 0, 0.1)',
-                        '& .MuiOutlinedInput-root': {
-                            padding: 0,
-                            '& .MuiOutlinedInput-input': {
-                                paddingX: 2,
-                                paddingY: 1,
-                            },
-                            '& .MuiOutlinedInput-notchedOutline': {
-                                border: 'none',
-                            },
-                        },
-                    }}
-                    />
-                </DialogContent>
-                <DialogActions sx={{ paddingBottom: 3, paddingRight: 3 }}>
-                    <Box display="flex" justifyContent="flex-end" color='black' paddingY={1} paddingX={2} borderRadius={2} alignItems={'center'} border={'1px solid #E0E0E0'}
-                        sx={{
-                            cursor: 'pointer',
-                            backgroundColor: '#3366FF',      
-                        }}
-                        onClick={() => setOpenPaper(false)}
-                    >
-                        <AddIcon sx={{ color: 'white', marginRight: 1, fontSize: 14}} />
-                        <Typography fontSize={14} fontWeight={400} color='white'> Topik </Typography>
-                    </Box>
-                </DialogActions>
-            </Dialog>
+            <AddTopic open={openPaper} onClose={() => setOpenPaper(false)} />
         </Stack>
     );
 }
 
-export default Personal;
+export default PersonalOperator;
