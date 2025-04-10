@@ -1,20 +1,13 @@
-import { useState } from "react";
 import "./App.css";
-import { Button, Typography } from "@mui/material";
-
+import { Routes, Route } from "react-router-dom";
+import Login from "./pages/auth/Login";
+import Chatpdf from "./pages/Chatpdf";
 function App() {
-
   return (
-    <>
-      <div>
-        <Typography variant="h4" gutterBottom>
-          Welcome to chat pdf
-        </Typography>
-        <Button variant="contained" color="primary">
-          Button
-        </Button>
-      </div>
-    </>
+    <Routes>
+      <Route path="/" element={<Chatpdf />} />
+      <Route path="/login" element={<Login />} />
+    </Routes>
   );
 }
 
