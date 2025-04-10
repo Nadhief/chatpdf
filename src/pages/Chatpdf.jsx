@@ -97,12 +97,12 @@ const Chatpdf = () => {
 
   return (
     <Grid
-      sx={{ height: "85vh" }}
+      sx={{height:"95vh", backgroundColor:"#fff", borderRadius:"10px", }}
       direction={"column"}
       justifyContent="spavce-between"
     >
       {responses.length === 0 && (
-        <Grid item xs>
+        <Grid item xs sx={{ textAlign: "center", pt:10 }}>
           <img
             src={ChatbotImage}
             alt="Chatbot"
@@ -127,13 +127,14 @@ const Chatpdf = () => {
       )}
 
       {responses.length > 0 && (
-        <Box
+        <Grid
           sx={{
             flex: 1,
             overflowY: "auto",
             maxWidth: responses.length > 0 ? "70%" : "80%",
             mx: "auto",
-            height: "90%",
+            height: "80%",
+            pt:10
           }}
           ref={chatEndRef}
         >
@@ -224,10 +225,10 @@ const Chatpdf = () => {
               </Box>
             </Box>
           ))}
-        </Box>
+        </Grid>
       )}
 
-      <Box
+      <Grid
         sx={{
           position: responses.length > 0 ? "sticky" : "static",
           bottom: 0,
@@ -293,7 +294,7 @@ const Chatpdf = () => {
               maxRows={8}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  e.preventDefault(); // Biar nggak bikin newline
+                  e.preventDefault();
                   handleSend();
                 }
               }}
@@ -336,7 +337,7 @@ const Chatpdf = () => {
             />
           </Grid>
         </Grid>
-      </Box>
+      </Grid>
     </Grid>
   );
 };

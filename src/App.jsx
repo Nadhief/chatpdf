@@ -24,8 +24,11 @@ function App() {
         <Grid size={{ md: 3, lg: 3 }} sx={{ alignItems: "start" }}>
           <Sidebar />
         </Grid>
-        <Grid size={{ md: 9, lg: 9 }} maxHeight={"100%"}>
-          <Chatpdf /> 
+        <Grid
+          size={{ md: 9, lg: 9 }}
+          sx={{ padding: "1rem" }}
+        >
+          <Chatpdf />
         </Grid>
       </Grid>
     </>
