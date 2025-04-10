@@ -25,7 +25,7 @@ function App() {
           <Sidebar />
         </Grid>
         <Grid size={{ md: 9, lg: 9 }} maxHeight={"100%"}>
-          {/* <Chatpdf />  */}
+          <Chatpdf /> 
         </Grid>
       </Grid>
     </>
