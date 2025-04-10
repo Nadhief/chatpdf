@@ -21,11 +21,14 @@ function App() {
           overflowX: "hidden",
         }}
       >
-        <Grid size={{ xs: 0, sm:0, md: 0, lg: 3 }} sx={{ alignItems: "start" }}>
+        <Grid size={{ md: 3, lg: 3 }} sx={{ alignItems: "start" }}>
           <Sidebar />
         </Grid>
-        <Grid size={{ xs: 12, sm:0, md: 12, lg: 9 }} maxHeight={"100%"}>
-          <Chatpdf /> 
+        <Grid
+          size={{ md: 9, lg: 9 }}
+          sx={{ padding: "1rem" }}
+        >
+          <Chatpdf />
         </Grid>
       </Grid>
     </>
