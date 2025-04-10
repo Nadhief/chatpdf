@@ -6,42 +6,42 @@ import {
     DialogActions,
     TextField,
     Typography,
+    Autocomplete,
     Stack,
     Box
 } from '@mui/material';
+import ExpandIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
-import AddIcon from '@mui/icons-material/ControlPoint';
 
-const AddTopic = ({ open, onClose }) => {
+const AddToDepartment = ({ open, onClose }) => {
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogTitle>
+            <DialogTitle width={450} mt={1}>
                 <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
-                    <Typography fontSize={18} fontWeight={400} color="#404040">Nama Topik</Typography>
+                    <Typography fontSize={20} fontWeight={600} color="#404040">Tambahkan Ke Departemen</Typography>
                     <CloseIcon onClick={onClose} sx={{ cursor: 'pointer', color: '#A0A3B1' }} />
                 </Stack>
             </DialogTitle>
 
             <DialogContent>
-                <TextField
-                    placeholder="Tulis nama topik"
-                    fullWidth
-                    sx={{
-                        width: '400px',
-                        borderRadius: 2,
-                        border: '1px solid #C2C2C2',
-                        boxShadow: 'inset 0px 2px 4px rgba(0, 0, 0, 0.1)',
+                <Box mb={0.5}>
+                    <Typography fontWeight={700}>Departemen</Typography>
+                </Box>
+                <Autocomplete
+                    options={['Departemen A', 'Departemen B', 'Departemen C']}
+                    sx={{ borderRadius: 2, border: '2px solid #E0E0E0',
                         '& .MuiOutlinedInput-root': {
                             padding: 0,
-                            '& .MuiOutlinedInput-input': {
-                                paddingX: 2,
-                                paddingY: 1,
-                            },
+                            paddingX: 2,
                             '& .MuiOutlinedInput-notchedOutline': {
                                 border: 'none',
                             },
                         },
                     }}
+                    renderInput={(params) => <TextField {...params}/>}
+                    clearIcon={false}
+                    defaultValue={'Departemen'}
+                    popupIcon={<ExpandIcon />}
                 />
             </DialogContent>
 
@@ -56,16 +56,15 @@ const AddTopic = ({ open, onClose }) => {
                     border="1px solid #E0E0E0"
                     sx={{
                         cursor: 'pointer',
-                        backgroundColor: '#3366FF',
+                        backgroundColor: '#52BD94',
                     }}
                     onClick={onClose}
                 >
-                    <AddIcon sx={{ color: 'white', marginRight: 1, fontSize: 14 }} />
-                    <Typography fontSize={14} fontWeight={400} color="white">Topik</Typography>
+                    <Typography fontSize={14} fontWeight={400} color="white">Tambahkan</Typography>
                 </Box>
             </DialogActions>
         </Dialog>
     );
 };
 
-export default AddTopic;
+export default AddToDepartment;

@@ -8,10 +8,12 @@ import { documents } from '../../../components/Sidebar/Documents/DocumentsConfig
 import AddIcon from '@mui/icons-material/ControlPoint'
 import InputSearchBar from '../../../components/Inputs/InputSearchBar';
 import AddTopic from '../../../components/Dialog/AddTopic';
+import DeleteFile from '../../../components/Dialog/DeleteFile';
 
 const PersonalUser = () => {
     const [selected, setSelected] = useState('file');
     const [openPaper, setOpenPaper] = useState(false);
+    const [openTrash, setOpenTrash] = useState(false);
 
     return (
         <Stack direction='column' backgroundColor='white' height={'100%'} width={'100%'} alignItems='center' spacing={3}>
@@ -85,6 +87,7 @@ const PersonalUser = () => {
                                         cursor: 'pointer',
                                         backgroundColor: '#CB3A31',
                                     }}
+                                    onClick={() => setOpenTrash(true)}
                                 >
                                     <TrashIcon sx={{ color: 'white', fontSize: 20}} />
                                 </Box>
@@ -123,6 +126,7 @@ const PersonalUser = () => {
                 </Box>
             </Stack>
             <AddTopic open={openPaper} onClose={() => setOpenPaper(false)} />
+            <DeleteFile open={openTrash} onClose={() => setOpenTrash(false)} />
         </Stack>
     );
 }
