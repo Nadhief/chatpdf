@@ -17,7 +17,7 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { chatPersonal } from "../services";
 import ReactMarkdown from "react-markdown";
 
-const Chatpdf = () => {
+const ChatBox = ({role}) => {
   const [model, setModel] = useState("Llama 3.1");
   const [vectorizer, setVectorizer] = useState("nomic-embed-text");
   const [question, setQuestion] = useState("");
@@ -99,7 +99,12 @@ const Chatpdf = () => {
 
   return (
     <Grid
-      sx={{ height: "95vh", backgroundColor: "#fff", borderRadius: "10px" }}
+      sx={{
+        height: "95vh",
+        backgroundColor: "#fff",
+        borderRadius: "10px",
+        width: "100%",
+      }}
       direction={"column"}
       justifyContent="spavce-between"
     >
@@ -111,7 +116,7 @@ const Chatpdf = () => {
             style={{ maxWidth: "127px", height: "120px" }}
           />
           <Typography variant="h4" sx={{ color: "#757575", mt: 2 }}>
-            Halo, User!
+            Halo, {role}!
           </Typography>
           <Typography variant="h2" sx={{ my: 2 }}>
             How may I help you?
@@ -133,15 +138,23 @@ const Chatpdf = () => {
           sx={{
             flex: 1,
             overflowY: "auto",
-            maxWidth: responses.length > 0 ? "70%" : "80%",
             mx: "auto",
             height: "80%",
             pt: 10,
+            border:'1px solid black',
           }}
           ref={chatEndRef}
         >
           {responses?.map((res, idx) => (
-            <Box key={idx} sx={{ mb: 4, px: 1 }}>
+            <Box
+              key={idx}
+              sx={{
+                mx: "auto",
+                mb: 4,
+                px: 1,
+                maxWidth: responses.length > 0 ? "70%" : "80%",
+              }}
+            >
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                 <Box
                   sx={{
@@ -156,9 +169,7 @@ const Chatpdf = () => {
                 </Box>
               </Box>
 
-              <Box
-                sx={{ display: "flex", alignItems: "flex-start", my: 6 }}
-              >
+              <Box sx={{ display: "flex", alignItems: "flex-start", my: 6 }}>
                 <Box
                   component="img"
                   src={ChatbotImage}
@@ -351,4 +362,4 @@ const Chatpdf = () => {
   );
 };
 
-export default Chatpdf;
+export default ChatBox;
