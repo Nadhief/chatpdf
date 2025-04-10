@@ -4,13 +4,10 @@ import Sidebar from "./components/Sidebar";
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/auth/Login";
-import PdfViewer from "./components/PdfViewer";
 import ChatBox from "./pages/Chatbox";
-import { Document, Page, pdfjs } from "react-pdf";
-import ShowdPDF from "../src/assets/pdf/pdfdummy.pdf";
 import Dokumenop from "./pages/operator/Dokumen";
 import Dokumenadm from "./pages/admin/Dokumen";
-import ManageDepartmen from "./pages/admin/ManageDepartment";
+import ManageDepartmen from "./pages/admin/ManageDepartmen";
 import ManageUser from "./pages/admin/ManageUser";
 
 function App() {
