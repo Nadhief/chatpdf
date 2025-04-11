@@ -267,8 +267,6 @@ const Dokumen = ({ id }) => {
     }
   };
 
-
-
   const fetchDataFileDepartment = async (dept_id) => {
     console.log(dept_id);
     try {
