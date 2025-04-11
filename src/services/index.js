@@ -155,3 +155,13 @@ export const chatPersonal = async (payload) => {
       throw error;
     }
   }
+
+  export const uploadPersonalToDepartmentFile = async (payload) => {
+    try {
+      const response = await api.post("file/add_multifile_department", payload);
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      throw error;
+    }
+  }

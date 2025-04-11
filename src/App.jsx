@@ -41,7 +41,11 @@ function App() {
             alignItems: "start",
           }}
         >
-          <Sidebar role={user?.role?.toLowerCase()} id={user?.id} username={user?.username} />
+          <Sidebar
+            role={user?.role?.toLowerCase()}
+            id={user?.id}
+            username={user?.username}
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 12, md: 12, lg: 9 }} sx={{ padding: "1rem" }}>
           {/* user */}
@@ -55,7 +59,10 @@ function App() {
               path="/operator/coofisai"
               element={<ChatBox role={"Operator"} />}
             />
-            <Route path="/operator/coofisai/dokumen" element={<Dokumenop />} />
+            <Route
+              path="/operator/coofisai/dokumen"
+              element={<Dokumenop id={user?.id} />}
+            />
           </Routes>
 
           {/* admin */}
@@ -64,7 +71,10 @@ function App() {
               path="/admin/coofisai"
               element={<ChatBox role={"Admin"} />}
             />
-            <Route path="/admin/coofisai/dokumen" element={<Dokumenadm />} />
+            <Route
+              path="/admin/coofisai/dokumen"
+              element={<Dokumenop id={user?.id} />}
+            />
             <Route path="/admin/coofisai/manageuser" element={<ManageUser />} />
             <Route
               path="/admin/coofisai/managedepartment"

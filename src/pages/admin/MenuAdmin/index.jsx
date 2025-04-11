@@ -5,8 +5,10 @@ import PersonIcon from '@mui/icons-material/PersonOutlined';
 import DepartmentIcon from '@mui/icons-material/ApartmentOutlined';
 import FileIcon from '@mui/icons-material/InsertDriveFileOutlined';
 import ChatIcon from '@mui/icons-material/ChatOutlined';
+import { useNavigate } from 'react-router-dom';
 
 const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
+    const navigate = useNavigate();
     return (
         <Stack direction={'column'} width={'100%'} spacing={1.8}>
             <Typography fontSize={16} fontWeight={600} color='#404040'> Menu Admin </Typography>
@@ -45,6 +47,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
                 }}
                 onClick={() => {
                     setItemSelected('departemen');
+                    navigate('/admin/coofisai/managedepartment')
                 }}>
                 <DepartmentIcon sx={{fontSize: 20, color: itemSelected === 'departemen' ? '#EA001E' : '#404040'}} />
                 <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'departemen' ? '#EA001E' : '#404040'}> Departemen </Typography>

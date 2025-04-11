@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { scrollbar } from "../../utils/scrollbar";
 import AdminIcon from "@mui/icons-material/ManageAccountsOutlined";
 import Logo from "../../assets/coofisLogo.svg";
@@ -13,12 +13,19 @@ import MenuOperator from "../../pages/operator/MenuOperator";
 import MenuAdmin from "../../pages/admin/MenuAdmin";
 import PersonalAdmin from "../../pages/admin/PersonalAdmin";
 import DepartemenAdmin from "../../pages/admin/DepartemenAdmin";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ role, id, username }) => {
   const [selected, setSelected] = useState("personal");
   const [itemSelected, setItemSelected] = useState("dokumen");
   const [settingPage, setSettingPage] = useState(false);
-  console.log(role, id, username);
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/");
+  };
 
   return (
     <Stack
@@ -38,6 +45,14 @@ const Sidebar = ({ role, id, username }) => {
         sx={{ width: 180, height: 72 }}
       />
       <Box justifyContent={"flex-start"} padding={2} width={"100%"}>
+        <Button
+          variant="contained"
+          sx={{ mb: 4, backgroundColor: "#BF2600" }}
+          onClick={handleLogout}
+        >
+          Logout
+        </Button>
+
         <Stack direction="row" spacing={3} alignItems="center">
           <Box
             component="img"
@@ -87,7 +102,10 @@ const Sidebar = ({ role, id, username }) => {
                 sx={{
                   cursor: "pointer",
                 }}
-                onClick={() => setSettingPage(true)}
+                onClick={() => {
+                  setSettingPage(true);
+                  navigate("/operator/coofisai/dokumen");
+                }}
               >
                 <AdminIcon sx={{ fontSize: 20 }} />
                 <Typography fontSize={20} fontWeight={400} color="#404040">
@@ -108,7 +126,10 @@ const Sidebar = ({ role, id, username }) => {
                 sx={{
                   cursor: "pointer",
                 }}
-                onClick={() => setSettingPage(true)}
+                onClick={() => {
+                  setSettingPage(true);
+                  navigate("/admin/coofisai/dokumen");
+                }}
               >
                 <AdminIcon sx={{ fontSize: 20 }} />
                 <Typography fontSize={20} fontWeight={400} color="#404040">
