@@ -13,7 +13,7 @@ import MenuOperator from "../../pages/operator/MenuOperator";
 import MenuAdmin from "../../pages/admin/MenuAdmin";
 
 
-const Sidebar = ({role}) => {
+const Sidebar = ({role, id}) => {
     const [selected, setSelected] = useState("personal");
     const [itemSelected, setItemSelected] = useState("dokumen");
     const [settingPage, setSettingPage] = useState(false);
@@ -109,7 +109,7 @@ const Sidebar = ({role}) => {
                     <Box width={'100%'} paddingTop={1}>
                         {selected === 'personal' ? (
                             role === 'user' ? ( 
-                                <PersonalUser /> 
+                                <PersonalUser id={id} /> 
                             ) : role === 'operator' ? ( 
                                 <PersonalOperator /> 
                             ) : role === 'admin' ? ( 

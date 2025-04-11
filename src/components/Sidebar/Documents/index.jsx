@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { Stack, Checkbox, Typography } from '@mui/material';
-import FileIcon from '@mui/icons-material/InsertDriveFileOutlined';
+import React, { useState } from "react";
+import { Stack, Checkbox, Typography } from "@mui/material";
+import FileIcon from "@mui/icons-material/InsertDriveFileOutlined";
 
-const Documents = ({ label }) => {
-  const [checked, setChecked] = useState(false);
-
+const Documents = ({ label, checked, onCheck, filter }) => {
   const handleStackClick = () => {
-    setChecked((prev) => !prev);
+    onCheck(!checked);
   };
 
   return (
@@ -17,26 +15,29 @@ const Documents = ({ label }) => {
       borderRadius={4}
       alignItems="center"
       sx={{
-        backgroundColor: '#F5F5F5',
-        cursor: 'pointer',
+        backgroundColor: "#F5F5F5",
+        cursor: "pointer",
       }}
       onClick={handleStackClick}
     >
       <Checkbox
         checked={checked}
-        onChange={handleStackClick}
+        onChange={(e) => onCheck(e.target.checked)}
         sx={{
           padding: 0.8,
-          '&.Mui-checked': {
-            color: '#bf2600',
+          "&.Mui-checked": {
+            color: "#bf2600",
           },
-          '& .MuiSvgIcon-root': {
+          "& .MuiSvgIcon-root": {
             fontSize: 16,
           },
         }}
         onClick={(e) => e.stopPropagation()}
       />
-      <FileIcon sx={{ color: '#404040', fontSize: 20 }} />
+
+      {filter === "file" ? (
+        <FileIcon sx={{ color: "#404040", fontSize: 20 }} />
+      ) : null}
       <Typography fontSize={12} fontWeight={400} color="#404040">
         {label}
       </Typography>
