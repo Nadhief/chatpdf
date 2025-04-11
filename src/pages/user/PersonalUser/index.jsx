@@ -132,12 +132,13 @@ const PersonalUser = ({ id }) => {
         .then((res) => {
           console.log("Upload berhasil:", res);
           setSelectedUploadFiles([]);
+          fetchDataFile();
           setIsLoading(false);
           openSnackbar("berhasil", "File berhasil diunggah!");
-          fetchDataFile();
         })
         .catch((error) => {
           console.error("Gagal upload:", error);
+          openSnackbar("gagal", "File gagal diunggah!");
         });
     }
   };
@@ -157,9 +158,11 @@ const PersonalUser = ({ id }) => {
           setCheckedItems({});
           fetchDataFile();
           setIsLoading(false);
+          openSnackbar("berhasil", "File berhasil dihapus!");
         })
         .catch((error) => {
           console.error("Gagal menghapus file:", error);
+          openSnackbar("gagal", "File gagal dihapus!");
         });
     });
   };
@@ -176,12 +179,14 @@ const PersonalUser = ({ id }) => {
       .then((res) => {
         console.log("Berhasil menambahkan topik:", res);
         setOpenPaper(false);
-        setIsLoading(false);
         setCheckedItemsTopics({});
         fetchDataTopics();
+        setIsLoading(false);
+        openSnackbar("berhasil", "Topik berhasil ditambah!");
       })
       .catch((error) => {
         console.error("Gagal menambahkan topik:", error);
+        openSnackbar("gagal", "Topik gagal ditambah!");
       });
   };
 
@@ -195,12 +200,14 @@ const PersonalUser = ({ id }) => {
       .then((res) => {
         console.log("Berhasil Menghapus topik:", res);
         setOpenTrash(false);
-        setIsLoading(false);
         setCheckedItemsTopics({});
         fetchDataTopics();
+        setIsLoading(false);
+        openSnackbar("berhasil", "Topik berhasil dihapus!");
       })
       .catch((error) => {
         console.error("Gagal menambahkan topik:", error);
+        openSnackbar("gagal", "Topik gagal dihapus!");
       });
   };
 
