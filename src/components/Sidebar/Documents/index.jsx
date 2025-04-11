@@ -34,7 +34,7 @@ const Documents = ({ label }) => {
             fontSize: 16,
           },
         }}
-        onClick={(e) => e.stopPropagation()} // Mencegah propagasi klik ke Stack
+        onClick={(e) => e.stopPropagation()}
       />
       <FileIcon sx={{ color: '#404040', fontSize: 20 }} />
       <Typography fontSize={12} fontWeight={400} color="#404040">

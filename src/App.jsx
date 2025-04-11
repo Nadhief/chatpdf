@@ -44,8 +44,8 @@ function App() {
         <Grid size={{ xs: 12, sm: 12, md: 12, lg: 9 }} sx={{ padding: "1rem" }}>
           {/* user */}
           <Routes>
-            <Route path="/" element={<Navigate to="/coofisai" />} />
-            <Route path="/coofisai" element={<ChatBox role={'User'} />} />
+            {/* <Route path="/" element={<Navigate to="/coofisai" />} />
+            <Route path="/coofisai" element={<ChatBox role={'User'} />} /> */}
           </Routes>
 
           {/* operator */}

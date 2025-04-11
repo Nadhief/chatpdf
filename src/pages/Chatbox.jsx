@@ -16,6 +16,7 @@ import ChatbotImage from "../assets/images/Chatbot.png";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { chatPersonal } from "../services";
 import ReactMarkdown from "react-markdown";
+import LogoSetting from "../components/LogoSetting";
 
 const ChatBox = ({role}) => {
   const [model, setModel] = useState("Llama 3.1");

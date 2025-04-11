@@ -110,14 +110,18 @@ const Sidebar = ({role}) => {
                         {selected === 'personal' ? (
                             role === 'user' ? ( 
                                 <PersonalUser /> 
-                            ) : role === 'operator' || 'admin' ? ( 
+                            ) : role === 'operator' ? ( 
                                 <PersonalOperator /> 
+                            ) : role === 'admin' ? ( 
+                                <PersonalAdmin /> 
                             ) : null
                         ) : selected === 'departemen' ? (
                             role === 'user' ? ( 
                                 <DepartemenUser /> 
-                            ) : role === 'operator' || 'admin' ? ( 
+                            ) : role === 'operator' ? ( 
                                 <DepartemenOperator /> 
+                            ) : role === 'admin' ? ( 
+                                <DepartemenAdmin /> 
                             ) : null
                         ) : null}
                     </Box>

@@ -1,10 +1,11 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import FolderPlusIcon from '@mui/icons-material/CreateNewFolderOutlined';
 import TrashIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import Documents from '../../../components/Sidebar/Documents';
 import { documents } from '../../../components/Sidebar/Documents/DocumentsConfig';
+import { getPersonalFile } from '../../../services';
 import AddIcon from '@mui/icons-material/ControlPoint'
 import InputSearchBar from '../../../components/Inputs/InputSearchBar';
 import AddTopic from '../../../components/Dialog/AddTopic';
@@ -12,7 +13,25 @@ import AddTopic from '../../../components/Dialog/AddTopic';
 const PersonalOperator = () => {
     const [selected, setSelected] = useState('file');
     const [openPaper, setOpenPaper] = useState(false);
+    const [personalFiles, setPersonalFiles] = useState([]);
 
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const data = await getPersonalFile({
+              user_id: 17,
+              page: 1,
+              per_page: 10,
+            });
+            setPersonalFiles(data); // Sesuaikan dengan struktur respons
+          } catch (error) {
+            console.error("Gagal mengambil file personal:", error);
+          }
+        };
+      
+        fetchData();
+      }, []);      
+    
     return (
         <Stack direction='column' backgroundColor='white' height={'100%'} width={'100%'} alignItems='center' spacing={3}>
             <Box width="100%" textAlign="left">
@@ -92,10 +111,8 @@ const PersonalOperator = () => {
                         </Stack>
                         <Stack direction={'column'} spacing={1}>
                             {/*MAPPING FILE PDF*/}
-                            {documents.map((item) => (
-                                <React.Fragment key={item.id}>
-                                    <Documents label={item.label} />
-                                </React.Fragment>
+                            {personalFiles?.list_files?.map((item, idx) => (
+                                <Documents key={idx} label={item.name} />
                             ))}
                         </Stack>
                     </Stack>
