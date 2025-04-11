@@ -21,7 +21,10 @@ import {
   deleteTopic,
   getPersonalFile,
   getTopic,
+  deletePersonalFile,
+  uploadPersonalFile,
 } from "../../../services";
+import CustomSnackbar from "../../../components/CustomSnackbar";
 
 const PersonalUser = ({ id }) => {
   const [selected, setSelected] = useState("file");
@@ -34,9 +37,26 @@ const PersonalUser = ({ id }) => {
   const [checkedItems, setCheckedItems] = useState({});
   const [checkedItemsTopics, setCheckedItemsTopics] = useState({});
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedUploadFiles, setSelectedUploadFiles] = useState([]);
 
-  const handleCheck = (idx, value) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('Loading');
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    status: "berhasil",
+  });
+
+  const openSnackbar = (status, message) => {
+    setSnackbar({ open: true, status, message });
+  };
+
+  const closeSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
+  const handleCheckFile = (idx, value) => {
     setCheckedItems((prev) => ({
       ...prev,
       [idx]: value,
@@ -87,8 +107,65 @@ const PersonalUser = ({ id }) => {
     }
   };
 
+  const handleSelectUploadFiles = (event) => {
+    const files = Array.from(event.target.files || []);
+    setSelectedUploadFiles(files);
+  };
+  
+  const handleCancel = () => {
+    setSelectedUploadFiles([]);
+  };
+  
+  const handleUploadPersonalFiles = () => {
+    if (selectedUploadFiles.length > 0) {
+      setIsLoading(true);
+      setLoadingMessage('Sedang mengunggah file...');
+      console.log("Uploading files:", selectedUploadFiles);
+      const formData = new FormData();
+      formData.append("id", String(id));
+      
+      selectedUploadFiles.forEach((file) => {
+        formData.append("files_upload", file);
+      });
+      uploadPersonalFile(formData)
+        .then((res) => {
+          console.log("Upload berhasil:", res);
+          setSelectedUploadFiles([]);
+          setIsLoading(false);
+          openSnackbar("berhasil", "File berhasil diunggah!");
+          fetchDataFile();
+        })  
+        .catch((error) => {
+          console.error("Gagal upload:", error);
+        });
+    }
+  };  
+  
+  const handleDeleteFile = () => {
+    setIsLoading(true);
+    setLoadingMessage('Sedang menghapus File...');
+    selectedFiles?.forEach((idx) => {
+      const payload = {
+        id: String(id),
+        filename: idx.name,
+      };
+      deletePersonalFile(payload)
+        .then((res) => {
+          console.log("Berhasil Menghapus File:", res);
+          setOpenTrash(false);
+          setIsLoading(false);
+          setCheckedItems({});
+          fetchDataFile();
+        })
+        .catch((error) => {
+          console.error("Gagal menghapus file:", error);
+        });
+    });
+  };
+
   const handleSubmitTopic = (topic) => {
     setIsLoading(true);
+    setLoadingMessage('Sedang menambahkan topik...');
     const payload = {
       files: selectedFiles?.map((file) => file?.name),
       user_id: String(id),
@@ -148,45 +225,89 @@ const PersonalUser = ({ id }) => {
           backgroundColor: "#FAFBFD",
         }}
       >
-        <Stack direction={"column"} padding={1.5} spacing={1}>
-          <Typography fontSize={14} fontWeight={600} color="#404040">
-            {" "}
-            Unggah File{" "}
-          </Typography>
+      <Stack direction="column" padding={1.5} spacing={1}>
+        <Typography fontSize={14} fontWeight={600} color="#404040">
+          Unggah File
+        </Typography>
+
+        {selectedUploadFiles.length > 0 ? (
+          <Stack spacing={0.5}>
+            {selectedUploadFiles.map((file, index) => (
+              <Typography key={index} fontSize={12} fontWeight={400} color="#404040">
+                {file.name}
+              </Typography>
+            ))}
+          </Stack>
+        ) : (
           <Typography fontSize={12} fontWeight={400} color="#404040">
-            {" "}
             Total ukuran berkas yang dapat diproses adalah maksimal 200 MB
-            dengan ekstensi (PDF, JSON){" "}
+            dengan ekstensi (PDF, JSON)
           </Typography>
-          <Box
-            display="flex"
-            justifyContent="flex-end"
-            width="100%"
-            color="white"
-          >
+        )}
+
+        <Box display="flex" justifyContent="flex-end" width="100%" color="white" gap={1}>
+          {selectedUploadFiles.length > 0 ? (
+            <>
+              <Box
+                component="button"
+                onClick={handleCancel}
+                sx={{
+                  backgroundColor: "#fff",
+                  color: "#4C4DDC",
+                  border: "1px solid #4C4DDC",
+                  borderRadius: 1,
+                  fontSize: 12,
+                  padding: "4px 12px",
+                  cursor: "pointer",
+                }}
+              >
+                Batal
+              </Box>
+              <Box
+                component="button"
+                onClick={handleUploadPersonalFiles}
+                sx={{
+                  backgroundColor: "#4C4DDC",
+                  color: "#fff",
+                  borderRadius: 1,
+                  fontSize: 12,
+                  padding: "4px 12px",
+                  cursor: "pointer",
+                }}
+              >
+                Unggah
+              </Box>
+            </>
+          ) : (
             <Box
+              component="label"
+              htmlFor="upload-file"
               display="flex"
               justifyContent="flex-end"
-              color="white"
               paddingY={0.5}
               paddingX={1}
               borderRadius={1}
-              alignItems={"center"}
+              alignItems="center"
               sx={{
                 cursor: "pointer",
                 backgroundColor: "#4C4DDC",
               }}
             >
-              <FolderPlusIcon
-                sx={{ color: "white", marginRight: 1, fontSize: 18 }}
-              />
+              <FolderPlusIcon sx={{ color: "white", marginRight: 1, fontSize: 18 }} />
               <Typography fontSize={12} fontWeight={400}>
-                {" "}
-                Pilih Berkas{" "}
+                Pilih Berkas
               </Typography>
+              <input
+                id="upload-file"
+                type="file"
+                accept=".pdf,.json"
+                hidden
+                onChange={handleSelectUploadFiles}
+              />
             </Box>
-          </Box>
-        </Stack>
+          )}
+        </Box>
+      </Stack>
       </Box>
       <Box
         sx={{
@@ -289,7 +410,7 @@ const PersonalUser = ({ id }) => {
                     <Documents
                       label={item.name}
                       checked={checkedItems[idx] || false}
-                      onCheck={(val) => handleCheck(idx, val)}
+                      onCheck={(val) => handleCheckFile(idx, val)}
                       filter={selected}
                     />
                   ))
@@ -358,11 +479,21 @@ const PersonalUser = ({ id }) => {
         onClose={() => setOpenPaper(false)}
         handleSubmit={handleSubmitTopic}
       />
-      <DeleteFile
-        open={openTrash}
-        onClose={() => setOpenTrash(false)}
-        handleDelete={handleDeleteTopic}
-      />
+      { selected === 'file' ?  (
+        <DeleteFile
+          open={openTrash}
+          onClose={() => setOpenTrash(false)}
+          handleDelete={handleDeleteFile}
+        />
+      )
+      : (
+        <DeleteFile
+          open={openTrash}
+          onClose={() => setOpenTrash(false)}
+          handleDelete={handleDeleteTopic}
+        />
+      )}
+      
       <Dialog
         open={isLoading}
         PaperProps={{ sx: { borderRadius: 2, textAlign: "center", p: 4 } }}
@@ -377,10 +508,16 @@ const PersonalUser = ({ id }) => {
         >
           <CircularProgress />
           <Typography variant="body2" color="textSecondary">
-            Sedang menambahkan topik...
+            {loadingMessage}
           </Typography>
         </DialogContent>
       </Dialog>
+      <CustomSnackbar
+        open={snackbar.open}
+        onClose={closeSnackbar}
+        status={snackbar.status}
+        message={snackbar.message}
+      />
     </Stack>
   );
 };

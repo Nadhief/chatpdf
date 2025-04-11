@@ -69,3 +69,23 @@ export const chatPersonal = async (payload) => {
       throw error;
     }
   }
+
+  export const deletePersonalFile = async ({ id, filename }) => {
+    try {
+      const response = await api.post("file/remove_pdf_personal_doc", { id, filename });
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      throw error;
+    }
+  }
+
+  export const uploadPersonalFile = async (payload) => {
+    try {
+      const response = await api.post("file/upload_pdf_personal", payload);
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      throw error;
+    }
+  }
