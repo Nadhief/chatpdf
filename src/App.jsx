@@ -39,13 +39,13 @@ function App() {
             alignItems: "start",
           }}
         >
-          <Sidebar />
+          <Sidebar role={'operator'} />
         </Grid>
         <Grid size={{ xs: 12, sm: 12, md: 12, lg: 9 }} sx={{ padding: "1rem" }}>
           {/* user */}
           <Routes>
-            <Route path="/" element={<Navigate to="/coofisai" />} />
-            <Route path="/coofisai" element={<ChatBox role={'User'} />} />
+            {/* <Route path="/" element={<Navigate to="/coofisai" />} />
+            <Route path="/coofisai" element={<ChatBox role={'User'} />} /> */}
           </Routes>
 
           {/* operator */}
@@ -57,11 +57,11 @@ function App() {
 
           {/* admin */}
           <Routes>
-            <Route path="/" element={<Navigate to="/admin/coofisai" />} />
+            {/* <Route path="/" element={<Navigate to="/admin/coofisai" />} />
             <Route path="/admin/coofisai" element={<ChatBox role={'Admin'} />} />
             <Route path="/admin/coofisai/dokumen" element={<Dokumenadm />} />
             <Route path="/admin/coofisai/manageuser" element={<ManageUser />} />
-            <Route path="/admin/coofisai/managedepartment" element={<ManageDepartmen />} />
+            <Route path="/admin/coofisai/managedepartment" element={<ManageDepartmen />} /> */}
 
           </Routes>
         </Grid>

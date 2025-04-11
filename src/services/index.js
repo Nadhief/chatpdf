@@ -19,3 +19,20 @@ export const chatPersonal = async (payload) => {
       throw error;
     }
   }
+
+  export const getPersonalFile = async ({ user_id, page, per_page }) => {
+    console.log("user_id", user_id)
+    try {
+      const response = await api.get("file/personal", {
+        params: {
+          user_id,
+          page,
+          per_page,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error getting file:", error);
+      throw error;
+    }
+  };
