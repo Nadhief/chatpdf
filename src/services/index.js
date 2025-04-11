@@ -18,7 +18,7 @@ export const chatPersonal = async (payload) => {
       console.error("Error adding department:", error);
       throw error;
     }
-  }
+  };
 
   export const getPersonalFile = async ({ user_id, page, per_page }) => {
     try {
@@ -118,3 +118,72 @@ export const chatPersonal = async (payload) => {
   }
 
 
+
+  export const getDepartmentList = async () => {
+    try {
+      const response = await api.get("department/department_list");
+      return response.data;
+    } catch (error) {
+      console.error("Error getting department:", error);
+      throw error;
+    }
+  }
+
+  export const getDepartmentFile = async ({ dept_id, page, per_page }) => {
+    try {
+      const response = await api.get("file/department", {
+        params: {
+          dept_id,
+          page,
+          per_page,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error getting department:", error);
+      throw error;
+    }
+  }
+
+  export const summarizeFilePersonal = async (payload) => {
+    try {
+      const response = await api.post("file/summarize_personal", payload);
+      return response.data;
+    } catch (error) {
+      console.error("Error getting department:", error);
+      throw error;
+    }
+  }
+  
+
+  export const summarizeFileDepartment = async (payload) => {
+    try {
+      const response = await api.post("file/summarize_department", payload);
+      return response.data;
+    } catch (error) {
+      console.error("Error getting department:", error);
+      throw error;
+    }
+  }
+
+
+
+  export const deletePersonalFile = async ({ id, filename }) => {
+    try {
+      const response = await api.post("file/remove_pdf_personal_doc", { id, filename });
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      throw error;
+    }
+  }
+
+  export const uploadPersonalFile = async (payload) => {
+    try {
+      const response = await api.post("file/upload_pdf_personal", payload);
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      throw error;
+    }
+  }

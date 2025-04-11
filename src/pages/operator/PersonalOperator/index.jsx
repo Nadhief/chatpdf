@@ -4,15 +4,16 @@ import { Box, Stack, Typography } from '@mui/material';
 import FolderPlusIcon from '@mui/icons-material/CreateNewFolderOutlined';
 import TrashIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import Documents from '../../../components/Sidebar/Documents';
-import { documents } from '../../../components/Sidebar/Documents/DocumentsConfig';
 import { getPersonalFile } from '../../../services';
 import AddIcon from '@mui/icons-material/ControlPoint'
 import InputSearchBar from '../../../components/Inputs/InputSearchBar';
 import AddTopic from '../../../components/Dialog/AddTopic';
+import DeleteFile from '../../../components/Dialog/DeleteFile';
 
 const PersonalOperator = () => {
     const [selected, setSelected] = useState('file');
     const [openPaper, setOpenPaper] = useState(false);
+    const [openDetete, setOpenDelete] = useState(false);
     const [personalFiles, setPersonalFiles] = useState([]);
 
     useEffect(() => {
@@ -104,6 +105,7 @@ const PersonalOperator = () => {
                                         cursor: 'pointer',
                                         backgroundColor: '#CB3A31',
                                     }}
+                                    onClick={() => setOpenDelete(true)}
                                 >
                                     <TrashIcon sx={{ color: 'white', fontSize: 20}} />
                                 </Box>
@@ -111,9 +113,15 @@ const PersonalOperator = () => {
                         </Stack>
                         <Stack direction={'column'} spacing={1}>
                             {/*MAPPING FILE PDF*/}
-                            {personalFiles?.list_files?.map((item, idx) => (
-                                <Documents key={idx} label={item.name} />
-                            ))}
+                            {selected === 'file' ? (
+                                personalFiles?.list_files?.map((item, idx) => (
+                                    <Documents filter={selected} key={idx} label={item.name} />
+                                ))
+                            ) : selected === 'topik' ? (
+                                personalFiles?.list_files?.map((item, idx) => (
+                                    <Documents key={idx} label={item.name} />
+                                ))
+                            ) : null}
                         </Stack>
                     </Stack>
                 </Stack>
@@ -140,6 +148,7 @@ const PersonalOperator = () => {
                 </Box>
             </Stack>
             <AddTopic open={openPaper} onClose={() => setOpenPaper(false)} />
+            <DeleteFile open={openDetete} onClose={() => setOpenDelete(false)} />
         </Stack>
     );
 }
