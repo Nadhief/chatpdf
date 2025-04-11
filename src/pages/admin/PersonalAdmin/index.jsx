@@ -9,7 +9,7 @@ import AddIcon from '@mui/icons-material/ControlPoint'
 import InputSearchBar from '../../../components/Inputs/InputSearchBar';
 import AddTopic from '../../../components/Dialog/AddTopic';
 
-const PersonalAdmin = () => {
+const PersonalAdmin = ({id}) => {
     const [selected, setSelected] = useState('file');
     const [openPaper, setOpenPaper] = useState(false);
 

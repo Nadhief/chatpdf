@@ -10,7 +10,7 @@ import InputSearchBar from '../../../components/Inputs/InputSearchBar';
 import AddTopic from '../../../components/Dialog/AddTopic';
 import DeleteFile from '../../../components/Dialog/DeleteFile';
 
-const PersonalOperator = () => {
+const PersonalOperator = ({id}) => {
     const [selected, setSelected] = useState('file');
     const [openPaper, setOpenPaper] = useState(false);
     const [openDetete, setOpenDelete] = useState(false);
@@ -20,7 +20,7 @@ const PersonalOperator = () => {
         const fetchData = async () => {
           try {
             const data = await getPersonalFile({
-              user_id: 17,
+              user_id: id,
               page: 1,
               per_page: 10,
             });
