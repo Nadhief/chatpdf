@@ -1,18 +1,30 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
+import EditIcon from '@mui/icons-material/Edit';
+import IconButton from '@mui/material/IconButton';
 
 const columns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "Department", headerName: "Department", width: 130 },
-  { field: "Nama Depan", headerName: "Nama Depan", width: 130 },
-  { field: "Nama Belakang", headerName: "Nama Belakang", width: 90 },
-  { field: "Gender", headerName: "Gender", width: 90 },
-  { field: "Username", headerName: "Username", width: 90 },
-  { field: "Tele Username", headerName: "Tele Username", width: 90 },
-  { field: "Email", headerName: "Email", width: 90 },
-  { field: "Phone", headerName: "Phone", width: 90 },
-  { field: "Role", headerName: "Role", width: 90 },
+  { field: "id", headerName: "ID", width: 110  },
+  { field: "Department", headerName: "Department", width: 110  },
+  { field: "Nama Depan", headerName: "Nama Depan", width: 110 },
+  { field: "Nama Belakang", headerName: "Nama Belakang", width: 110},
+  { field: "Gender", headerName: "Gender", width: 110},
+  { field: "Username", headerName: "Username", width: 110},
+  { field: "Tele Username", headerName: "Tele Username", width: 110},
+  { field: "Email", headerName: "Email", width: 110},
+  { field: "Phone", headerName: "Phone", width: 110},
+  { field: "Role", headerName: "Role", width: 110},
+  {
+    field: "Aksi",
+    headerName: "",
+    width: 60,
+    renderCell: (params) => (
+      <IconButton onClick={() => handleEdit(params.row)}>
+        <EditIcon sx={{ color:"#3366FF" }} />
+      </IconButton>
+    ),
+  },
 ];
 
 const rows = [
@@ -27,6 +39,7 @@ const rows = [
     Email: "budi@mail.id",
     Phone: "08192010109290",
     Role: "Operator",
+    
   },
   {
     id: 2,

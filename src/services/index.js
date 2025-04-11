@@ -36,12 +36,36 @@ export const chatPersonal = async (payload) => {
     }
   };
 
-  export const deletePersonalFile = async ({ id, filename }) => {
+  export const createTopic = async (payload) => {
     try {
-      const response = await api.post("file/remove_pdf_personal_doc", { id, filename });
+      const response = await api.post("file/add_topic_personal", payload);
       return response.data;
     } catch (error) {
-      console.error("Error deleting file:", error);
+      console.error("Error adding department:", error);
+      throw error;
+    }
+  }
+
+  export const getTopic = async ({user_id}) => {
+    try {
+      const response = await api.get("topic/personal", {
+        params: {
+          user_id,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error adding department:", error);
+      throw error;
+    }
+  }
+
+  export const deleteTopic = async (payload) => {
+    try {
+      const response = await api.post("topic/remove_personal_topic", payload);
+      return response.data;
+    } catch (error) {
+      console.error("Error adding department:", error);
       throw error;
     }
   }

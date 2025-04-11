@@ -140,7 +140,6 @@ const ChatBox = ({role}) => {
             mx: "auto",
             height: "80%",
             pt: 10,
-            border:'1px solid black',
           }}
           ref={chatEndRef}
         >

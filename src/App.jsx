@@ -37,31 +37,30 @@ function App() {
             alignItems: "start",
           }}
         >
-          <Sidebar role={'operator'} />
+          <Sidebar role={'user'} id={17} />
         </Grid>
         <Grid size={{ xs: 12, sm: 12, md: 12, lg: 9 }} sx={{ padding: "1rem" }}>
           {/* user */}
           <Routes>
-            {/* <Route path="/" element={<Navigate to="/coofisai" />} />
-            <Route path="/coofisai" element={<ChatBox role={'User'} />} /> */}
+            <Route path="/" element={<Navigate to="/coofisai" />} />
+            <Route path="/coofisai" element={<ChatBox role={'User'} />} />
           </Routes>
 
           {/* operator */}
-          <Routes>
+          {/* <Routes>
             <Route path="/" element={<Navigate to="/operator/coofisai" />} />
             <Route path="/operator/coofisai" element={<ChatBox role={'Operator'} />} />
             <Route path="/operator/coofisai/dokumen" element={<Dokumenop />} />
-          </Routes>
+          </Routes> */}
 
           {/* admin */}
-          <Routes>
-            {/* <Route path="/" element={<Navigate to="/admin/coofisai" />} />
+          {/* <Routes>
+            <Route path="/" element={<Navigate to="/admin/coofisai" />} />
             <Route path="/admin/coofisai" element={<ChatBox role={'Admin'} />} />
             <Route path="/admin/coofisai/dokumen" element={<Dokumenadm />} />
             <Route path="/admin/coofisai/manageuser" element={<ManageUser />} />
-            <Route path="/admin/coofisai/managedepartment" element={<ManageDepartmen />} /> */}
-
-          </Routes>
+            <Route path="/admin/coofisai/managedepartment" element={<ManageDepartmen />} />
+          </Routes> */}
         </Grid>
         {/* <Grid
           size={{ xs: 12, sm: 12, md: 12, lg: 3 }}
