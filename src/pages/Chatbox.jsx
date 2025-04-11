@@ -96,8 +96,6 @@ const ChatBox = ({role}) => {
     }
   }, [responses]);
 
-  console.log(responses);
-
   return (
     <Grid
       sx={{

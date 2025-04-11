@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -7,8 +7,11 @@ import {
     Typography,
     Box
 } from '@mui/material';
+import { deletePersonalFile } from '../../../services';
 
-const DeleteFile = ({ open, onClose }) => {
+
+const DeleteFile = ({ open, onClose, handleDelete }) => {
+
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>
@@ -59,7 +62,10 @@ const DeleteFile = ({ open, onClose }) => {
                         cursor: 'pointer',
                         backgroundColor: '#3366FF',
                     }}
-                    onClick={onClose}
+                    onClick={() => {
+                        handleDelete()
+                        onClose()
+                    }}
                 >
 
                     <Typography fontSize={14} fontWeight={400} color="white">Ya</Typography>

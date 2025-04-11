@@ -9,8 +9,6 @@ import Dokumenop from "./pages/operator/Dokumen";
 import Dokumenadm from "./pages/admin/Dokumen";
 import ManageDepartmen from "./pages/admin/ManageDepartmen";
 import ManageUser from "./pages/admin/ManageUser";
-import ChatOperator from "./pages/operator/ChatOperator";
-import ChatAdmin from "./pages/admin/ChatAdmin";
 
 function App() {
   return (
@@ -19,8 +17,8 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         {/* <Route path="/user" element={<ChatUser />} /> */}
-        <Route path="/admin" element={<ChatAdmin />} />
-        <Route path="/operator" element={<ChatOperator />} />
+        {/* <Route path="/admin" element={<ChatAdmin />} />
+        <Route path="/operator" element={<ChatOperator />} /> */}
       </Routes>
 
       <Grid

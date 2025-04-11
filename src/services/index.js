@@ -18,10 +18,9 @@ export const chatPersonal = async (payload) => {
       console.error("Error adding department:", error);
       throw error;
     }
-  }
+  };
 
   export const getPersonalFile = async ({ user_id, page, per_page }) => {
-    console.log("user_id", user_id)
     try {
       const response = await api.get("file/personal", {
         params: {
@@ -36,3 +35,13 @@ export const chatPersonal = async (payload) => {
       throw error;
     }
   };
+
+  export const deletePersonalFile = async ({ id, filename }) => {
+    try {
+      const response = await api.post("file/remove_pdf_personal_doc", { id, filename });
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      throw error;
+    }
+  }

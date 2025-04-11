@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Stack, Checkbox, Typography } from '@mui/material';
 import FileIcon from '@mui/icons-material/InsertDriveFileOutlined';
 
-const Documents = ({ label }) => {
+const Documents = ({ label, filter }) => {
   const [checked, setChecked] = useState(false);
 
   const handleStackClick = () => {
@@ -36,7 +36,11 @@ const Documents = ({ label }) => {
         }}
         onClick={(e) => e.stopPropagation()}
       />
-      <FileIcon sx={{ color: '#404040', fontSize: 20 }} />
+      {filter === 'file' ? (
+        <FileIcon sx={{ color: '#404040', fontSize: 20 }} />
+      ) : (
+        null
+      )}
       <Typography fontSize={12} fontWeight={400} color="#404040">
         {label}
       </Typography>
