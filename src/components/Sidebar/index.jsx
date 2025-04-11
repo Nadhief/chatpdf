@@ -11,6 +11,8 @@ import PersonalOperator from "../../pages/operator/PersonalOperator";
 import DepartemenOperator from "../../pages/operator/DepartemenOperator";
 import MenuOperator from "../../pages/operator/MenuOperator";
 import MenuAdmin from "../../pages/admin/MenuAdmin";
+import PersonalAdmin from "../../pages/admin/PersonalAdmin";
+import DepartemenAdmin from "../../pages/admin/DepartemenAdmin";
 
 
 const Sidebar = ({role, id}) => {
@@ -117,7 +119,7 @@ const Sidebar = ({role, id}) => {
                             ) : null
                         ) : selected === 'departemen' ? (
                             role === 'user' ? ( 
-                                <DepartemenUser /> 
+                                <DepartemenUser id={id} /> 
                             ) : role === 'operator' ? ( 
                                 <DepartemenOperator /> 
                             ) : role === 'admin' ? ( 

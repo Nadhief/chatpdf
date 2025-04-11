@@ -2,25 +2,27 @@ import "./App.css";
 import { Grid } from "@mui/material";
 import Sidebar from "./components/Sidebar";
 
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import ChatBox from "./pages/Chatbox";
 import Dokumenop from "./pages/operator/Dokumen";
 import Dokumenadm from "./pages/admin/Dokumen";
 import ManageDepartmen from "./pages/admin/ManageDepartmen";
 import ManageUser from "./pages/admin/ManageUser";
-import ChatOperator from "./pages/operator/ChatOperator";
-import ChatAdmin from "./pages/admin/ChatAdmin";
+import { useEffect, useState } from "react";
 
 function App() {
+  const location = useLocation();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    setUser(storedUser);
+  }, [location.pathname]);
   return (
     <>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/login" element={<Login />} />
-        {/* <Route path="/user" element={<ChatUser />} /> */}
-        <Route path="/admin" element={<ChatAdmin />} />
-        <Route path="/operator" element={<ChatOperator />} />
+        <Route path="/" element={<Login />} />
       </Routes>
 
       <Grid
@@ -39,30 +41,36 @@ function App() {
             alignItems: "start",
           }}
         >
-          <Sidebar role={'user'} id={17} />
+          <Sidebar role={user?.role?.toLowerCase()} id={17} />
         </Grid>
         <Grid size={{ xs: 12, sm: 12, md: 12, lg: 9 }} sx={{ padding: "1rem" }}>
           {/* user */}
           <Routes>
-            <Route path="/" element={<Navigate to="/coofisai" />} />
-            <Route path="/coofisai" element={<ChatBox role={'User'} />} />
+            <Route path="/coofisai" element={<ChatBox role={"User"} />} />
           </Routes>
 
           {/* operator */}
-          {/* <Routes>
-            <Route path="/" element={<Navigate to="/operator/coofisai" />} />
-            <Route path="/operator/coofisai" element={<ChatBox role={'Operator'} />} />
+          <Routes>
+            <Route
+              path="/operator/coofisai"
+              element={<ChatBox role={"Operator"} />}
+            />
             <Route path="/operator/coofisai/dokumen" element={<Dokumenop />} />
-          </Routes> */}
+          </Routes>
 
           {/* admin */}
-          {/* <Routes>
-            <Route path="/" element={<Navigate to="/admin/coofisai" />} />
-            <Route path="/admin/coofisai" element={<ChatBox role={'Admin'} />} />
+          <Routes>
+            <Route
+              path="/admin/coofisai"
+              element={<ChatBox role={"Admin"} />}
+            />
             <Route path="/admin/coofisai/dokumen" element={<Dokumenadm />} />
             <Route path="/admin/coofisai/manageuser" element={<ManageUser />} />
-            <Route path="/admin/coofisai/managedepartment" element={<ManageDepartmen />} />
-          </Routes> */}
+            <Route
+              path="/admin/coofisai/managedepartment"
+              element={<ManageDepartmen />}
+            />
+          </Routes>
         </Grid>
         {/* <Grid
           size={{ xs: 12, sm: 12, md: 12, lg: 3 }}

@@ -38,7 +38,16 @@ const Documents = ({ label, checked, onCheck, filter }) => {
       {filter === "file" ? (
         <FileIcon sx={{ color: "#404040", fontSize: 20 }} />
       ) : null}
-      <Typography fontSize={12} fontWeight={400} color="#404040">
+      <Typography
+        fontSize={12}
+        fontWeight={400}
+        color="#404040"
+        sx={{
+          overflowWrap: "anywhere",
+          wordBreak: "break-word", 
+          whiteSpace: "normal", 
+        }}
+      >
         {label}
       </Typography>
     </Stack>

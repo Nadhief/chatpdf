@@ -12,6 +12,7 @@ import {
 // import { loginUser } from "../../services/authServices";
 import { useNavigate } from "react-router-dom";
 import CoofisImage from "../../assets/images/Coofis.png"; // Adjust the path as necessary
+import { login } from "../../services/authservices";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -19,15 +20,36 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    // try {
-    //   const response = await loginUser(username, password);
-    //   alert(response.message);
-    //   localStorage.setItem("token", response.token);
-    //   localStorage.setItem("username", response.username);
-    //   navigate("/layoutmanagerv4");
-    // } catch (error) {
-    //   alert(error.message);
-    // }
+    const payload = {
+      username: username,
+      password: password,
+    };
+
+    login(payload)
+      .then((response) => {
+        const userData = response;
+        localStorage.setItem("user", JSON.stringify(userData));
+        console.log("Login successful:", userData);
+        switch (userData.role) {
+          case "Admin":
+            navigate("/admin/coofisai");
+            break;
+          case "User":
+            navigate("/coofisai");
+            break;
+          case "Operator":
+            navigate("/operator/coofisai");
+            break;
+          default:
+            navigate("/");
+        }
+      })
+      .catch((error) => {
+        console.error(
+          "Login failed:",
+          error.response?.data?.message || error.message
+        );
+      });
   };
 
   return (
@@ -50,8 +72,6 @@ const Login = () => {
             Username
           </Typography>
           <TextField
-            // label="Username"
-            // variant="outlined"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             fullWidth
@@ -67,8 +87,6 @@ const Login = () => {
             Password
           </Typography>
           <TextField
-            // label="Password"
-            // variant="outlined"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

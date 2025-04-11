@@ -21,6 +21,7 @@ import {
   deleteTopic,
   getPersonalFile,
   getTopic,
+  summarizeFilePersonal,
 } from "../../../services";
 
 const PersonalUser = ({ id }) => {
@@ -123,6 +124,22 @@ const PersonalUser = ({ id }) => {
       })
       .catch((error) => {
         console.error("Gagal menambahkan topik:", error);
+      });
+  };
+
+  const handleSummarize = async () => {
+    const payload = {
+      id: "17",
+      embedding_model: "nomic-embed-text",
+      llm_model: "Llama 3.1",
+      filename: selectedFiles?.map((file) => file?.name),
+    };
+    summarizeFilePersonal(payload)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
 
@@ -287,6 +304,7 @@ const PersonalUser = ({ id }) => {
               {selected === "file"
                 ? personalFiles?.list_files?.map((item, idx) => (
                     <Documents
+                      key={idx}
                       label={item.name}
                       checked={checkedItems[idx] || false}
                       onCheck={(val) => handleCheck(idx, val)}
@@ -296,6 +314,7 @@ const PersonalUser = ({ id }) => {
                 : selected === "topik"
                 ? personalTopics?.list_files?.map((item, idx) => (
                     <Documents
+                      key={idx}
                       label={item.topic_name}
                       checked={checkedItemsTopics[idx] || false}
                       onCheck={(val) => handleCheckTopic(idx, val)}
@@ -337,6 +356,9 @@ const PersonalUser = ({ id }) => {
         </Box>
 
         <Box
+          onClick={() => {
+            handleSummarize();
+          }}
           color="white"
           paddingY={0.5}
           paddingX={1}
