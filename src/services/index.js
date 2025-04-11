@@ -106,7 +106,6 @@ export const chatPersonal = async (payload) => {
     }
   }
   
-
   export const summarizeFileDepartment = async (payload) => {
     try {
       const response = await api.post("file/summarize_department", payload);
@@ -116,57 +115,6 @@ export const chatPersonal = async (payload) => {
       throw error;
     }
   }
-
-
-
-  export const getDepartmentList = async () => {
-    try {
-      const response = await api.get("department/department_list");
-      return response.data;
-    } catch (error) {
-      console.error("Error getting department:", error);
-      throw error;
-    }
-  }
-
-  export const getDepartmentFile = async ({ dept_id, page, per_page }) => {
-    try {
-      const response = await api.get("file/department", {
-        params: {
-          dept_id,
-          page,
-          per_page,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error getting department:", error);
-      throw error;
-    }
-  }
-
-  export const summarizeFilePersonal = async (payload) => {
-    try {
-      const response = await api.post("file/summarize_personal", payload);
-      return response.data;
-    } catch (error) {
-      console.error("Error getting department:", error);
-      throw error;
-    }
-  }
-  
-
-  export const summarizeFileDepartment = async (payload) => {
-    try {
-      const response = await api.post("file/summarize_department", payload);
-      return response.data;
-    } catch (error) {
-      console.error("Error getting department:", error);
-      throw error;
-    }
-  }
-
-
 
   export const deletePersonalFile = async ({ id, filename }) => {
     try {
