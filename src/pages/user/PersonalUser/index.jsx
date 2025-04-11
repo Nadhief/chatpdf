@@ -206,7 +206,7 @@ const PersonalUser = ({ id }) => {
 
   const handleSummarize = async () => {
     const payload = {
-      id: "17",
+      id: String(id),
       embedding_model: "nomic-embed-text",
       llm_model: "Llama 3.1",
       filename: selectedFiles?.map((file) => file?.name),

@@ -15,10 +15,11 @@ import PersonalAdmin from "../../pages/admin/PersonalAdmin";
 import DepartemenAdmin from "../../pages/admin/DepartemenAdmin";
 
 
-const Sidebar = ({role, id}) => {
+const Sidebar = ({role, id, username}) => {
     const [selected, setSelected] = useState("personal");
     const [itemSelected, setItemSelected] = useState("dokumen");
     const [settingPage, setSettingPage] = useState(false);
+    console.log(role, id, username)
 
     return (
         <Stack direction='column' backgroundColor='white' alignItems='center' spacing={2} padding={3} height={'93vh'} boxShadow={'5px 0px 10px rgba(0, 0, 0, 0.15)'} sx={{ ...scrollbar('#9E9E9E'), overflowX: 'hidden', overflowY: 'auto'}}>
@@ -37,7 +38,7 @@ const Sidebar = ({role, id}) => {
                         sx={{width: 50, height: 50}}
                     />
                     <Stack direction='column' alignItems='flex-start' justifyContent='flex-start'>
-                        <Typography variant="h6" fontWeight={600} color="#2E3A59">Nama User</Typography>
+                        <Typography variant="h6" fontWeight={600} color="#2E3A59">{username}</Typography>
                         <Typography variant="body2" fontWeight={400} color="#A0A3B1">Departemen</Typography>
                     </Stack>
                 </Stack>

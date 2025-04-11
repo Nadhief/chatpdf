@@ -41,7 +41,7 @@ function App() {
             alignItems: "start",
           }}
         >
-          <Sidebar role={user?.role?.toLowerCase()} id={17} />
+          <Sidebar role={user?.role?.toLowerCase()} id={user?.id} username={user?.username} />
         </Grid>
         <Grid size={{ xs: 12, sm: 12, md: 12, lg: 9 }} sx={{ padding: "1rem" }}>
           {/* user */}
