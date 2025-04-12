@@ -402,7 +402,7 @@ const DepartemenOperator = ({ id }) => {
           </Stack>
         </Stack>
       </Box>
-      <Stack
+      {/* <Stack
         width={"100%"}
         direction={"row"}
         spacing={1}
@@ -428,7 +428,7 @@ const DepartemenOperator = ({ id }) => {
             Summarize{" "}
           </Typography>
         </Box>
-      </Stack>
+      </Stack> */}
 
       <DeleteFile
         open={openTrash}

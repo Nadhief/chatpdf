@@ -83,7 +83,19 @@ function App() {
           <Routes>
             <Route
               path="/operator/coofisai"
-              element={<ChatBox role={"Operator"} />}
+              element={
+                <ChatBox
+                  role={"Operator"}
+                  id={user?.id}
+                  selected={selected}
+                  responseSummarize={responseSummarize}
+                  setResponseSummarize={setResponseSummarize}
+                  isSummarize={isSummarize}
+                  setIsSummarize={setIsSummarize}
+                  selectedTopic={selectedTopic}
+                  topicName={topicName}
+                />
+              }
             />
             <Route
               path="/operator/coofisai/dokumen"

@@ -26,6 +26,7 @@ import {
   getDepartmentList,
   getPersonalFile,
   getTopic,
+  uploadDepartmentFile,
   uploadPersonalFile,
   uploadPersonalToDepartmentFile,
 } from "../../services";
@@ -51,7 +52,9 @@ const Dokumen = ({ id }) => {
 
   const [checkedItems, setCheckedItems] = useState({});
   const [checkedItemsTopics, setCheckedItemsTopics] = useState({});
-  const [checkedItemsFileDepartment, setCheckedItemsFileDepartment] = useState({});
+  const [checkedItemsFileDepartment, setCheckedItemsFileDepartment] = useState(
+    {}
+  );
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -87,8 +90,6 @@ const Dokumen = ({ id }) => {
       [idx]: value,
     }));
   };
-  console.log("awikok", checkedItems)
-  console.log("awikok", checkedItemsFileDepartment)
   const [selectedDepartmentid, setSelectedDepartmentid] = useState(null);
   const [departmentFile, setDepartmentFile] = useState([]);
 
@@ -100,7 +101,7 @@ const Dokumen = ({ id }) => {
     .filter(([idx, isChecked]) => isChecked)
     .map(([idx]) => personalTopics.list_files[idx]);
 
-    const selectedFileDepartment = Object.entries(checkedItemsFileDepartment)
+  const selectedFileDepartment = Object.entries(checkedItemsFileDepartment)
     .filter(([idx, isChecked]) => isChecked)
     .map(([idx]) => departmentFile.list_files[idx]);
 
@@ -151,30 +152,50 @@ const Dokumen = ({ id }) => {
     setSelectedFile(files);
   };
 
-  const handleUploadPersonalFiles = () => {
+  const handleUploadFile = () => {
     if (selectedFile) {
       setIsLoading(true);
       setLoadingMessage("Sedang mengunggah file...");
       console.log("Uploading files:", selectedFile);
       const formData = new FormData();
-      formData.append("id", String(id));
 
       selectedFile.forEach((file) => {
         formData.append("files_upload", file);
       });
-      uploadPersonalFile(formData)
-        .then((res) => {
-          console.log("Upload berhasil:", res);
-          setSelectedFile([]);
-          fetchDataFile();
-          setIsLoading(false);
-          openSnackbar("berhasil", "File berhasil diunggah!");
-        })
-        .catch((error) => {
-          console.error("Gagal upload:", error);
-          openSnackbar("gagal", "File gagal diunggah!");
-          setIsLoading(false);
-        });
+
+      if (mainSelect === "Departemen") {
+        formData.append("id", String(departmen));
+
+        uploadDepartmentFile(formData)
+          .then((res) => {
+            console.log("Upload berhasil:", res);
+            setSelectedFile([]);
+            fetchDataFileDepartment(departmen);
+            setIsLoading(false);
+            openSnackbar("berhasil", "File berhasil diunggah!");
+          })
+          .catch((error) => {
+            console.error("Gagal upload:", error);
+            openSnackbar("gagal", "File gagal diunggah!");
+            setIsLoading(false);
+          });
+      } else if (mainSelect === "Personal") {
+        formData.append("id", String(id));
+
+        uploadPersonalFile(formData)
+          .then((res) => {
+            console.log("Upload berhasil:", res);
+            setSelectedFile([]);
+            fetchDataFile();
+            setIsLoading(false);
+            openSnackbar("berhasil", "File berhasil diunggah!");
+          })
+          .catch((error) => {
+            console.error("Gagal upload:", error);
+            openSnackbar("gagal", "File gagal diunggah!");
+            setIsLoading(false);
+          });
+      }
     }
   };
 
@@ -253,7 +274,6 @@ const Dokumen = ({ id }) => {
     code,
   }));
 
-
   useEffect(() => {
     fetchDepartmentList();
   }, []);
@@ -308,7 +328,7 @@ const Dokumen = ({ id }) => {
         });
     });
   };
-
+  console.log(mainSelect, selected, departmen, "ini main select dan selected");
   return (
     <Grid
       sx={{
@@ -412,7 +432,7 @@ const Dokumen = ({ id }) => {
           <Box sx={{ width: "100%", mb: 4 }}>
             <Box width="100%" textAlign="left" sx={{ mb: 2 }}>
               <Typography fontSize={18} fontWeight={700} color="#404040">
-                Unggah Dokumen Personal
+                Unggah Dokumen
               </Typography>
             </Box>
             <Box
@@ -467,7 +487,7 @@ const Dokumen = ({ id }) => {
                       </Box>
                       <Box
                         component="button"
-                        onClick={handleUploadPersonalFiles}
+                        onClick={handleUploadFile}
                         sx={{
                           backgroundColor: "#4C4DDC",
                           color: "#fff",
@@ -708,19 +728,19 @@ const Dokumen = ({ id }) => {
           onClose={() => setOpenTrash(false)}
           handleDelete={handleDeleteFile}
         />
-      ) : selected === "topic" && mainSelect === "Personal" ? (
+      ) : selected === "topik" && mainSelect === "Personal" ? (
         <DeleteFile
           open={openTrash}
           onClose={() => setOpenTrash(false)}
           handleDelete={handleDeleteTopic}
         />
-      ) : (
+      ) : selected === "file" && mainSelect === "Departemen" ? (
         <DeleteFile
           open={openTrash}
           onClose={() => setOpenTrash(false)}
           handleDelete={handleDeleteFileDepartment}
         />
-      )}
+      ) : null}
 
       <Dialog
         open={isLoading}
