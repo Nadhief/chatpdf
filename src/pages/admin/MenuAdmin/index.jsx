@@ -21,6 +21,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
                 }}
                 onClick={() => {
                     setItemSelected('dokumen');
+                    navigate("/admin/coofisai/dokumen");
                 }}>
                 <FileIcon sx={{fontSize: 20, color: itemSelected === 'dokumen' ? '#EA001E' : '#404040'}} />
                 <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'dokumen' ? '#EA001E' : '#404040'}> Dokumen </Typography>

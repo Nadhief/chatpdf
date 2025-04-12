@@ -191,3 +191,23 @@ export const uploadPersonalToDepartmentFile = async (payload) => {
     throw error;
   }
 };
+
+export const deleteDepartment = async (payload) => {
+  try {
+    const response = await api.post("department/remove_department", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error removing department:", error);
+    throw error;
+  }
+};
+
+export const editDepartment = async (payload) => {
+  try {
+    const response = await api.post("department/edit_department", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error editting department:", error);
+    throw error;
+  }
+};

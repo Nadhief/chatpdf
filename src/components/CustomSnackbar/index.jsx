@@ -1,12 +1,9 @@
 import React from "react";
-import { Snackbar, Slide, Alert } from "@mui/material";
+import { Snackbar, Alert } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircleOutlined";
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 
 const CustomSnackbar = ({ status = "berhasil", open, onClose, message }) => {
-  const SlideTransition = (props) => {
-    return <Slide {...props} direction="down" />;
-  };
 
   const isSuccess = status === "berhasil";
 
@@ -19,11 +16,16 @@ const CustomSnackbar = ({ status = "berhasil", open, onClose, message }) => {
     <Snackbar
       open={open}
       onClose={onClose}
-      TransitionComponent={SlideTransition}
       autoHideDuration={3500}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
       sx={{
-        paddingRight: 3
+        paddingRight: 3,
+        '& .MuiSnackbar-root': {
+        pointerEvents: 'none',
+        },
+        '& .MuiAlert-root': {
+          pointerEvents: 'auto',
+        },
       }}
     >
       <Alert
