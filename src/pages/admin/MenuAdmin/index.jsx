@@ -35,6 +35,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
                 }}
                 onClick={() => {
                     setItemSelected('user');
+                    navigate("/admin/coofisai/manageuser");
                 }}>
                 <PersonIcon sx={{fontSize: 20, color: itemSelected === 'user' ? '#EA001E' : '#404040'}} />
                 <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'user' ? '#EA001E' : '#404040'}> User </Typography>
@@ -75,6 +76,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
                 onClick={() => {
                     setSettingPage(false);
                     setItemSelected('dokumen');
+                    navigate("/admin/coofisai");
                 }}
                 >
                 <ChatIcon sx={{fontSize: 20}} />

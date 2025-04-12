@@ -225,7 +225,7 @@ const Dokumen = ({ id }) => {
 
   const handleSubmitToDepartment = () => {
     setIsLoading(true);
-    setLoadingMessage("Sedang menambahkan topik...");
+    setLoadingMessage("Sedang menambahkan file Personal ke Departemen...");
     const payload = {
       filename: selectedFiles?.map((file) => file?.name),
       user_id: String(id),
@@ -233,16 +233,16 @@ const Dokumen = ({ id }) => {
     };
     uploadPersonalToDepartmentFile(payload)
       .then((res) => {
-        console.log("Berhasil menambahkan topik:", res);
+        console.log("Berhasil menambahkan file Personal ke Departemen:", res);
         setOpenPaper(false);
         setCheckedItemsTopics({});
         fetchDataTopics();
         setIsLoading(false);
-        openSnackbar("berhasil", "Topik berhasil ditambah!");
+        openSnackbar("berhasil", "File Personal berhasil ditambah ke Departemen!");
       })
       .catch((error) => {
-        console.error("Gagal menambahkan topik:", error);
-        openSnackbar("gagal", "Topik gagal ditambah!");
+        console.error("Gagal menambahkan File:", error);
+        openSnackbar("gagal", "File gagal ditambah!");
       });
   };
 
