@@ -15,7 +15,7 @@ import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import InputSearchBar from "../../components/Inputs/InputSearchBar";
 import DataTableDepartment from "../../components/Table/DataTableDepartment";
 import CloseIcon from "@mui/icons-material/Close";
-import { createDepartment, getDepartmentList, deleteDepartment } from "../../services";
+import { createDepartment, getDepartmentList, removeDepartment } from "../../services";
 import CustomSnackbar from "../../components/CustomSnackbar";
 import DeleteDepartment from '../../components/Dialog/DeleteDepartment';
 
@@ -50,7 +50,7 @@ const ManageDepartmen = () => {
       const data = await getDepartmentList();
       setDepartmentList(data.response);
     } catch (error) {
-      console.error("Gagal mengambil file personal:", error);
+      console.error("Gagal mengambil list department:", error);
     }
   };
 
@@ -73,7 +73,7 @@ const ManageDepartmen = () => {
       ids: selectedIds.map(id => String(id))
     };
     
-    deleteDepartment(payload)
+    removeDepartment(payload)
       .then(() => {
         openSnackbar("berhasil", "Departemen berhasil dihapus!");
         fetchDepartmentList();
@@ -215,7 +215,7 @@ const ManageDepartmen = () => {
             <TextField
               size="small"
               fullWidth
-              placeholder="Input placeholder"
+              placeholder="Masukan kode Departemen"
               value={kodeDept}
               onChange={(e) => setKodeDept(e.target.value)}
               sx={{ mb: 3 }}
@@ -224,7 +224,7 @@ const ManageDepartmen = () => {
             <TextField
               size="small"
               fullWidth
-              placeholder="Input placeholder"
+              placeholder="MMasukan nama Departemen"
               value={namaDept}
               onChange={(e) => setNamaDept(e.target.value)}
               sx={{ mb: 3 }}

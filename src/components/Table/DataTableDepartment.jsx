@@ -17,7 +17,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import CustomSnackbar from "../CustomSnackbar";
 import { editDepartment } from "../../services";
 
-export default function DataTableDepartment({ departmentList, fetchDepartmentList, selectedIds, setSelectedIds, }) {
+export default function DataTableDepartment({ departmentList, fetchDepartmentList, selectedIds, setSelectedIds }) {
   const [open, setOpen] = useState(false);
   const [id, setId] = useState("");
   const [kodeDept, setKodeDept] = useState("");
@@ -25,7 +25,7 @@ export default function DataTableDepartment({ departmentList, fetchDepartmentLis
 
   const departmentRow = departmentList.map(([id, name, code]) => ({ 
     id,
-    label: name,
+    name,
     code,
   }));
   
@@ -85,7 +85,7 @@ export default function DataTableDepartment({ departmentList, fetchDepartmentLis
   // Kolom tabel
   const columns = [
     { field: "code", headerName: "Kode Department", width: 500 },
-    { field: "label", headerName: "Nama Department", width: 500 },
+    { field: "name", headerName: "Nama Department", width: 500 },
     {
       field: "Aksi",
       headerName: "",
