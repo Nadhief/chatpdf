@@ -21,6 +21,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
                 }}
                 onClick={() => {
                     setItemSelected('dokumen');
+                    navigate('/admin/coofisai/dokumen')
                 }}>
                 <FileIcon sx={{fontSize: 20, color: itemSelected === 'dokumen' ? '#EA001E' : '#404040'}} />
                 <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'dokumen' ? '#EA001E' : '#404040'}> Dokumen </Typography>
@@ -34,6 +35,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
                 }}
                 onClick={() => {
                     setItemSelected('user');
+                    navigate('/admin/coofisai/manageuser')
                 }}>
                 <PersonIcon sx={{fontSize: 20, color: itemSelected === 'user' ? '#EA001E' : '#404040'}} />
                 <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'user' ? '#EA001E' : '#404040'}> User </Typography>
@@ -52,7 +54,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
                 <DepartmentIcon sx={{fontSize: 20, color: itemSelected === 'departemen' ? '#EA001E' : '#404040'}} />
                 <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'departemen' ? '#EA001E' : '#404040'}> Departemen </Typography>
             </Stack>
-            <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
+            {/* <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
                 cursor:'pointer',
                 backgroundColor: itemSelected === 'pengaturan' ? '#F5F5F5' : 'none',
                 paddingY: 0.7,
@@ -65,7 +67,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
                 >
                 <SettingIcon sx={{fontSize: 20, color: itemSelected === 'pengaturan' ? '#EA001E' : '#404040'}} />
                 <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'pengaturan' ? '#EA001E' : '#404040'}> Pengaturan </Typography>
-            </Stack>
+            </Stack> */}
             <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
                 cursor:'pointer',
                 paddingY: 0.7,
@@ -74,6 +76,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
                 onClick={() => {
                     setSettingPage(false);
                     setItemSelected('dokumen');
+                    navigate('/admin/coofisai')
                 }}
                 >
                 <ChatIcon sx={{fontSize: 20}} />

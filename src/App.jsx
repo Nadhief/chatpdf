@@ -5,8 +5,7 @@ import Sidebar from "./components/Sidebar";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import ChatBox from "./pages/Chatbox";
-import Dokumenop from "./pages/operator/Dokumen";
-import Dokumenadm from "./pages/admin/Dokumen";
+import Dokumen from "./pages/operator/Dokumen";
 import ManageDepartmen from "./pages/admin/ManageDepartmen";
 import ManageUser from "./pages/admin/ManageUser";
 import { useEffect, useState } from "react";
@@ -99,7 +98,7 @@ function App() {
             />
             <Route
               path="/operator/coofisai/dokumen"
-              element={<Dokumenop id={user?.id} />}
+              element={<Dokumen id={user?.id} />}
             />
           </Routes>
 
@@ -107,11 +106,23 @@ function App() {
           <Routes>
             <Route
               path="/admin/coofisai"
-              element={<ChatBox role={"Admin"} />}
+              element={
+                <ChatBox
+                  role={"Admin"}
+                  id={user?.id}
+                  selected={selected}
+                  responseSummarize={responseSummarize}
+                  setResponseSummarize={setResponseSummarize}
+                  isSummarize={isSummarize}
+                  setIsSummarize={setIsSummarize}
+                  selectedTopic={selectedTopic}
+                  topicName={topicName}
+                />
+              }
             />
             <Route
               path="/admin/coofisai/dokumen"
-              element={<Dokumenop id={user?.id} />}
+              element={<Dokumen id={user?.id} />}
             />
             <Route path="/admin/coofisai/manageuser" element={<ManageUser />} />
             <Route
