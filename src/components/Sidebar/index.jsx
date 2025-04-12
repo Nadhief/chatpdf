@@ -15,8 +15,18 @@ import PersonalAdmin from "../../pages/admin/PersonalAdmin";
 import DepartemenAdmin from "../../pages/admin/DepartemenAdmin";
 import { useNavigate } from "react-router-dom";
 
-const Sidebar = ({ role, id, username }) => {
-  const [selected, setSelected] = useState("personal");
+const Sidebar = ({
+  role,
+  id,
+  username,
+  selected,
+  setSelected,
+  setResponseSummarize,
+  setIsSummarize,
+  selectedTopic,
+  setSelectedTopic,
+  setTopicName
+}) => {
   const [itemSelected, setItemSelected] = useState("dokumen");
   const [settingPage, setSettingPage] = useState(false);
 
@@ -48,7 +58,11 @@ const Sidebar = ({ role, id, username }) => {
         <Button
           variant="contained"
           sx={{ mb: 4, backgroundColor: "#BF2600" }}
-          onClick={handleLogout}
+          onClick={()=>{
+            localStorage.removeItem("chat_responses");
+            handleLogout();
+          }
+        }
         >
           Logout
         </Button>
@@ -207,10 +221,21 @@ const Sidebar = ({ role, id, username }) => {
           </Box>
           <Box width={"100%"} paddingTop={1}>
             {selected === "personal" ? (
-              <PersonalUser id={id} />
+              <PersonalUser
+                id={id}
+                setResponseSummarize={setResponseSummarize}
+                setIsSummarize={setIsSummarize}
+                selectedTopicc={selectedTopic}
+                setSelectedTopic={setSelectedTopic}
+                setTopicName={setTopicName}
+              />
             ) : selected === "departemen" ? (
               role === "user" ? (
-                <DepartemenUser id={id} />
+                <DepartemenUser
+                  id={id}
+                  setResponseSummarize={setResponseSummarize}
+                  setIsSummarize={setIsSummarize}
+                />
               ) : role === "operator" || "admin" ? (
                 <DepartemenOperator id={id} />
               ) : null

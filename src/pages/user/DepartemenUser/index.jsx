@@ -11,7 +11,7 @@ import {
   summarizeFileDepartment,
 } from "../../../services";
 
-const DepartemenUser = ({ id }) => {
+const DepartemenUser = ({ id, setResponseSummarize, setIsSummarize }) => {
   const [departmentList, setDepartmentList] = useState([]);
   const departmentOptions = departmentList.map(([id, name, code]) => ({
     id,
@@ -75,6 +75,7 @@ const DepartemenUser = ({ id }) => {
     };
     summarizeFileDepartment(payload)
       .then((res) => {
+        setResponseSummarize(res)
         console.log(res);
       })
       .catch((err) => {
@@ -185,6 +186,7 @@ const DepartemenUser = ({ id }) => {
         <Box
           onClick={() => {
             handleSummarize();
+            setIsSummarize(true);
           }}
           color="white"
           paddingY={0.5}

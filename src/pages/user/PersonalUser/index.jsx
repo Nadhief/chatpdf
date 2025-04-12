@@ -27,7 +27,14 @@ import {
 } from "../../../services";
 import CustomSnackbar from "../../../components/CustomSnackbar";
 
-const PersonalUser = ({ id }) => {
+const PersonalUser = ({
+  id,
+  setResponseSummarize,
+  setIsSummarize,
+  selectedTopicc,
+  setSelectedTopic,
+  setTopicName,
+}) => {
   const [selected, setSelected] = useState("file");
   const [openPaper, setOpenPaper] = useState(false);
   const [openTrash, setOpenTrash] = useState(false);
@@ -78,6 +85,10 @@ const PersonalUser = ({ id }) => {
   const selectedTopic = Object.entries(checkedItemsTopics)
     .filter(([idx, isChecked]) => isChecked)
     .map(([idx]) => personalTopics.list_files[idx]);
+
+  if (selectedTopic.length > 0) {
+    setTopicName(selectedTopic[0].topic_name);
+  }
 
   useEffect(() => {
     fetchDataFile();
@@ -220,6 +231,7 @@ const PersonalUser = ({ id }) => {
     };
     summarizeFilePersonal(payload)
       .then((res) => {
+        setResponseSummarize(res);
         console.log(res);
       })
       .catch((err) => {
@@ -379,7 +391,10 @@ const PersonalUser = ({ id }) => {
                 paddingX={0.7}
                 borderRadius={100}
                 border={"1px solid #9E9E9E"}
-                onClick={() => setSelected("file")}
+                onClick={() => {
+                  setSelectedTopic(false);
+                  setSelected("file");
+                }}
                 sx={{
                   cursor: selected === "file" ? "default" : "pointer",
                   backgroundColor: selected === "file" ? "#FAFBFD" : "white",
@@ -402,7 +417,10 @@ const PersonalUser = ({ id }) => {
                 paddingX={0.7}
                 borderRadius={100}
                 border={"1px solid #9E9E9E"}
-                onClick={() => setSelected("topik")}
+                onClick={() => {
+                  setSelectedTopic(true);
+                  setSelected("topik");
+                }}
                 sx={{
                   cursor: selected === "topik" ? "default" : "pointer",
                   backgroundColor: selected === "topik" ? "#FAFBFD" : "white",
@@ -474,47 +492,52 @@ const PersonalUser = ({ id }) => {
         justifyContent={"flex-end"}
         alignItems={"flex-end"}
       >
-        <Box
-          display="flex"
-          justifyContent="flex-end"
-          color="black"
-          paddingY={0.5}
-          paddingX={1}
-          borderRadius={1}
-          alignItems={"center"}
-          border={"1px solid #E0E0E0"}
-          sx={{
-            cursor: "pointer",
-            backgroundColor: "white",
-          }}
-          onClick={() => setOpenPaper(true)}
-        >
-          <AddIcon sx={{ color: "black", marginRight: 1, fontSize: 18 }} />
-          <Typography fontSize={12} fontWeight={400}>
-            {" "}
-            Topik{" "}
-          </Typography>
-        </Box>
+        {selectedFiles.length > 0 && (
+          <Box
+            display="flex"
+            justifyContent="flex-end"
+            color="black"
+            paddingY={0.5}
+            paddingX={1}
+            borderRadius={1}
+            alignItems={"center"}
+            border={"1px solid #E0E0E0"}
+            sx={{
+              cursor: "pointer",
+              backgroundColor: "white",
+            }}
+            onClick={() => setOpenPaper(true)}
+          >
+            <AddIcon sx={{ color: "black", marginRight: 1, fontSize: 18 }} />
+            <Typography fontSize={12} fontWeight={400}>
+              {" "}
+              Topik{" "}
+            </Typography>
+          </Box>
+        )}
 
-        <Box
-          onClick={() => {
-            handleSummarize();
-          }}
-          color="white"
-          paddingY={0.5}
-          paddingX={1}
-          borderRadius={1}
-          alignItems={"center"}
-          sx={{
-            cursor: "pointer",
-            backgroundColor: "#CB3A31",
-          }}
-        >
-          <Typography fontSize={12} fontWeight={400}>
-            {" "}
-            Summarize{" "}
-          </Typography>
-        </Box>
+        {selectedTopicc === false && (
+          <Box
+            onClick={() => {
+              handleSummarize();
+              setIsSummarize(true);
+            }}
+            color="white"
+            paddingY={0.5}
+            paddingX={1}
+            borderRadius={1}
+            alignItems={"center"}
+            sx={{
+              cursor: "pointer",
+              backgroundColor: "#CB3A31",
+            }}
+          >
+            <Typography fontSize={12} fontWeight={400}>
+              {" "}
+              Summarize{" "}
+            </Typography>
+          </Box>
+        )}
       </Stack>
       <AddTopic
         open={openPaper}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import {
   FormControl,
   Grid,
@@ -14,16 +14,29 @@ import {
 } from "@mui/material";
 import ChatbotImage from "../assets/images/Chatbot.png";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import { chatPersonal } from "../services";
+import { chatDepartemen, chatPersonal, chatTopic } from "../services";
 import ReactMarkdown from "react-markdown";
 import LogoSetting from "../components/LogoSetting";
 
-const ChatBox = ({role}) => {
+const ChatBox = ({
+  role,
+  id,
+  selected,
+  responseSummarize,
+  setResponseSummarize,
+  isSummarize,
+  setIsSummarize,
+  selectedTopic,
+  topicName,
+}) => {
   const [model, setModel] = useState("Llama 3.1");
   const [vectorizer, setVectorizer] = useState("nomic-embed-text");
   const [question, setQuestion] = useState("");
 
-  const [responses, setResponses] = useState([]);
+  const [responses, setResponses] = useState(() => {
+    const saved = localStorage.getItem("chat_responses");
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const [displayedText, setDisplayedText] = useState("");
 
@@ -46,28 +59,85 @@ const ChatBox = ({role}) => {
     setResponses((prev) => [...prev, placeholder]);
 
     const payload = {
-      id: "17",
+      id: String(id),
       embedding_model: vectorizer,
       llm_model: model,
       question: currentQuestion,
     };
-
-    chatPersonal(payload).then((res) => {
-      const updatedEntry = {
-        user: currentQuestion,
-        bot: res.response,
-        source: res.sources || [],
+    if (selectedTopic === true) {
+      const payloadTopic = {
+        id: String(id),
+        embedding_model: vectorizer,
+        llm_model: model,
+        question: currentQuestion,
+        topic: topicName
       };
+      chatTopic(payloadTopic).then((res) => {
+        const filenames = res?.sources?.map((item) => {
+          const cleanedItem = item.replace(/^PDF:\s*/, "");
+          return cleanedItem.split("/").pop();
+        });
 
-      setResponses((prev) => {
-        const updated = [...prev];
-        updated[updated.length - 1] = updatedEntry;
-        return updated;
+        const updatedEntry = {
+          user: currentQuestion,
+          bot: res.response,
+          source: filenames,
+        };
+
+        setResponses((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = updatedEntry;
+          return updated;
+        });
       });
-    });
+    } else {
+      if (selected === "personal") {
+        chatPersonal(payload).then((res) => {
+          const filenames = res?.sources?.map((item) => {
+            const cleanedItem = item.replace(/^PDF:\s*/, "");
+            return cleanedItem.split("/").pop();
+          });
+
+          const updatedEntry = {
+            user: currentQuestion,
+            bot: res.response,
+            source: filenames,
+          };
+
+          setResponses((prev) => {
+            const updated = [...prev];
+            updated[updated.length - 1] = updatedEntry;
+            return updated;
+          });
+        });
+      } else if (selected === "departemen") {
+        chatDepartemen(payload).then((res) => {
+          const filenames = res?.sources?.map((item) => {
+            const cleanedItem = item.replace(/^PDF:\s*/, "");
+            return cleanedItem.split("/").pop();
+          });
+
+          const updatedEntry = {
+            user: currentQuestion,
+            bot: res.response,
+            source: filenames,
+          };
+
+          setResponses((prev) => {
+            const updated = [...prev];
+            updated[updated.length - 1] = updatedEntry;
+            return updated;
+          });
+        });
+      }
+    }
   };
 
   const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [responses]);
 
   useEffect(() => {
     if (chatEndRef.current) {
@@ -96,6 +166,44 @@ const ChatBox = ({role}) => {
     }
   }, [responses]);
 
+  useEffect(() => {
+    localStorage.setItem("chat_responses", JSON.stringify(responses));
+  }, [responses]);
+
+  useEffect(() => {
+    if (isSummarize) {
+      const placeholder = {
+        user: "Please summarize this document",
+        bot: "⌛",
+        source: [],
+      };
+      setResponses((prev) => [...prev, placeholder]);
+      setIsSummarize(false);
+    }
+  }, [isSummarize]);
+
+  useEffect(() => {
+    if (responseSummarize) {
+      const filenames = responseSummarize?.sources?.map((item) => {
+        const cleanedItem = item.replace(/^PDF:\s*/, "");
+        return cleanedItem.split("/").pop();
+      });
+
+      const updatedEntry = {
+        user: "Please summarize this document",
+        bot: responseSummarize?.response,
+        source: filenames,
+      };
+
+      setResponses((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = updatedEntry;
+        return updated;
+      });
+      setIsSummarize(false);
+      setResponseSummarize(null);
+    }
+  }, [responseSummarize, isSummarize]);
   return (
     <Grid
       sx={{
@@ -141,7 +249,6 @@ const ChatBox = ({role}) => {
             height: "80%",
             pt: 10,
           }}
-          ref={chatEndRef}
         >
           {responses?.map((res, idx) => (
             <Box
@@ -197,7 +304,8 @@ const ChatBox = ({role}) => {
                       </Box>
                     ) : (
                       <ReactMarkdown>
-                        {idx === responses.length - 1 ? displayedText : res.bot}
+                        {/* {idx === responses.length - 1 ? displayedText : res.bot} */}
+                        {res.bot}
                       </ReactMarkdown>
                     )}
                   </Box>
@@ -238,6 +346,7 @@ const ChatBox = ({role}) => {
               </Box>
             </Box>
           ))}
+          <Box ref={chatEndRef} />
         </Grid>
       )}
 

@@ -14,7 +14,11 @@ import { useEffect, useState } from "react";
 function App() {
   const location = useLocation();
   const [user, setUser] = useState(null);
-
+  const [selected, setSelected] = useState("personal");
+  const [responseSummarize, setResponseSummarize] = useState(null);
+  const [isSummarize, setIsSummarize] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState(false);
+  const [topicName, setTopicName] = useState("");
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     setUser(storedUser);
@@ -45,12 +49,34 @@ function App() {
             role={user?.role?.toLowerCase()}
             id={user?.id}
             username={user?.username}
+            selected={selected}
+            setSelected={setSelected}
+            setResponseSummarize={setResponseSummarize}
+            setIsSummarize={setIsSummarize}
+            selectedTopic={selectedTopic}
+            setSelectedTopic={setSelectedTopic}
+            setTopicName={setTopicName}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 12, md: 12, lg: 9 }} sx={{ padding: "1rem" }}>
           {/* user */}
           <Routes>
-            <Route path="/coofisai" element={<ChatBox role={"User"} />} />
+            <Route
+              path="/coofisai"
+              element={
+                <ChatBox
+                  role={"User"}
+                  id={user?.id}
+                  selected={selected}
+                  responseSummarize={responseSummarize}
+                  setResponseSummarize={setResponseSummarize}
+                  isSummarize={isSummarize}
+                  setIsSummarize={setIsSummarize}
+                  selectedTopic={selectedTopic}
+                  topicName={topicName}
+                />
+              }
+            />
           </Routes>
 
           {/* operator */}
