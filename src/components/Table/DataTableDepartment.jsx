@@ -49,7 +49,7 @@ export default function DataTableDepartment({ departmentList, fetchDepartmentLis
   const handleOpenEdit = (row) => {
     setId(row.id);
     setKodeDept(row.code);
-    setNamaDept(row.label);
+    setNamaDept(row.name);
     handleOpen();
   };  
 
