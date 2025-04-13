@@ -1,23 +1,26 @@
 import React, { useState } from "react";
-import { Box, Typography, Stack, Grid } from "@mui/material";
+import { Box, Typography, Stack, Grid, Dialog, DialogContent, CircularProgress } from "@mui/material";
 import FolderPlusIcon from "@mui/icons-material/FolderOpenOutlined";
 import { uploadLogo } from "../../services";
 import CustomSnackbar from "../CustomSnackbar";
 
 const LogoSetting = ({ id }) => {
-    const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    status: "berhasil",
-    });
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Loading");
 
-    const openSnackbar = (status, message) => {
-    setSnackbar({ open: true, status, message });
-    };
+  const [snackbar, setSnackbar] = useState({
+  open: false,
+  message: "",
+  status: "berhasil",
+  });
 
-    const closeSnackbar = () => {
-    setSnackbar((prev) => ({ ...prev, open: false }));
-    };
+  const openSnackbar = (status, message) => {
+  setSnackbar({ open: true, status, message });
+  };
+
+  const closeSnackbar = () => {
+  setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   const [file, setFile] = useState(null);
 
@@ -29,21 +32,25 @@ const LogoSetting = ({ id }) => {
     setFile(null);
   };
 
-  const handleUpload = async () => {
+  const handleUpload = () => {
     if (!file) {
       alert("Please select a file to upload");
       return;
     }
+    setIsLoading(true);
 
-    try {
-      const response = await uploadLogo(file);
-      console.log("Logo berhasil diupload:", response);
-      openSnackbar("berhasil", "Logo berhasil disimpan!");
-      setFile(null)
-    } catch (error) {
-      console.error("Logo gagal diupload:", error);
-      openSnackbar("gagal", "Logo gagal disimpan!");
-    }
+    uploadLogo(file)
+      .then((res) => {
+        console.log("Logo berhasil diupload:", res);
+        setFile(null);
+        setIsLoading(false);
+        openSnackbar("berhasil", "File berhasil diunggah!");
+      })
+      .catch((error) => {
+        console.error("Logo gagal diupload:", error);
+        openSnackbar("gagal", "Logo gagal disimpan!");
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -179,6 +186,24 @@ const LogoSetting = ({ id }) => {
           </Stack>
         </Box>
       </Grid>
+      <Dialog
+        open={isLoading}
+        PaperProps={{ sx: { borderRadius: 2, textAlign: "center", p: 4 } }}
+      >
+        <DialogContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 2,
+          }}
+        >
+          <CircularProgress />
+          <Typography variant="body2" color="textSecondary">
+            {loadingMessage}
+          </Typography>
+        </DialogContent>
+      </Dialog>
       <CustomSnackbar
         open={snackbar.open}
         onClose={closeSnackbar}

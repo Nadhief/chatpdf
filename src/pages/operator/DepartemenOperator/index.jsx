@@ -16,8 +16,8 @@ import FolderPlusIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import { documents } from "../../../components/Sidebar/Documents/DocumentsConfig";
 import InputSearchBar from "../../../components/Inputs/InputSearchBar";
 import {
-    deleteDepartmentlFile,
-    deletePersonalFile,
+  deleteDepartmentlFile,
+  deletePersonalFile,
   getDepartmentFile,
   getDepartmentList,
   searchFileDepartment,
@@ -35,6 +35,7 @@ const DepartemenOperator = ({ id }) => {
     code,
   }));
 
+  const [departemenSelected, setDepartmenSelected] = useState(false);
   const [departmentFile, setDepartmentFile] = useState([]);
 
   const [checkedItems, setCheckedItems] = useState({});
@@ -237,10 +238,11 @@ const DepartemenOperator = ({ id }) => {
         }}
         renderInput={(params) => <TextField {...params} />}
         clearIcon={false}
-        defaultValue={"Departemen"}
+        defaultValue={"Pilih Departemen"}
         popupIcon={<ExpandIcon />}
         onChange={(event, value) => {
           if (value) {
+            setDepartmenSelected(true);
             getDepartment(value);
           }
         }}
@@ -372,63 +374,70 @@ const DepartemenOperator = ({ id }) => {
               File Departemen{" "}
             </Typography>
           </Box>
-          <Stack direction={"column"} padding={1.5} spacing={1}>
-          <InputSearchBar handleSearch={handleSearchFileDepartment} />
-            <Stack direction={"row"} spacing={1} alignItems="center">
-              <Box
-                width={"30%"}
-                display="flex"
-                justifyContent="center"
-                paddingY={0.3}
-                paddingX={0.7}
-                borderRadius={100}
-                border={"1px solid #9E9E9E"}
-                sx={{
-                  backgroundColor: "#FAFBFD",
-                  boxShadow: "none",
-                }}
-              >
-                <Typography fontSize={12} fontWeight={400} color="black">
-                  {" "}
-                  File{" "}
-                </Typography>
-              </Box>
-              <Box
-                display="flex"
-                justifyContent="flex-end"
-                width="100%"
-                color="white"
-              >
+          {departemenSelected ? (
+            <Stack direction={"column"} padding={1.5} spacing={1}>
+            <InputSearchBar handleSearch={handleSearchFileDepartment} />
+              <Stack direction={"row"} spacing={1} alignItems="center">
+                <Box
+                  width={"30%"}
+                  display="flex"
+                  justifyContent="center"
+                  paddingY={0.3}
+                  paddingX={0.7}
+                  borderRadius={100}
+                  border={"1px solid #9E9E9E"}
+                  sx={{
+                    backgroundColor: "#FAFBFD",
+                    boxShadow: "none",
+                  }}
+                >
+                  <Typography fontSize={12} fontWeight={400} color="black">
+                    {" "}
+                    File{" "}
+                  </Typography>
+                </Box>
                 <Box
                   display="flex"
                   justifyContent="flex-end"
+                  width="100%"
                   color="white"
-                  paddingY={0.7}
-                  paddingX={0.7}
-                  borderRadius={1}
-                  sx={{
-                    cursor: "pointer",
-                    backgroundColor: "#CB3A31",
-                  }}
-                  onClick={() => setOpenTrash(true)}
                 >
-                  <TrashIcon sx={{ color: "white", fontSize: 20 }} />
+                  <Box
+                    display="flex"
+                    justifyContent="flex-end"
+                    color="white"
+                    paddingY={0.7}
+                    paddingX={0.7}
+                    borderRadius={1}
+                    sx={{
+                      cursor: "pointer",
+                      backgroundColor: "#CB3A31",
+                    }}
+                    onClick={() => setOpenTrash(true)}
+                  >
+                    <TrashIcon sx={{ color: "white", fontSize: 20 }} />
+                  </Box>
                 </Box>
-              </Box>
+              </Stack>
+              <Stack direction={"column"} spacing={1}>
+                {/*MAPPING FILE PDF*/}
+                {departmentFile?.list_files?.map((item, idx) => (
+                  <React.Fragment key={idx}>
+                    <Documents
+                      label={item.name}
+                      checked={checkedItems[idx] || false}
+                      onCheck={(val) => handleCheck(idx, val)}
+                    />
+                  </React.Fragment>
+                ))}
+              </Stack>
             </Stack>
-            <Stack direction={"column"} spacing={1}>
-              {/*MAPPING FILE PDF*/}
-              {departmentFile?.list_files?.map((item, idx) => (
-                <React.Fragment key={idx}>
-                  <Documents
-                    label={item.name}
-                    checked={checkedItems[idx] || false}
-                    onCheck={(val) => handleCheck(idx, val)}
-                  />
-                </React.Fragment>
-              ))}
-            </Stack>
-          </Stack>
+          ) : (
+            <Typography padding={2} fontSize={14} fontWeight={400} color="#404040">
+              Silakan pilih departemen terlebih dahulu
+            </Typography>
+          )}
+          
         </Stack>
       </Box>
       {/* <Stack
