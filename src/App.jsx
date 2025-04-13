@@ -9,6 +9,7 @@ import Dokumen from "./pages/operator/Dokumen";
 import ManageDepartmen from "./pages/admin/ManageDepartmen";
 import ManageUser from "./pages/admin/ManageUser";
 import { useEffect, useState } from "react";
+import LogoSetting from "./components/LogoSetting";
 
 function App() {
   const location = useLocation();
@@ -100,6 +101,10 @@ function App() {
               path="/operator/coofisai/dokumen"
               element={<Dokumen id={user?.id} />}
             />
+            <Route
+              path="/operator/coofisai/pengaturan"
+              element={<LogoSetting id={user?.id} />}
+            />
           </Routes>
 
           {/* admin */}
@@ -128,6 +133,10 @@ function App() {
             <Route
               path="/admin/coofisai/managedepartment"
               element={<ManageDepartmen />}
+            />
+            <Route
+              path="/admin/coofisai/pengaturan"
+              element={<LogoSetting id={user?.id} />}
             />
           </Routes>
         </Grid>

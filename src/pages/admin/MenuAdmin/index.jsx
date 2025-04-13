@@ -54,7 +54,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
                 <DepartmentIcon sx={{fontSize: 20, color: itemSelected === 'departemen' ? '#EA001E' : '#404040'}} />
                 <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'departemen' ? '#EA001E' : '#404040'}> Departemen </Typography>
             </Stack>
-            {/* <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
+            <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
                 cursor:'pointer',
                 backgroundColor: itemSelected === 'pengaturan' ? '#F5F5F5' : 'none',
                 paddingY: 0.7,
@@ -63,11 +63,12 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
                 }}
                 onClick={() => {
                     setItemSelected('pengaturan');
+                    navigate("/admin/coofisai/pengaturan");
                 }}
                 >
                 <SettingIcon sx={{fontSize: 20, color: itemSelected === 'pengaturan' ? '#EA001E' : '#404040'}} />
                 <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'pengaturan' ? '#EA001E' : '#404040'}> Pengaturan </Typography>
-            </Stack> */}
+            </Stack>
             <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
                 cursor:'pointer',
                 paddingY: 0.7,

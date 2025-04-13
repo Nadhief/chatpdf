@@ -15,6 +15,7 @@ import PersonalAdmin from "../../pages/admin/PersonalAdmin";
 import DepartemenAdmin from "../../pages/admin/DepartemenAdmin";
 import { useNavigate } from "react-router-dom";
 
+
 const Sidebar = ({
   role,
   id,
@@ -27,6 +28,8 @@ const Sidebar = ({
   setSelectedTopic,
   setTopicName
 }) => {
+  const logoUrl = "http://localhost:8001/logo";
+
   const [itemSelected, setItemSelected] = useState("dokumen");
   const [settingPage, setSettingPage] = useState(false);
 
@@ -50,9 +53,9 @@ const Sidebar = ({
     >
       <Box
         component="img"
-        src={Logo}
-        alt="Gambar"
-        sx={{ width: 180, height: 72 }}
+        src={logoUrl}
+        alt="logo"
+        sx={{ width: '40%', height: '20%' }}
       />
       <Box justifyContent={"flex-start"} padding={2} width={"100%"}>
         <Button

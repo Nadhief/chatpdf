@@ -19,11 +19,12 @@ const MenuOperator = ({ itemSelected, setItemSelected, setSettingPage }) => {
                 }}
                 onClick={() => {
                     setItemSelected('dokumen');
+                    navigate('/operator/coofisai/dokumen')
                 }}>
                 <FileIcon sx={{fontSize: 20, color: itemSelected === 'dokumen' ? '#EA001E' : '#404040'}} />
                 <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'dokumen' ? '#EA001E' : '#404040'}> Dokumen </Typography>
             </Stack>
-            {/* <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
+            <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
                 cursor:'pointer',
                 backgroundColor: itemSelected === 'pengaturan' ? '#F5F5F5' : 'none',
                 paddingY: 0.7,
@@ -32,11 +33,12 @@ const MenuOperator = ({ itemSelected, setItemSelected, setSettingPage }) => {
                 }}
                 onClick={() => {
                     setItemSelected('pengaturan');
+                    navigate('/operator/coofisai/pengaturan')
                 }}
                 >
                 <SettingIcon sx={{fontSize: 20, color: itemSelected === 'pengaturan' ? '#EA001E' : '#404040'}} />
                 <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'pengaturan' ? '#EA001E' : '#404040'}> Pengaturan </Typography>
-            </Stack> */}
+            </Stack>
             <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
                 cursor:'pointer',
                 paddingY: 0.7,
