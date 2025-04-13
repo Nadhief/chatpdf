@@ -12,8 +12,21 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/ControlPoint";
 
+const formatTopic = (input) =>
+  input
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")  
+    .replace(/^_+|_+$/g, ""); 
+
 const AddTopic = ({ open, onClose, handleSubmit }) => {
-  const [topic, setTopic] = useState("");
+  const [rawTopic, setRawTopic] = useState("");
+
+  const handleChange = (e) => {
+    setRawTopic(e.target.value);
+  };
+
+  const formattedTopic = formatTopic(rawTopic);
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>
@@ -53,8 +66,9 @@ const AddTopic = ({ open, onClose, handleSubmit }) => {
               },
             },
           }}
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
+          value={rawTopic}
+          onChange={handleChange}
+          helperText={`Hasil format: ${formattedTopic || "-"}`}
         />
       </DialogContent>
 
@@ -71,9 +85,9 @@ const AddTopic = ({ open, onClose, handleSubmit }) => {
             cursor: "pointer",
             backgroundColor: "#3366FF",
           }}
-          onClick={()=>{
-            handleSubmit(topic);
-            setTopic("");
+          onClick={() => {
+            handleSubmit(formattedTopic);
+            setRawTopic("");
             onClose();
           }}
         >

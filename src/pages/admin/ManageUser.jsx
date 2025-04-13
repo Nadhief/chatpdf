@@ -12,7 +12,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import InputSearchBar from "../../components/Inputs/InputSearchBar";
 import DataTable from "../../components/Table/DataTable";
@@ -24,9 +24,11 @@ import {
   removeUser,
   getDepartmentList,
   removeDepartment,
+  searchUser,
 } from "../../services";
 import CustomSnackbar from "../../components/CustomSnackbar";
 import DeleteUser from "../../components/Dialog/DeleteUser";
+import { debounce } from "lodash";
 
 const ManageUser = () => {
   const [open, setOpen] = useState(false);
@@ -191,7 +193,20 @@ const ManageUser = () => {
     setDeleteDialogOpen(true);
   };
 
-  console.log(selectedIds);
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value) => {
+        searchUser({ keywords: value })
+          .then((res) => console.log("Search result:", res))
+          .catch((err) => console.error("Search error:", err));
+      }, 300),
+    []
+  );
+
+  const handleSearch = (e) => {
+    console.log("Search value:", e.target.value);
+    debouncedSearch(e.target.value);
+  };
 
   return (
     <Grid
@@ -252,7 +267,7 @@ const ManageUser = () => {
               + Add User
             </Button>
           </Box>
-          <InputSearchBar />
+          <InputSearchBar handleSearch={handleSearch}/>
         </Box>
         <DataTable
           userList={userList}

@@ -8,7 +8,9 @@ import ChatBox from "./pages/Chatbox";
 import Dokumen from "./pages/operator/Dokumen";
 import ManageDepartmen from "./pages/admin/ManageDepartmen";
 import ManageUser from "./pages/admin/ManageUser";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { debounce } from "lodash";
+import { searchUser } from "./services";
 import LogoSetting from "./components/LogoSetting";
 
 function App() {
@@ -23,6 +25,22 @@ function App() {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     setUser(storedUser);
   }, [location.pathname]);
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value) => {
+        searchUser({ keywords: value })
+          .then((res) => console.log("Search result:", res))
+          .catch((err) => console.error("Search error:", err));
+      }, 300),
+    []
+  );
+
+  const handleSearch = (e) => {
+    console.log("Search value:", e.target.value);
+    debouncedSearch(e.target.value);
+  };
+
   return (
     <>
       <Routes>

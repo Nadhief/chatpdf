@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Box, Stack, Typography, Autocomplete, TextField } from "@mui/material";
 import ExpandIcon from "@mui/icons-material/ExpandMore";
 import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
@@ -8,8 +8,10 @@ import InputSearchBar from "../../../components/Inputs/InputSearchBar";
 import {
   getDepartmentFile,
   getDepartmentList,
+  searchFileDepartment,
   summarizeFileDepartment,
 } from "../../../services";
+import { debounce } from "lodash";
 
 const DepartemenUser = ({ id, setResponseSummarize, setIsSummarize }) => {
   const [departmentList, setDepartmentList] = useState([]);
@@ -75,12 +77,40 @@ const DepartemenUser = ({ id, setResponseSummarize, setIsSummarize }) => {
     };
     summarizeFileDepartment(payload)
       .then((res) => {
-        setResponseSummarize(res)
+        setResponseSummarize(res);
         console.log(res);
       })
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const debouncedSearchFileDepartment = useMemo(
+    () =>
+      debounce((value, dept_id) => {
+        searchFileDepartment({
+          dept_id: String(dept_id),
+          keywords: value,
+          page: 1,
+          per_page: 10,
+        })
+          .then((res) => {
+            console.log("Search result:", res.list_files);
+            setDepartmentFile((prev) => ({
+              ...prev,
+              list_files: res.list_files,
+            }));
+          })
+          .catch((err) => {
+            console.error("Search error:", err);
+          });
+      }, 300),
+    []
+  );
+
+  const handleSearchFileDepartment = (e) => {
+    console.log("Search value:", e.target.value, selectedDepartmentid);
+    debouncedSearchFileDepartment(e.target.value, selectedDepartmentid);
   };
 
   return (
@@ -140,7 +170,7 @@ const DepartemenUser = ({ id, setResponseSummarize, setIsSummarize }) => {
             </Typography>
           </Box>
           <Stack direction={"column"} padding={1.5} spacing={1}>
-            <InputSearchBar />
+            <InputSearchBar handleSearch={handleSearchFileDepartment} />
             <Stack direction={"row"} spacing={1} alignItems="center">
               <Box
                 width={"30%"}

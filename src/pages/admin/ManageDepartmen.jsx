@@ -10,14 +10,20 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import InputSearchBar from "../../components/Inputs/InputSearchBar";
 import DataTableDepartment from "../../components/Table/DataTableDepartment";
 import CloseIcon from "@mui/icons-material/Close";
-import { createDepartment, getDepartmentList, removeDepartment } from "../../services";
+import {
+  createDepartment,
+  getDepartmentList,
+  removeDepartment,
+  searchDepartment,
+} from "../../services";
 import CustomSnackbar from "../../components/CustomSnackbar";
-import DeleteDepartment from '../../components/Dialog/DeleteDepartment';
+import DeleteDepartment from "../../components/Dialog/DeleteDepartment";
+import { debounce } from "lodash";
 
 const ManageDepartmen = () => {
   const [open, setOpen] = useState(false);
@@ -42,9 +48,9 @@ const ManageDepartmen = () => {
   };
 
   useEffect(() => {
-      fetchDepartmentList();
-    }, []);
-  
+    fetchDepartmentList();
+  }, []);
+
   const fetchDepartmentList = async () => {
     try {
       const data = await getDepartmentList();
@@ -70,9 +76,9 @@ const ManageDepartmen = () => {
 
   const handleDelete = () => {
     const payload = {
-      ids: selectedIds.map(id => String(id))
+      ids: selectedIds.map((id) => String(id)),
     };
-    
+
     removeDepartment(payload)
       .then(() => {
         openSnackbar("berhasil", "Departemen berhasil dihapus!");
@@ -87,7 +93,7 @@ const ManageDepartmen = () => {
         setDeleteDialogOpen(false);
       });
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -102,26 +108,41 @@ const ManageDepartmen = () => {
     };
 
     console.log("Departemen baru:", newDepartment);
-    
+
     createDepartment(newDepartment)
-    .then((res) => {
-      console.log("Departemen berhasil ditambahkan:", res);
-      setKodeDept("");
-      setNamaDept("");
-      handleClose();
-      openSnackbar("berhasil", "Departemen berhasil ditambahkan!");
-      fetchDepartmentList();
-    })
-    .catch((error) => {
-      console.error("Gagal menambahkan departemen:", error);
-      openSnackbar("gagal", "Gagal menambahkan departemen!");
-    })
-    .finally(() => {
-      setKodeDept("");
-      setNamaDept("");
-    });
+      .then((res) => {
+        console.log("Departemen berhasil ditambahkan:", res);
+        setKodeDept("");
+        setNamaDept("");
+        handleClose();
+        openSnackbar("berhasil", "Departemen berhasil ditambahkan!");
+        fetchDepartmentList();
+      })
+      .catch((error) => {
+        console.error("Gagal menambahkan departemen:", error);
+        openSnackbar("gagal", "Gagal menambahkan departemen!");
+      })
+      .finally(() => {
+        setKodeDept("");
+        setNamaDept("");
+      });
 
     handleClose();
+  };
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value) => {
+        searchDepartment({ keywords: value })
+          .then((res) => console.log("Search result:", res))
+          .catch((err) => console.error("Search error:", err));
+      }, 300),
+    []
+  );
+
+  const handleSearch = (e) => {
+    console.log("Search value:", e.target.value);
+    debouncedSearch(e.target.value);
   };
 
   return (
@@ -169,8 +190,9 @@ const ManageDepartmen = () => {
                 backgroundColor: "#CB3A31",
                 color: "white",
               }}
-              onClick={() => {handleTrashClick()}}
-              
+              onClick={() => {
+                handleTrashClick();
+              }}
             >
               <TrashIcon sx={{ fontSize: 20 }} />
             </Box>
@@ -182,7 +204,7 @@ const ManageDepartmen = () => {
               + Add Department
             </Button>
           </Box>
-          <InputSearchBar />
+          <InputSearchBar handleSearch={handleSearch} />
         </Box>
         <DataTableDepartment
           departmentList={departmentList}
@@ -191,7 +213,7 @@ const ManageDepartmen = () => {
           setSelectedIds={setSelectedIds}
         />
       </Grid>
-      
+
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ m: 0, p: 2 }}>
           <Typography fontWeight="bold">Tambah Departemen</Typography>
@@ -253,7 +275,6 @@ const ManageDepartmen = () => {
         onClose={() => setDeleteDialogOpen(false)}
         handleDelete={handleDelete}
       />
-
     </Grid>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useState } from "react";
 import {
   Box,
@@ -24,8 +24,12 @@ import {
   summarizeFilePersonal,
   deletePersonalFile,
   uploadPersonalFile,
+  searchTopic,
+  searchFileDepartment,
+  searchFilePersonal,
 } from "../../../services";
 import CustomSnackbar from "../../../components/CustomSnackbar";
+import { debounce } from "lodash";
 
 const PersonalUser = ({
   id,
@@ -239,6 +243,66 @@ const PersonalUser = ({
       });
   };
 
+  const debouncedSearchFilePersonal = useMemo(
+      () =>
+        debounce((value) => {
+          searchFilePersonal({
+            user_id: String(id),
+            keywords: value,
+            page: 1,
+            per_page: 10,
+          })
+            .then((res) => {
+              console.log("Search result:", res.list_files);
+              setPersonalFiles((prev) => ({
+                ...prev,
+                list_files: res.list_files,
+              }));            
+            })
+            .catch((err) => {
+              console.error("Search error:", err);
+            });
+        }, 300),
+      [id] 
+    );
+  
+    const debouncedSearchTopic = useMemo(
+      () =>
+        debounce((value) => {
+          searchTopic({
+            user_id: String(id),
+            keywords: value,
+          })
+          .then((res) => {
+            console.log("Search result:", res.results);
+            setPersonalTopics((prev) => ({
+              ...prev,
+              list_files: res.results,
+            }));            
+          })
+          .catch((err) => {
+            console.error("Search error:", err);
+          });
+        }, 300),
+      []
+    );
+  
+    const handleSearchFilePersonal = (e) => {
+      debouncedSearchFilePersonal(e.target.value);
+    };
+  
+    const handleSearchTopic = (e) => {
+      debouncedSearchTopic(e.target.value);
+    };
+  
+    const getSearchHandler = (e) => {
+      if (selected === "file")
+        return handleSearchFilePersonal;
+      if (selected === "topik")
+        return handleSearchTopic;
+      return () => {};
+    };
+
   return (
     <Stack
       direction="column"
@@ -381,7 +445,7 @@ const PersonalUser = ({
             </Typography>
           </Box>
           <Stack direction={"column"} padding={1.5} spacing={1}>
-            <InputSearchBar />
+          <InputSearchBar handleSearch={getSearchHandler()} />
             <Stack direction={"row"} spacing={1} alignItems="center">
               <Box
                 width={"30%"}
