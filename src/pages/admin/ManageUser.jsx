@@ -17,6 +17,10 @@ import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import InputSearchBar from "../../components/Inputs/InputSearchBar";
 import DataTable from "../../components/Table/DataTable";
 import CloseIcon from "@mui/icons-material/Close";
+import { useEffect } from "react";
+import { createUser, getUserList, removeUser, getDepartmentList } from "../../services";
+import CustomSnackbar from "../../components/CustomSnackbar";
+import DeleteUser from '../../components/Dialog/DeleteUser';
 
 const ManageUser = () => {
   const [open, setOpen] = useState(false);
@@ -33,35 +37,127 @@ const ManageUser = () => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [telepon, setTelepon] = useState('');
-  const [telegram, setTelegram] = useState('');
+  const [status, setStatus] = useState('');
+
+  const [userList, setUserList] = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  const [departmentList, setDepartmentList] = useState([]);
+  const departmentOptions = departmentList.map(([id, name, code]) => ({
+    id,
+    name,
+    code,
+  }));
+
+  const [snackbar, setSnackbar] = useState({
+      open: false,
+      message: "",
+      status: "berhasil",
+    });
   
+    const openSnackbar = (status, message) => {
+      setSnackbar({ open: true, status, message });
+    };
+  
+    const closeSnackbar = () => {
+      setSnackbar((prev) => ({ ...prev, open: false }));
+    };
+
+  useEffect(() => {
+    fetchDepartmentList();
+  }, []);
+
+  const fetchDepartmentList = async () => {
+    try {
+      const data = await getDepartmentList();
+      setDepartmentList(data.response);
+    } catch (error) {
+      console.error("Gagal mengambil file personal:", error);
+    }
+  };
+
+  useEffect(() => {
+      fetchUserList();
+    }, []);
+  
+  const fetchUserList = async () => {
+    try {
+      const data = await getUserList();
+      setUserList(data.response);
+    } catch (error) {
+      console.error("Gagal mengambil list user:", error);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!departemen || !namaDepan || !namaBelakang || !gender || !posisi || !username || !password || !email || !telepon || !telegram) {
+  
+    if (
+      !departemen ||
+      !namaDepan ||
+      !namaBelakang ||
+      !gender ||
+      !posisi ||
+      !username ||
+      !password ||
+      !email ||
+      !telepon ||
+      !status
+    ) {
       alert("Mohon isi semua field.");
       return;
     }
-
-    const newDepartment = {
-      departemen,
-      namaDepan,
-      namaBelakang,
-      gender,
-      posisi,
-      username,
-      password,
-      email,
-      telepon,
-      telegram,
+  
+    // Cari department_id dari departmentOptions berdasarkan nama departemen
+    const selectedDepartment = departmentOptions.find(
+      (dept) => dept.name === departemen
+    );
+  
+    if (!selectedDepartment) {
+      alert("Departemen tidak ditemukan.");
+      return;
+    }
+  
+    const newUser = {
+      department_id: String(selectedDepartment.id),
+      department: selectedDepartment.name,
+      first_name: namaDepan,
+      last_name: namaBelakang,
+      gender: gender,
+      username: username,
+      email: email,
+      phone_number: telepon,
+      password: password,
+      role: posisi,
+      status: status,
     };
-
-    console.log("Departemen baru:", newDepartment);
-
-
-    handleClose();
+  
+    console.log("Pengguna baru:", newUser);
+  
+    createUser(newUser)
+      .then((res) => {
+        console.log("User berhasil ditambahkan:", res);
+        setDepartemen("");
+        setNamaDepan("");
+        setNamaBelakang("");
+        setGender("");
+        setPosisi("");
+        setUsername("");
+        setPassword("");
+        setEmail("");
+        setTelepon("");
+        setStatus("");
+  
+        handleClose();
+        openSnackbar("berhasil", "User berhasil ditambahkan!");
+        fetchUserList();
+      })
+      .catch((error) => {
+        console.error("Gagal menambahkan user:", error);
+        openSnackbar("gagal", "Gagal menambahkan user!");
+      });
   };
+  
 
   return (
     <Grid
@@ -121,7 +217,12 @@ const ManageUser = () => {
           </Box>
           <InputSearchBar />
         </Box>
-        <DataTable />
+        <DataTable 
+        userList={userList}
+        fetchUserList={fetchUserList}
+        selectedIds={selectedIds}
+        setSelectedIds={setSelectedIds}
+        />
       </Grid>
 
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
@@ -156,9 +257,11 @@ const ManageUser = () => {
                   value={departemen}
                   onChange={(e) => setDepartemen(e.target.value)}
                 >
-                  <MenuItem value="Finansial">Finansial</MenuItem>
-                  <MenuItem value="Marketing">Marketing</MenuItem>
-                  {/* Tambahkan lainnya sesuai kebutuhan */}
+                  {departmentOptions.map((dept) => (
+                    <MenuItem key={dept.id} value={dept.name}>
+                      {dept.name}
+                    </MenuItem>
+                  ))}
                 </TextField>
               </Grid>
 
@@ -266,17 +369,20 @@ const ManageUser = () => {
                 />
               </Grid>
 
-              {/* Telegram Username */}
+              {/* Status */}
               <Grid item size={6}>
-                <Typography sx={{ mb:1 }}>Telegram Username</Typography>
+                <Typography sx={{ mb:1 }}>Status</Typography>
                 <TextField
                 size="small"
                 sx={{ mb: 1 }}
                   fullWidth
-                  placeholder="Masukkan username telegram"
-                  value={telegram}
-                  onChange={(e) => setTelegram(e.target.value)}
-                />
+                  select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <MenuItem value="Active">Active</MenuItem>
+                  <MenuItem value="User">Inactive</MenuItem>
+                </TextField>
               </Grid>
             </Grid>
           </form>
@@ -292,6 +398,12 @@ const ManageUser = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <CustomSnackbar
+        open={snackbar.open}
+        onClose={closeSnackbar}
+        status={snackbar.status}
+        message={snackbar.message}
+      />
     </Grid>
   );
 };
