@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Stack,
@@ -20,10 +20,12 @@ import {
     deletePersonalFile,
   getDepartmentFile,
   getDepartmentList,
+  searchFileDepartment,
   uploadDepartmentFile,
 } from "../../../services";
 import CustomSnackbar from "../../../components/CustomSnackbar";
 import DeleteFile from "../../../components/Dialog/DeleteFile";
+import { debounce } from "lodash";
 
 const DepartemenOperator = ({ id }) => {
   const [departmentList, setDepartmentList] = useState([]);
@@ -177,6 +179,33 @@ const DepartemenOperator = ({ id }) => {
         });
     });
   };
+    const debouncedSearchFileDepartment = useMemo(
+      () =>
+        debounce((value, dept_id) => {
+          searchFileDepartment({
+            dept_id: String(dept_id),
+            keywords: value,
+            page: 1,
+            per_page: 10,
+          })
+            .then((res) => {
+              console.log("Search result:", res.list_files);
+              setDepartmentFile((prev) => ({
+                ...prev,
+                list_files: res.list_files,
+              }));
+            })
+            .catch((err) => {
+              console.error("Search error:", err);
+            });
+        }, 300),
+      []
+    );
+  
+    const handleSearchFileDepartment = (e) => {
+      console.log("Search value:", e.target.value, selectedDepartmentid);
+      debouncedSearchFileDepartment(e.target.value, selectedDepartmentid);
+    };
   return (
     <Stack
       direction="column"
@@ -344,7 +373,7 @@ const DepartemenOperator = ({ id }) => {
             </Typography>
           </Box>
           <Stack direction={"column"} padding={1.5} spacing={1}>
-            <InputSearchBar />
+          <InputSearchBar handleSearch={handleSearchFileDepartment} />
             <Stack direction={"row"} spacing={1} alignItems="center">
               <Box
                 width={"30%"}

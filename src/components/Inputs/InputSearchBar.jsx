@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Search } from "@mui/icons-material";
 import { Box, InputBase, styled } from "@mui/material";
+import { searchUser } from "../../services";
+import { debounce } from "lodash";
+const InputSearchBar = ({ handleSearch}) => {
 
-const InputSearchBar = ({ placeholder, ...rest }) => {
+
   return (
     <SearchWrapper>
       <StyledInputBase
-        {...rest}
-        placeholder={placeholder || "Search....."}
+        onChange={handleSearch}
+        placeholder={"Search....."}
         inputProps={{ "aria-label": "search" }}
       />
       <SearchIconWrapper>

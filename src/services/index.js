@@ -251,3 +251,79 @@ export const editUser = async (payload) => {
     throw error;
   }
 };
+
+export const searchFilePersonal = async ({user_id, keywords, page, per_page}) => {
+  try {
+    const response = await api.get("file/search_personal", {
+      params: {
+        user_id: user_id,
+        keywords: keywords,
+        Page: page,
+        per_page: per_page,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting user:", error);
+    throw error;
+  }
+};
+
+export const searchFileDepartment = async ({dept_id, keywords, page, per_page}) => {
+  try {
+    const response = await api.get("file/search_department", {
+      params: {
+        dept_id: dept_id,
+        keywords: keywords,
+        Page: page,
+        per_page: per_page,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting user:", error);
+    throw error;
+  }
+};
+
+export const searchUser = async ({ keywords}) => {
+  try {
+    const response = await api.get("users/search_user", {
+      params: {
+        keywords: keywords,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting user:", error);
+    throw error;
+  }
+};
+export const searchDepartment = async ({ keywords}) => {
+  try {
+    const response = await api.get("department/search_department", {
+      params: {
+        keywords: keywords,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting user:", error);
+    throw error;
+  }
+};
+
+export const searchTopic = async ({ keywords, user_id}) => {
+  try {
+    const response = await api.get("topic/search_personal_topic", {
+      params: {
+        user_id: user_id,
+        keywords: keywords,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting user:", error);
+    throw error;
+  }
+}

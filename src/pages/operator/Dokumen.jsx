@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Grid,
@@ -26,6 +26,9 @@ import {
   getDepartmentList,
   getPersonalFile,
   getTopic,
+  searchFileDepartment,
+  searchFilePersonal,
+  searchTopic,
   uploadDepartmentFile,
   uploadPersonalFile,
   uploadPersonalToDepartmentFile,
@@ -33,6 +36,7 @@ import {
 import CustomSnackbar from "../../components/CustomSnackbar";
 import DeleteFile from "../../components/Dialog/DeleteFile";
 import AddToDepartement from "../../components/Dialog/AddToDepartment";
+import { debounce } from "lodash";
 
 const Dokumen = ({ id }) => {
   const [mainSelect, setMainSelect] = useState("Personal");
@@ -55,6 +59,26 @@ const Dokumen = ({ id }) => {
   const [checkedItemsFileDepartment, setCheckedItemsFileDepartment] = useState(
     {}
   );
+
+  const [selectedDepartmentid, setSelectedDepartmentid] = useState(null);
+  const [departmentFile, setDepartmentFile] = useState([]);
+
+  const selectedFiles = Object.entries(checkedItems)
+    .filter(([idx, isChecked]) => isChecked)
+    .map(([idx]) => personalFiles.list_files[idx]);
+
+  const selectedTopic = Object.entries(checkedItemsTopics)
+    .filter(([idx, isChecked]) => isChecked)
+    .map(([idx]) => personalTopics.list_files[idx]);
+
+  const selectedFileDepartment = Object.entries(checkedItemsFileDepartment)
+    .filter(([idx, isChecked]) => isChecked)
+    .map(([idx]) => departmentFile.list_files[idx]);
+
+  useEffect(() => {
+    fetchDataFile();
+    fetchDataTopics();
+  }, []);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -90,25 +114,6 @@ const Dokumen = ({ id }) => {
       [idx]: value,
     }));
   };
-  const [selectedDepartmentid, setSelectedDepartmentid] = useState(null);
-  const [departmentFile, setDepartmentFile] = useState([]);
-
-  const selectedFiles = Object.entries(checkedItems)
-    .filter(([idx, isChecked]) => isChecked)
-    .map(([idx]) => personalFiles.list_files[idx]);
-
-  const selectedTopic = Object.entries(checkedItemsTopics)
-    .filter(([idx, isChecked]) => isChecked)
-    .map(([idx]) => personalTopics.list_files[idx]);
-
-  const selectedFileDepartment = Object.entries(checkedItemsFileDepartment)
-    .filter(([idx, isChecked]) => isChecked)
-    .map(([idx]) => departmentFile.list_files[idx]);
-
-  useEffect(() => {
-    fetchDataFile();
-    fetchDataTopics();
-  }, []);
 
   const fetchDataFile = async () => {
     try {
@@ -259,7 +264,10 @@ const Dokumen = ({ id }) => {
         setCheckedItemsTopics({});
         fetchDataTopics();
         setIsLoading(false);
-        openSnackbar("berhasil", "File Personal berhasil ditambah ke Departemen!");
+        openSnackbar(
+          "berhasil",
+          "File Personal berhasil ditambah ke Departemen!"
+        );
       })
       .catch((error) => {
         console.error("Gagal menambahkan File:", error);
@@ -328,7 +336,97 @@ const Dokumen = ({ id }) => {
         });
     });
   };
-  console.log(mainSelect, selected, departmen, "ini main select dan selected");
+
+  const debouncedSearchFilePersonal = useMemo(
+    () =>
+      debounce((value) => {
+        searchFilePersonal({
+          user_id: String(id),
+          keywords: value,
+          page: 1,
+          per_page: 10,
+        })
+          .then((res) => {
+            console.log("Search result:", res.list_files);
+            setPersonalFiles((prev) => ({
+              ...prev,
+              list_files: res.list_files,
+            }));            
+          })
+          .catch((err) => {
+            console.error("Search error:", err);
+          });
+      }, 300),
+    [id] 
+  );
+  
+  const debouncedSearchFileDepartment = useMemo(
+    () =>
+      debounce((value, dept_id) => {
+        searchFileDepartment({
+          dept_id: String(dept_id),
+          keywords: value,
+          page: 1,
+          per_page: 10,
+        })
+        .then((res) => {
+          console.log("Search result:", res.list_files);
+          setDepartmentFile((prev) => ({
+            ...prev,
+            list_files: res.list_files,
+          }));            
+        })
+        .catch((err) => {
+          console.error("Search error:", err);
+        });
+      }, 300),
+    []
+  );
+
+  const debouncedSearchTopic = useMemo(
+    () =>
+      debounce((value) => {
+        searchTopic({
+          user_id: String(id),
+          keywords: value,
+        })
+        .then((res) => {
+          console.log("Search result:", res.results);
+          setPersonalTopics((prev) => ({
+            ...prev,
+            list_files: res.results,
+          }));            
+        })
+        .catch((err) => {
+          console.error("Search error:", err);
+        });
+      }, 300),
+    []
+  );
+
+  const handleSearchFilePersonal = (e) => {
+    debouncedSearchFilePersonal(e.target.value);
+  };
+
+  const handleSearchFileDepartment = (e) => {
+    debouncedSearchFileDepartment(e.target.value, departmen);
+  };
+
+  const handleSearchTopic = (e) => {
+    debouncedSearchTopic(e.target.value);
+  };
+
+  const getSearchHandler = (e) => {
+    if (mainSelect === "Personal" && selected === "file")
+      return handleSearchFilePersonal;
+    if (mainSelect === "Departemen" && selected === "file")
+      return handleSearchFileDepartment;
+    if (mainSelect === "Personal" && selected === "topik")
+      return handleSearchTopic;
+    return () => {};
+  };
+  
+  console.log("Selected File:", departmentFile);
   return (
     <Grid
       sx={{
@@ -378,29 +476,6 @@ const Dokumen = ({ id }) => {
               </Select>
             </FormControl>
           </Box>
-
-          {/* Pilih orang*/}
-          {/* {mainSelect === "Personal" && (
-            <Box>
-              <Box width="100%" textAlign="left" sx={{ mb: 2 }}>
-                <Typography fontSize={18} fontWeight={700} color="#404040">
-                  Personal
-                </Typography>
-              </Box>
-              <FormControl fullWidth sx={{ mb: 4 }}>
-                <InputLabel id="personal-label">Personal</InputLabel>
-                <Select
-                  labelId="personal-label"
-                  value={people}
-                  onChange={handlepeople}
-                  label="Personal"
-                >
-                  <MenuItem value="Personal 1">Personal 1</MenuItem>
-                  <MenuItem value="Personal 2">Personal 2</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-          )} */}
 
           {/* Pilih departemen*/}
           {mainSelect === "Departemen" && (
@@ -560,7 +635,7 @@ const Dokumen = ({ id }) => {
                 </Typography>
               </Box>
               <Stack direction={"column"} padding={1.5} spacing={1}>
-                <InputSearchBar />
+                <InputSearchBar handleSearch={getSearchHandler()} />
                 <Stack direction={"row"} spacing={1} alignItems="center">
                   {mainSelect === "Personal" ? (
                     <>
