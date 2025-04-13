@@ -18,29 +18,36 @@ import InputSearchBar from "../../components/Inputs/InputSearchBar";
 import DataTable from "../../components/Table/DataTable";
 import CloseIcon from "@mui/icons-material/Close";
 import { useEffect } from "react";
-import { createUser, getUserList, removeUser, getDepartmentList } from "../../services";
+import {
+  createUser,
+  getUserList,
+  removeUser,
+  getDepartmentList,
+  removeDepartment,
+} from "../../services";
 import CustomSnackbar from "../../components/CustomSnackbar";
-import DeleteUser from '../../components/Dialog/DeleteUser';
+import DeleteUser from "../../components/Dialog/DeleteUser";
 
 const ManageUser = () => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  
-  const [departemen, setDepartemen] = useState('');
-  const [namaDepan, setNamaDepan] = useState('');
-  const [namaBelakang, setNamaBelakang] = useState('');
-  const [gender, setGender] = useState('');
-  const [posisi, setPosisi] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
-  const [telepon, setTelepon] = useState('');
-  const [status, setStatus] = useState('');
+
+  const [departemen, setDepartemen] = useState("");
+  const [namaDepan, setNamaDepan] = useState("");
+  const [namaBelakang, setNamaBelakang] = useState("");
+  const [gender, setGender] = useState("");
+  const [posisi, setPosisi] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [telepon, setTelepon] = useState("");
+  const [status, setStatus] = useState("");
 
   const [userList, setUserList] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const [departmentList, setDepartmentList] = useState([]);
   const departmentOptions = departmentList.map(([id, name, code]) => ({
@@ -50,18 +57,18 @@ const ManageUser = () => {
   }));
 
   const [snackbar, setSnackbar] = useState({
-      open: false,
-      message: "",
-      status: "berhasil",
-    });
-  
-    const openSnackbar = (status, message) => {
-      setSnackbar({ open: true, status, message });
-    };
-  
-    const closeSnackbar = () => {
-      setSnackbar((prev) => ({ ...prev, open: false }));
-    };
+    open: false,
+    message: "",
+    status: "berhasil",
+  });
+
+  const openSnackbar = (status, message) => {
+    setSnackbar({ open: true, status, message });
+  };
+
+  const closeSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   useEffect(() => {
     fetchDepartmentList();
@@ -77,9 +84,9 @@ const ManageUser = () => {
   };
 
   useEffect(() => {
-      fetchUserList();
-    }, []);
-  
+    fetchUserList();
+  }, []);
+
   const fetchUserList = async () => {
     try {
       const data = await getUserList();
@@ -91,7 +98,7 @@ const ManageUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     if (
       !departemen ||
       !namaDepan ||
@@ -107,17 +114,17 @@ const ManageUser = () => {
       alert("Mohon isi semua field.");
       return;
     }
-  
+
     // Cari department_id dari departmentOptions berdasarkan nama departemen
     const selectedDepartment = departmentOptions.find(
       (dept) => dept.name === departemen
     );
-  
+
     if (!selectedDepartment) {
       alert("Departemen tidak ditemukan.");
       return;
     }
-  
+
     const newUser = {
       department_id: String(selectedDepartment.id),
       department: selectedDepartment.name,
@@ -131,9 +138,9 @@ const ManageUser = () => {
       role: posisi,
       status: status,
     };
-  
+
     console.log("Pengguna baru:", newUser);
-  
+
     createUser(newUser)
       .then((res) => {
         console.log("User berhasil ditambahkan:", res);
@@ -147,7 +154,7 @@ const ManageUser = () => {
         setEmail("");
         setTelepon("");
         setStatus("");
-  
+
         handleClose();
         openSnackbar("berhasil", "User berhasil ditambahkan!");
         fetchUserList();
@@ -157,7 +164,34 @@ const ManageUser = () => {
         openSnackbar("gagal", "Gagal menambahkan user!");
       });
   };
-  
+
+  const handleDelete = () => {
+    const payload = {
+      ids: selectedIds.map((id) => String(id)),
+    };
+    removeUser(payload)
+      .then(() => {
+        openSnackbar("berhasil", "User berhasil dihapus!");
+        fetchUserList();
+      })
+      .catch((error) => {
+        console.error("Gagal menghapus User:", error);
+        openSnackbar("gagal", "Gagal menghapus User");
+      })
+      .finally(() => {
+        setSelectedIds([]);
+        setDeleteDialogOpen(false);
+      });
+  };
+  const handleTrashClick = () => {
+    if (selectedIds.length === 0) {
+      alert("Pilih department yang ingin dihapus.");
+      return;
+    }
+    setDeleteDialogOpen(true);
+  };
+
+  console.log(selectedIds);
 
   return (
     <Grid
@@ -204,6 +238,9 @@ const ManageUser = () => {
                 backgroundColor: "#CB3A31",
                 color: "white",
               }}
+              onClick={() => {
+                handleTrashClick();
+              }}
             >
               <TrashIcon sx={{ fontSize: 20 }} />
             </Box>
@@ -217,11 +254,12 @@ const ManageUser = () => {
           </Box>
           <InputSearchBar />
         </Box>
-        <DataTable 
-        userList={userList}
-        fetchUserList={fetchUserList}
-        selectedIds={selectedIds}
-        setSelectedIds={setSelectedIds}
+        <DataTable
+          userList={userList}
+          fetchUserList={fetchUserList}
+          selectedIds={selectedIds}
+          setSelectedIds={setSelectedIds}
+          departmentOptions={departmentOptions}
         />
       </Grid>
 
@@ -247,10 +285,10 @@ const ManageUser = () => {
             <Grid container spacing={2}>
               {/* Departemen */}
               <Grid item size={12}>
-                <Typography sx={{ mb:1 }}>Departemen</Typography>
+                <Typography sx={{ mb: 1 }}>Departemen</Typography>
                 <TextField
-                size="small"
-                sx={{ mb: 1 }}
+                  size="small"
+                  sx={{ mb: 1 }}
                   fullWidth
                   placeholder="Masukkan departemen"
                   select
@@ -267,10 +305,10 @@ const ManageUser = () => {
 
               {/* Nama Depan & Nama Belakang */}
               <Grid item size={6}>
-                <Typography sx={{ mb:1 }}>Nama Depan</Typography>
+                <Typography sx={{ mb: 1 }}>Nama Depan</Typography>
                 <TextField
-                size="small"
-                sx={{ mb: 1 }}
+                  size="small"
+                  sx={{ mb: 1 }}
                   fullWidth
                   placeholder="Masukkan nama depan"
                   value={namaDepan}
@@ -278,10 +316,10 @@ const ManageUser = () => {
                 />
               </Grid>
               <Grid item size={6}>
-                <Typography sx={{ mb:1 }}>Nama Belakang</Typography>
+                <Typography sx={{ mb: 1 }}>Nama Belakang</Typography>
                 <TextField
-                size="small"
-                sx={{ mb: 1 }}
+                  size="small"
+                  sx={{ mb: 1 }}
                   fullWidth
                   placeholder="Masukkan nama belakang"
                   value={namaBelakang}
@@ -291,10 +329,10 @@ const ManageUser = () => {
 
               {/* Gender & Posisi */}
               <Grid item size={6}>
-                <Typography sx={{ mb:1 }}>Gender</Typography>
+                <Typography sx={{ mb: 1 }}>Gender</Typography>
                 <TextField
-                size="small"
-                sx={{ mb: 1 }}
+                  size="small"
+                  sx={{ mb: 1 }}
                   fullWidth
                   select
                   value={gender}
@@ -305,10 +343,10 @@ const ManageUser = () => {
                 </TextField>
               </Grid>
               <Grid item size={6}>
-                <Typography sx={{ mb:1 }}>Posisi</Typography>
+                <Typography sx={{ mb: 1 }}>Posisi</Typography>
                 <TextField
-                size="small"
-                sx={{ mb: 1 }}
+                  size="small"
+                  sx={{ mb: 1 }}
                   fullWidth
                   select
                   value={posisi}
@@ -322,10 +360,10 @@ const ManageUser = () => {
 
               {/* Username & Kata Sandi */}
               <Grid item size={6}>
-                <Typography sx={{ mb:1 }}>Username</Typography>
+                <Typography sx={{ mb: 1 }}>Username</Typography>
                 <TextField
-                size="small"
-                sx={{ mb: 1 }}
+                  size="small"
+                  sx={{ mb: 1 }}
                   fullWidth
                   placeholder="Masukkan username"
                   value={username}
@@ -333,10 +371,10 @@ const ManageUser = () => {
                 />
               </Grid>
               <Grid item size={6}>
-                <Typography sx={{ mb:1 }}>Kata Sandi</Typography>
+                <Typography sx={{ mb: 1 }}>Kata Sandi</Typography>
                 <TextField
-                size="small"
-                sx={{ mb: 1 }}
+                  size="small"
+                  sx={{ mb: 1 }}
                   fullWidth
                   placeholder="Masukkan kata sandi"
                   type="password"
@@ -347,10 +385,10 @@ const ManageUser = () => {
 
               {/* Email & No. Telepon */}
               <Grid item size={6}>
-                <Typography sx={{ mb:1 }}>Email</Typography>
+                <Typography sx={{ mb: 1 }}>Email</Typography>
                 <TextField
-                size="small"
-                sx={{ mb: 1 }}
+                  size="small"
+                  sx={{ mb: 1 }}
                   fullWidth
                   placeholder="Masukkan email"
                   value={email}
@@ -358,10 +396,10 @@ const ManageUser = () => {
                 />
               </Grid>
               <Grid item size={6}>
-                <Typography sx={{ mb:1 }}>No. Telepon</Typography>
+                <Typography sx={{ mb: 1 }}>No. Telepon</Typography>
                 <TextField
-                size="small"
-                sx={{ mb: 1 }}
+                  size="small"
+                  sx={{ mb: 1 }}
                   fullWidth
                   placeholder="Masukkan no. telepon"
                   value={telepon}
@@ -371,10 +409,10 @@ const ManageUser = () => {
 
               {/* Status */}
               <Grid item size={6}>
-                <Typography sx={{ mb:1 }}>Status</Typography>
+                <Typography sx={{ mb: 1 }}>Status</Typography>
                 <TextField
-                size="small"
-                sx={{ mb: 1 }}
+                  size="small"
+                  sx={{ mb: 1 }}
                   fullWidth
                   select
                   value={status}
@@ -403,6 +441,11 @@ const ManageUser = () => {
         onClose={closeSnackbar}
         status={snackbar.status}
         message={snackbar.message}
+      />
+      <DeleteUser
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        handleDelete={handleDelete}
       />
     </Grid>
   );
