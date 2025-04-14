@@ -28,7 +28,9 @@ const ChatBox = ({
   setIsSummarize,
   selectedTopic,
   topicName,
-  deptID
+  deptID,
+  setIsViewPdf,
+  setPdfSource
 }) => {
   const [model, setModel] = useState("Llama 3.1");
   const [vectorizer, setVectorizer] = useState("nomic-embed-text");
@@ -340,6 +342,10 @@ const ChatBox = ({
                                 fontSize: "0.9rem",
                                 color: "#666",
                                 backgroundColor: "#fafafa",
+                              }}
+                              onClick={() => {
+                                setIsViewPdf(true);
+                                setPdfSource(src)
                               }}
                             >
                               <Typography align="start">📄 {src}</Typography>

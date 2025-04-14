@@ -12,6 +12,7 @@ import { useEffect, useState, useMemo } from "react";
 import { debounce } from "lodash";
 import { searchUser } from "./services";
 import LogoSetting from "./components/LogoSetting";
+import PDFViewer from "./components/PdfViewer";
 
 function App() {
   const location = useLocation();
@@ -22,6 +23,8 @@ function App() {
   const [selectedTopic, setSelectedTopic] = useState(false);
   const [topicName, setTopicName] = useState("");
   const [deptID, setDeptID] = useState("");
+  const [isViewPdf, setIsViewPdf] = useState(false);
+  const [pdfSource, setPdfSource] = useState(null);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -79,95 +82,205 @@ function App() {
             setDeptID={setDeptID}
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 9 }} sx={{ padding: "1rem" }}>
-          {/* user */}
-          <Routes>
-            <Route
-              path="/coofisai"
-              element={
-                <ChatBox
-                  role={"User"}
-                  id={user?.id}
-                  selected={selected}
-                  responseSummarize={responseSummarize}
-                  setResponseSummarize={setResponseSummarize}
-                  isSummarize={isSummarize}
-                  setIsSummarize={setIsSummarize}
-                  selectedTopic={selectedTopic}
-                  topicName={topicName}
+        {isViewPdf ? (
+          <>
+            <Grid
+              size={{ xs: 12, sm: 12, md: 12, lg: 6 }}
+              sx={{ padding: "1rem" }}
+            >
+              <Routes>
+                <Route
+                  path="/coofisai"
+                  element={
+                    <ChatBox
+                      role={"Admin"}
+                      id={user?.id}
+                      selected={selected}
+                      responseSummarize={responseSummarize}
+                      setResponseSummarize={setResponseSummarize}
+                      isSummarize={isSummarize}
+                      setIsSummarize={setIsSummarize}
+                      selectedTopic={selectedTopic}
+                      topicName={topicName}
+                      deptID={deptID}
+                      setIsViewPdf={setIsViewPdf}
+                      setPdfSource={setPdfSource}
+                    />
+                  }
                 />
-              }
-            />
-          </Routes>
+              </Routes>
 
-          {/* operator */}
-          <Routes>
-            <Route
-              path="/operator/coofisai"
-              element={
-                <ChatBox
-                  role={"Operator"}
-                  id={user?.id}
-                  selected={selected}
-                  responseSummarize={responseSummarize}
-                  setResponseSummarize={setResponseSummarize}
-                  isSummarize={isSummarize}
-                  setIsSummarize={setIsSummarize}
-                  selectedTopic={selectedTopic}
-                  topicName={topicName}
+              <Routes>
+                <Route
+                  path="/operator/coofisai"
+                  element={
+                    <ChatBox
+                      role={"Admin"}
+                      id={user?.id}
+                      selected={selected}
+                      responseSummarize={responseSummarize}
+                      setResponseSummarize={setResponseSummarize}
+                      isSummarize={isSummarize}
+                      setIsSummarize={setIsSummarize}
+                      selectedTopic={selectedTopic}
+                      topicName={topicName}
+                      deptID={deptID}
+                      setIsViewPdf={setIsViewPdf}
+                      setPdfSource={setPdfSource}
+                    />
+                  }
                 />
-              }
-            />
-            <Route
-              path="/operator/coofisai/dokumen"
-              element={<Dokumen id={user?.id} />}
-            />
-            <Route
-              path="/operator/coofisai/pengaturan"
-              element={<LogoSetting id={user?.id} />}
-            />
-          </Routes>
+                <Route
+                  path="/operator/coofisai/dokumen"
+                  element={<Dokumen id={user?.id} />}
+                />
+                <Route
+                  path="/operator/coofisai/pengaturan"
+                  element={<LogoSetting id={user?.id} />}
+                />
+              </Routes>
 
-          {/* admin */}
-          <Routes>
-            <Route
-              path="/admin/coofisai"
-              element={
-                <ChatBox
-                  role={"Admin"}
-                  id={user?.id}
-                  selected={selected}
-                  responseSummarize={responseSummarize}
-                  setResponseSummarize={setResponseSummarize}
-                  isSummarize={isSummarize}
-                  setIsSummarize={setIsSummarize}
-                  selectedTopic={selectedTopic}
-                  topicName={topicName}
-                  deptID={deptID}
+              <Routes>
+                <Route
+                  path="/admin/coofisai"
+                  element={
+                    <ChatBox
+                      role={"Admin"}
+                      id={user?.id}
+                      selected={selected}
+                      responseSummarize={responseSummarize}
+                      setResponseSummarize={setResponseSummarize}
+                      isSummarize={isSummarize}
+                      setIsSummarize={setIsSummarize}
+                      selectedTopic={selectedTopic}
+                      topicName={topicName}
+                      deptID={deptID}
+                      setIsViewPdf={setIsViewPdf}
+                      setPdfSource={setPdfSource}
+                    />
+                  }
                 />
-              }
-            />
-            <Route
-              path="/admin/coofisai/dokumen"
-              element={<Dokumen id={user?.id} />}
-            />
-            <Route path="/admin/coofisai/manageuser" element={<ManageUser />} />
-            <Route
-              path="/admin/coofisai/managedepartment"
-              element={<ManageDepartmen />}
-            />
-            <Route
-              path="/admin/coofisai/pengaturan"
-              element={<LogoSetting id={user?.id} />}
-            />
-          </Routes>
-        </Grid>
-        {/* <Grid
-          size={{ xs: 12, sm: 12, md: 12, lg: 3 }}
-          sx={{ padding: "1rem", backgroundColor: "#D8DAE5" }}
-        >
-          <PdfViewer />
-        </Grid> */}
+                <Route
+                  path="/admin/coofisai/dokumen"
+                  element={<Dokumen id={user?.id} />}
+                />
+                <Route
+                  path="/admin/coofisai/manageuser"
+                  element={<ManageUser />}
+                />
+                <Route
+                  path="/admin/coofisai/managedepartment"
+                  element={<ManageDepartmen />}
+                />
+                <Route
+                  path="/admin/coofisai/pengaturan"
+                  element={<LogoSetting id={user?.id} />}
+                />
+              </Routes>
+            </Grid>
+            <Grid
+              size={{ xs: 12, sm: 12, md: 12, lg: 3 }}
+              sx={{ padding: "1rem", backgroundColor: "#D8DAE5" }}
+            >
+              <PDFViewer id={user?.id} source={pdfSource} />
+            </Grid>
+          </>
+        ) : (
+          <Grid
+            size={{ xs: 12, sm: 12, md: 12, lg: 9 }}
+            sx={{ padding: "1rem" }}
+          >
+            <Routes>
+              <Route
+                path="/coofisai"
+                element={
+                  <ChatBox
+                    role={"Admin"}
+                    id={user?.id}
+                    selected={selected}
+                    responseSummarize={responseSummarize}
+                    setResponseSummarize={setResponseSummarize}
+                    isSummarize={isSummarize}
+                    setIsSummarize={setIsSummarize}
+                    selectedTopic={selectedTopic}
+                    topicName={topicName}
+                    deptID={deptID}
+                    setIsViewPdf={setIsViewPdf}
+                    setPdfSource={setPdfSource}
+                  />
+                }
+              />
+            </Routes>
+
+            <Routes>
+              <Route
+                path="/operator/coofisai"
+                element={
+                  <ChatBox
+                    role={"Admin"}
+                    id={user?.id}
+                    selected={selected}
+                    responseSummarize={responseSummarize}
+                    setResponseSummarize={setResponseSummarize}
+                    isSummarize={isSummarize}
+                    setIsSummarize={setIsSummarize}
+                    selectedTopic={selectedTopic}
+                    topicName={topicName}
+                    deptID={deptID}
+                    setIsViewPdf={setIsViewPdf}
+                    setPdfSource={setPdfSource}
+                  />
+                }
+              />
+              <Route
+                path="/operator/coofisai/dokumen"
+                element={<Dokumen id={user?.id} />}
+              />
+              <Route
+                path="/operator/coofisai/pengaturan"
+                element={<LogoSetting id={user?.id} />}
+              />
+            </Routes>
+
+            <Routes>
+              <Route
+                path="/admin/coofisai"
+                element={
+                  <ChatBox
+                    role={"Admin"}
+                    id={user?.id}
+                    selected={selected}
+                    responseSummarize={responseSummarize}
+                    setResponseSummarize={setResponseSummarize}
+                    isSummarize={isSummarize}
+                    setIsSummarize={setIsSummarize}
+                    selectedTopic={selectedTopic}
+                    topicName={topicName}
+                    deptID={deptID}
+                    setIsViewPdf={setIsViewPdf}
+                    setPdfSource={setPdfSource}
+                  />
+                }
+              />
+              <Route
+                path="/admin/coofisai/dokumen"
+                element={<Dokumen id={user?.id} />}
+              />
+              <Route
+                path="/admin/coofisai/manageuser"
+                element={<ManageUser />}
+              />
+              <Route
+                path="/admin/coofisai/managedepartment"
+                element={<ManageDepartmen />}
+              />
+              <Route
+                path="/admin/coofisai/pengaturan"
+                element={<LogoSetting id={user?.id} />}
+              />
+            </Routes>
+          </Grid>
+        )}
       </Grid>
     </>
   );
