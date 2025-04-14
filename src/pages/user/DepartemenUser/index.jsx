@@ -199,21 +199,6 @@ const DepartemenUser = ({ id, setResponseSummarize, setIsSummarize }) => {
                   width="100%"
                   color="white"
                 >
-                  <Box
-                    display="flex"
-                    justifyContent="flex-end"
-                    color="white"
-                    paddingY={0.7}
-                    paddingX={0.7}
-                    borderRadius={1}
-                    sx={{
-                      cursor: "pointer",
-                      backgroundColor: "#CB3A31",
-                    }}
-                    onClick={() => setOpenTrash(true)}
-                  >
-                    <TrashIcon sx={{ color: "white", fontSize: 20 }} />
-                  </Box>
                 </Box>
               </Stack>
               <Stack direction={"column"} spacing={1}>

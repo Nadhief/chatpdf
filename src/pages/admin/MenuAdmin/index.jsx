@@ -1,5 +1,5 @@
-import React from 'react'
-import { Stack, Typography } from '@mui/material'
+import React from 'react';
+import { Stack, Typography } from '@mui/material';
 import SettingIcon from '@mui/icons-material/SettingsOutlined';
 import PersonIcon from '@mui/icons-material/PersonOutlined';
 import DepartmentIcon from '@mui/icons-material/ApartmentOutlined';
@@ -8,83 +8,107 @@ import ChatIcon from '@mui/icons-material/ChatOutlined';
 import { useNavigate } from 'react-router-dom';
 
 const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
-    const navigate = useNavigate();
-    return (
-        <Stack direction={'column'} width={'100%'} spacing={1.8}>
-            <Typography fontSize={16} fontWeight={600} color='#404040'> Menu Admin </Typography>
-            <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
-                cursor:'pointer',
-                backgroundColor: itemSelected === 'dokumen' ? '#F5F5F5' : 'none',
-                paddingY: 0.7,
-                paddingX: 1.2,
-                borderRadius: 2
-                }}
-                onClick={() => {
-                    setItemSelected('dokumen');
-                    navigate("/admin/coofisai/dokumen");
-                }}>
-                <FileIcon sx={{fontSize: 20, color: itemSelected === 'dokumen' ? '#EA001E' : '#404040'}} />
-                <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'dokumen' ? '#EA001E' : '#404040'}> Dokumen </Typography>
-            </Stack>
-            <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
-                cursor:'pointer',
-                backgroundColor: itemSelected === 'user' ? '#F5F5F5' : 'none',
-                paddingY: 0.7,
-                paddingX: 1.2,
-                borderRadius: 2
-                }}
-                onClick={() => {
-                    setItemSelected('user');
-                    navigate("/admin/coofisai/manageuser");
-                }}>
-                <PersonIcon sx={{fontSize: 20, color: itemSelected === 'user' ? '#EA001E' : '#404040'}} />
-                <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'user' ? '#EA001E' : '#404040'}> User </Typography>
-            </Stack>
-            <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
-                cursor:'pointer',
-                backgroundColor: itemSelected === 'departemen' ? '#F5F5F5' : 'none',
-                paddingY: 0.7,
-                paddingX: 1.2,
-                borderRadius: 2
-                }}
-                onClick={() => {
-                    setItemSelected('departemen');
-                    navigate('/admin/coofisai/managedepartment')
-                }}>
-                <DepartmentIcon sx={{fontSize: 20, color: itemSelected === 'departemen' ? '#EA001E' : '#404040'}} />
-                <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'departemen' ? '#EA001E' : '#404040'}> Departemen </Typography>
-            </Stack>
-            <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
-                cursor:'pointer',
-                backgroundColor: itemSelected === 'pengaturan' ? '#F5F5F5' : 'none',
-                paddingY: 0.7,
-                paddingX: 1.2,
-                borderRadius: 2
-                }}
-                onClick={() => {
-                    setItemSelected('pengaturan');
-                    navigate("/admin/coofisai/pengaturan");
-                }}
-                >
-                <SettingIcon sx={{fontSize: 20, color: itemSelected === 'pengaturan' ? '#EA001E' : '#404040'}} />
-                <Typography fontSize={20} fontWeight={400} color = {itemSelected === 'pengaturan' ? '#EA001E' : '#404040'}> Pengaturan </Typography>
-            </Stack>
-            <Stack spacing={1} direction={'row'} alignItems={'center'} color={'black'} sx={{
-                cursor:'pointer',
-                paddingY: 0.7,
-                paddingX: 1.2
-                }}
-                onClick={() => {
-                    setSettingPage(false);
-                    setItemSelected('dokumen');
-                    navigate("/admin/coofisai");
-                }}
-                >
-                <ChatIcon sx={{fontSize: 20}} />
-                <Typography fontSize={20} fontWeight={400} color='#404040'> Ask Chatalize AI </Typography>
-            </Stack>
-        </Stack>
-    )
-}
+  const navigate = useNavigate();
 
-export default MenuAdmin
+  const MenuItem = ({ label, icon: Icon, selected, onClick }) => (
+    <Stack
+      spacing={1}
+      direction={'row'}
+      alignItems={'center'}
+      sx={{
+        cursor: 'pointer',
+        backgroundColor: selected ? '#F5F5F5' : 'transparent',
+        paddingY: 0.7,
+        paddingX: 1.2,
+        borderRadius: 2,
+        transition: 'all 0.3s',
+        '&:hover': {
+          backgroundColor: '#F5F5F5',
+        },
+        '&:hover .hover-color': {
+          color: '#EA001E',
+        },
+      }}
+      onClick={onClick}
+    >
+      <Icon
+        className="hover-color"
+        sx={{
+          fontSize: 20,
+          color: selected ? '#EA001E' : '#404040',
+          transition: 'color 0.3s',
+        }}
+      />
+      <Typography
+        className="hover-color"
+        fontSize={20}
+        fontWeight={400}
+        color={selected ? '#EA001E' : '#404040'}
+        sx={{ transition: 'color 0.3s' }}
+      >
+        {label}
+      </Typography>
+    </Stack>
+  );
+
+  return (
+    <Stack direction={'column'} width={'100%'} spacing={1.8}>
+      <Typography fontSize={16} fontWeight={600} color="#404040">
+        Menu Admin
+      </Typography>
+
+      <MenuItem
+        label="Dokumen"
+        icon={FileIcon}
+        selected={itemSelected === 'dokumen'}
+        onClick={() => {
+          setItemSelected('dokumen');
+          navigate('/admin/coofisai/dokumen');
+        }}
+      />
+
+      <MenuItem
+        label="User"
+        icon={PersonIcon}
+        selected={itemSelected === 'user'}
+        onClick={() => {
+          setItemSelected('user');
+          navigate('/admin/coofisai/manageuser');
+        }}
+      />
+
+      <MenuItem
+        label="Departemen"
+        icon={DepartmentIcon}
+        selected={itemSelected === 'departemen'}
+        onClick={() => {
+          setItemSelected('departemen');
+          navigate('/admin/coofisai/managedepartment');
+        }}
+      />
+
+      <MenuItem
+        label="Pengaturan"
+        icon={SettingIcon}
+        selected={itemSelected === 'pengaturan'}
+        onClick={() => {
+          setItemSelected('pengaturan');
+          navigate('/admin/coofisai/pengaturan');
+        }}
+      />
+
+      <MenuItem
+        label="Ask Chatalize AI"
+        icon={ChatIcon}
+        selected={false}
+        onClick={() => {
+          setSettingPage(false);
+          setItemSelected('dokumen');
+          navigate('/admin/coofisai');
+        }}
+      />
+    </Stack>
+  );
+};
+
+export default MenuAdmin;

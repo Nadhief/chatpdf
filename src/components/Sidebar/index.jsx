@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { scrollbar } from "../../utils/scrollbar";
 import AdminIcon from "@mui/icons-material/ManageAccountsOutlined";
+import LogoutIcon from "@mui/icons-material/logout";
 import Logo from "../../assets/coofisLogo.svg";
 import ProfilPict from "../../assets/malePict.svg";
 import PersonalUser from "../../pages/user/PersonalUser";
@@ -58,39 +59,42 @@ const Sidebar = ({
         sx={{ width: '40%', height: '20%' }}
       />
       <Box justifyContent={"flex-start"} padding={2} width={"100%"}>
-        <Button
-          variant="contained"
-          sx={{ mb: 4, backgroundColor: "#BF2600" }}
-          onClick={()=>{
-            localStorage.removeItem("chat_responses");
-            handleLogout();
-          }
-        }
-        >
-          Logout
-        </Button>
+  <Stack direction="row" spacing={3} alignItems="center" width="100%">
+    <Box
+      component="img"
+      src={ProfilPict}
+      alt="Gambar"
+      sx={{ width: 50, height: 50 }}
+    />
 
-        <Stack direction="row" spacing={3} alignItems="center">
-          <Box
-            component="img"
-            src={ProfilPict}
-            alt="Gambar"
-            sx={{ width: 50, height: 50 }}
-          />
-          <Stack
-            direction="column"
-            alignItems="flex-start"
-            justifyContent="flex-start"
-          >
-            <Typography variant="h6" fontWeight={600} color="#2E3A59">
-              {username}
-            </Typography>
-            <Typography variant="body2" fontWeight={400} color="#A0A3B1">
-              Departemen
-            </Typography>
-          </Stack>
-        </Stack>
-      </Box>
+    <Stack
+      direction="column"
+      alignItems="flex-start"
+      justifyContent="flex-start"
+    >
+      <Typography variant="h6" fontWeight={600} color="#2E3A59">
+        {username}
+      </Typography>
+      <Typography variant="body2" fontWeight={400} color="#A0A3B1">
+        Departemen
+      </Typography>
+    </Stack>
+
+    <Box sx={{ flexGrow: 1 }} />
+
+    <Button
+      variant="contained"
+      sx={{ backgroundColor: "#BF2600" }}
+      onClick={() => {
+        localStorage.removeItem("chat_responses");
+        handleLogout();
+      }}
+    >
+      <LogoutIcon />
+    </Button>
+  </Stack>
+</Box>
+
       {settingPage ? (
         role === "operator" ? (
           <MenuOperator
@@ -108,48 +112,66 @@ const Sidebar = ({
       ) : (
         <>
           {role === "operator" ? (
-            <Box width={"100%"}>
+            <Box width={"100%"} paddingRight={3} paddingLeft={1}>
               <Stack
+                paddingY={0.8}
+                borderRadius={2}
                 direction={"row"}
                 spacing={1}
                 alignItems={"center"}
                 justifyContent={"flex-start"}
-                width={"fit-content"}
+                width={"100%"}
                 paddingLeft={2}
                 sx={{
                   cursor: "pointer",
+                  transition: "background-color 0.3s",
+                  "&:hover": {
+                    backgroundColor: "#f5f5f5",
+                  },
+                  "&:hover .hover-color": {
+                    color: "#EA001E",
+                  },
                 }}
                 onClick={() => {
                   setSettingPage(true);
                   navigate("/operator/coofisai/dokumen");
                 }}
               >
-                <AdminIcon sx={{ fontSize: 20 }} />
-                <Typography fontSize={20} fontWeight={400} color="#404040">
+                <AdminIcon className="hover-color" sx={{ fontSize: 20 }} />
+                <Typography className="hover-color" fontSize={20} fontWeight={400} color="#404040">
                   {" "}
                   Menu Operator{" "}
                 </Typography>
               </Stack>
             </Box>
           ) : role === "admin" ? (
-            <Box width={"100%"}>
+            <Box width={"100%"} paddingRight={3} paddingLeft={1}>
               <Stack
+                paddingY={0.8}
+                borderRadius={2}
                 direction={"row"}
                 spacing={1}
                 alignItems={"center"}
                 justifyContent={"flex-start"}
-                width={"fit-content"}
+                width={"100%"}
                 paddingLeft={2}
                 sx={{
                   cursor: "pointer",
+                  transition: "background-color 0.3s",
+                  "&:hover": {
+                    backgroundColor: "#f5f5f5",
+                  },
+                  "&:hover .hover-color": {
+                    color: "#EA001E",
+                  },
                 }}
                 onClick={() => {
                   setSettingPage(true);
                   navigate("/admin/coofisai/dokumen");
                 }}
               >
-                <AdminIcon sx={{ fontSize: 20 }} />
-                <Typography fontSize={20} fontWeight={400} color="#404040">
+                <AdminIcon className="hover-color" sx={{ fontSize: 20 }} />
+                <Typography className="hover-color" fontSize={20} fontWeight={400} color="#404040">
                   {" "}
                   Menu Admin{" "}
                 </Typography>

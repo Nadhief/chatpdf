@@ -247,6 +247,7 @@ const DepartemenOperator = ({ id }) => {
           }
         }}
       />
+      {departemenSelected ? (
       <Box
         sx={{
           width: "100%",
@@ -352,6 +353,9 @@ const DepartemenOperator = ({ id }) => {
           </Box>
         </Stack>
       </Box>
+      ) : (
+        null
+      )}
       <Box
         sx={{
           width: "100%",
