@@ -16,7 +16,6 @@ import PersonalAdmin from "../../pages/admin/PersonalAdmin";
 import DepartemenAdmin from "../../pages/admin/DepartemenAdmin";
 import { useNavigate } from "react-router-dom";
 
-
 const Sidebar = ({
   role,
   id,
@@ -57,44 +56,44 @@ const Sidebar = ({
         component="img"
         src={logoUrl}
         alt="logo"
-        sx={{ width: '40%', height: '20%' }}
+        sx={{ width: "40%", height: "20%" }}
       />
       <Box justifyContent={"flex-start"} padding={2} width={"100%"}>
-  <Stack direction="row" spacing={3} alignItems="center" width="100%">
-    <Box
-      component="img"
-      src={ProfilPict}
-      alt="Gambar"
-      sx={{ width: 50, height: 50 }}
-    />
+        <Stack direction="row" spacing={3} alignItems="center" width="100%">
+          <Box
+            component="img"
+            src={ProfilPict}
+            alt="Gambar"
+            sx={{ width: 50, height: 50 }}
+          />
 
-    <Stack
-      direction="column"
-      alignItems="flex-start"
-      justifyContent="flex-start"
-    >
-      <Typography variant="h6" fontWeight={600} color="#2E3A59">
-        {username}
-      </Typography>
-      <Typography variant="body2" fontWeight={400} color="#A0A3B1">
-        Departemen
-      </Typography>
-    </Stack>
+          <Stack
+            direction="column"
+            alignItems="flex-start"
+            justifyContent="flex-start"
+          >
+            <Typography variant="h6" fontWeight={600} color="#2E3A59">
+              {username}
+            </Typography>
+            <Typography variant="body2" fontWeight={400} color="#A0A3B1">
+              Departemen
+            </Typography>
+          </Stack>
 
-    <Box sx={{ flexGrow: 1 }} />
+          <Box sx={{ flexGrow: 1 }} />
 
-    <Button
-      variant="contained"
-      sx={{ backgroundColor: "#BF2600" }}
-      onClick={() => {
-        localStorage.removeItem("chat_responses");
-        handleLogout();
-      }}
-    >
-      <LogoutIcon />
-    </Button>
-  </Stack>
-</Box>
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: "#BF2600" }}
+            onClick={() => {
+              localStorage.removeItem("chat_responses");
+              handleLogout();
+            }}
+          >
+            <LogoutIcon />
+          </Button>
+        </Stack>
+      </Box>
 
       {settingPage ? (
         role === "operator" ? (
@@ -139,7 +138,12 @@ const Sidebar = ({
                 }}
               >
                 <AdminIcon className="hover-color" sx={{ fontSize: 20 }} />
-                <Typography className="hover-color" fontSize={20} fontWeight={400} color="#404040">
+                <Typography
+                  className="hover-color"
+                  fontSize={20}
+                  fontWeight={400}
+                  color="#404040"
+                >
                   {" "}
                   Menu Operator{" "}
                 </Typography>
@@ -172,7 +176,12 @@ const Sidebar = ({
                 }}
               >
                 <AdminIcon className="hover-color" sx={{ fontSize: 20 }} />
-                <Typography className="hover-color" fontSize={20} fontWeight={400} color="#404040">
+                <Typography
+                  className="hover-color"
+                  fontSize={20}
+                  fontWeight={400}
+                  color="#404040"
+                >
                   {" "}
                   Menu Admin{" "}
                 </Typography>
@@ -263,7 +272,12 @@ const Sidebar = ({
                   setIsSummarize={setIsSummarize}
                 />
               ) : role === "operator" || "admin" ? (
-                <DepartemenOperator id={id} setDeptID={setDeptID} />
+                <DepartemenOperator
+                  id={id}
+                  setDeptID={setDeptID}
+                  setIsSummarize={setIsSummarize}
+                  setResponseSummarize={setResponseSummarize}
+                />
               ) : null
             ) : null}
           </Box>
