@@ -28,6 +28,7 @@ const ChatBox = ({
   setIsSummarize,
   selectedTopic,
   topicName,
+  deptID
 }) => {
   const [model, setModel] = useState("Llama 3.1");
   const [vectorizer, setVectorizer] = useState("nomic-embed-text");
@@ -111,7 +112,13 @@ const ChatBox = ({
           });
         });
       } else if (selected === "departemen") {
-        chatDepartemen(payload).then((res) => {
+        const payloadDepartment = {
+          id: String(deptID),
+          embedding_model: vectorizer,
+          llm_model: model,
+          question: currentQuestion,
+        };
+        chatDepartemen(payloadDepartment).then((res) => {
           const filenames = res?.sources?.map((item) => {
             const cleanedItem = item.replace(/^PDF:\s*/, "");
             return cleanedItem.split("/").pop();

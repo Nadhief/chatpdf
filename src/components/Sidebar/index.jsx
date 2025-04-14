@@ -26,7 +26,8 @@ const Sidebar = ({
   setIsSummarize,
   selectedTopic,
   setSelectedTopic,
-  setTopicName
+  setTopicName,
+  setDeptID,
 }) => {
   const logoUrl = "http://localhost:8001/logo";
 
@@ -240,7 +241,7 @@ const Sidebar = ({
                   setIsSummarize={setIsSummarize}
                 />
               ) : role === "operator" || "admin" ? (
-                <DepartemenOperator id={id} />
+                <DepartemenOperator id={id} setDeptID={setDeptID} />
               ) : null
             ) : null}
           </Box>

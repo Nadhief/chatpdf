@@ -21,6 +21,8 @@ function App() {
   const [isSummarize, setIsSummarize] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(false);
   const [topicName, setTopicName] = useState("");
+  const [deptID, setDeptID] = useState("");
+
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     setUser(storedUser);
@@ -74,6 +76,7 @@ function App() {
             selectedTopic={selectedTopic}
             setSelectedTopic={setSelectedTopic}
             setTopicName={setTopicName}
+            setDeptID={setDeptID}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 12, md: 12, lg: 9 }} sx={{ padding: "1rem" }}>
@@ -140,6 +143,7 @@ function App() {
                   setIsSummarize={setIsSummarize}
                   selectedTopic={selectedTopic}
                   topicName={topicName}
+                  deptID={deptID}
                 />
               }
             />

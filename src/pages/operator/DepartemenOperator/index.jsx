@@ -21,13 +21,14 @@ import {
   getDepartmentFile,
   getDepartmentList,
   searchFileDepartment,
+  summarizeFileDepartment,
   uploadDepartmentFile,
 } from "../../../services";
 import CustomSnackbar from "../../../components/CustomSnackbar";
 import DeleteFile from "../../../components/Dialog/DeleteFile";
 import { debounce } from "lodash";
 
-const DepartemenOperator = ({ id }) => {
+const DepartemenOperator = ({ id, setDeptID }) => {
   const [departmentList, setDepartmentList] = useState([]);
   const departmentOptions = departmentList.map(([id, name, code]) => ({
     id,
@@ -102,6 +103,7 @@ const DepartemenOperator = ({ id }) => {
   const getDepartment = (department) => {
     setSelectedDepartmentid(department.id);
     fetchDataFileDepartment(department.id);
+    setDeptID(department.id);
   };
 
   const handleSummarize = async () => {
