@@ -648,7 +648,7 @@ const Dokumen = ({ id }) => {
                           paddingY={0.3}
                           paddingX={0.7}
                           borderRadius={100}
-                          border={"1px solid #9E9E9E"}
+                          border={selected === type ? "1px solid #EA001E" : "1px solid #9E9E9E"}
                           onClick={() => setSelected(type)}
                           sx={{
                             cursor: selected === type ? "default" : "pointer",
@@ -663,7 +663,7 @@ const Dokumen = ({ id }) => {
                           <Typography
                             fontSize={12}
                             fontWeight={400}
-                            color="black"
+                            color= {selected === type ? "#EA001E" : "black"}
                           >
                             {type.charAt(0).toUpperCase() + type.slice(1)}
                           </Typography>

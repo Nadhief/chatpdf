@@ -458,7 +458,7 @@ const PersonalUser = ({
                 paddingY={0.3}
                 paddingX={0.7}
                 borderRadius={100}
-                border={selected === "file" ? '1px solid red' : "1px solid #9E9E9E"}
+                border={selected === "file" ? '1px solid #EA001E' : "1px solid #9E9E9E"}
                 onClick={() => {
                   setSelectedTopic(false);
                   setSelected("file");
@@ -472,7 +472,7 @@ const PersonalUser = ({
                       : "0px 4px 8px rgba(0, 0, 0, 0.14)",
                 }}
               >
-                <Typography fontSize={12} fontWeight={400} color= {selected === "file" ? 'red' : 'black'}>
+                <Typography fontSize={12} fontWeight={400} color= {selected === "file" ? '#EA001E' : 'black'}>
                   File
                 </Typography>
               </Box>
@@ -483,7 +483,7 @@ const PersonalUser = ({
                 paddingY={0.3}
                 paddingX={0.7}
                 borderRadius={100}
-                border={selected === "topik" ? '1px solid red' : "1px solid #9E9E9E"}
+                border={selected === "topik" ? '1px solid #EA001E' : "1px solid #9E9E9E"}
                 onClick={() => {
                   setSelectedTopic(true);
                   setSelected("topik");
@@ -497,7 +497,7 @@ const PersonalUser = ({
                       : "0px 4px 8px rgba(0, 0, 0, 0.14)",
                 }}
               >
-                <Typography fontSize={12} fontWeight={400} color={selected === "topik" ? 'red' : 'black'}>
+                <Typography fontSize={12} fontWeight={400} color={selected === "topik" ? '#EA001E' : 'black'}>
                   {" "}
                   Topik{" "}
                 </Typography>
