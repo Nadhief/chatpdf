@@ -3,8 +3,9 @@ import { useState } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { scrollbar } from "../../utils/scrollbar";
 import AdminIcon from "@mui/icons-material/ManageAccountsOutlined";
+import MailIcon from "@mui/icons-material/Mail"
 import LogoutIcon from "@mui/icons-material/logout";
-import Logo from "../../assets/coofisLogo.svg";
+import Logo from "../../assets/ChatalizeLogo.svg";
 import ProfilPict from "../../assets/malePict.svg";
 import PersonalUser from "../../pages/user/PersonalUser";
 import DepartemenUser from "../../pages/user/DepartemenUser";
@@ -52,16 +53,16 @@ const Sidebar = ({
       boxShadow={"5px 0px 10px rgba(0, 0, 0, 0.15)"}
       sx={{ ...scrollbar("#9E9E9E"), overflowX: "hidden", overflowY: "auto" }}
     > 
-      <Stack direction={'row'} spacing={2} width={'100%'} alignItems={'center'}>
-        <Box p={1} border={'1px solid #E0E0E0'}>
+      <Stack direction={'row'} spacing={3} width={'100%'} alignItems={'center'} justifyContent="flex-start">
+        <Box paddingX={1.5} paddingTop={1.2} paddingBottom={0.8} border={'2px solid #E0E0E0'} borderRadius={4} width={'fit-content'} boxShadow="0px 2px 4px rgba(0, 0, 0, 0.2)">
           <Box
             component="img"
             src={logoUrl}
-            alt="logo"
-            sx={{ width: "60%", height: "60%" }}
+            alt="Logo"
+            sx={{ width: '100%', height: 'auto', maxWidth: 40 }}
           />
         </Box>      
-        <Typography fontSize={25} fontWeight={700}>
+        <Typography fontSize={35} fontWeight={700}>
           Chatalize AI
         </Typography>
       </Stack>
@@ -151,8 +152,7 @@ const Sidebar = ({
                   fontWeight={400}
                   color="#404040"
                 >
-                  {" "}
-                  Menu Operator{" "}
+                  Menu Operator
                 </Typography>
               </Stack>
             </Box>
@@ -189,13 +189,46 @@ const Sidebar = ({
                   fontWeight={400}
                   color="#404040"
                 >
-                  {" "}
-                  Menu Admin{" "}
+                  Menu Admin
                 </Typography>
               </Stack>
             </Box>
           ) : null}
+          <Box width={"100%"} paddingRight={3} paddingLeft={1}>
+            <Stack
+              paddingBottom={0.8}
+              borderRadius={2}
+              direction={"row"}
+              spacing={1}
+              alignItems={"center"}
+              justifyContent={"flex-start"}
+              width={"100%"}
+              paddingLeft={2}
+              sx={{
+                cursor: "pointer",
+                transition: "background-color 0.3s",
+                "&:hover": {
+                  backgroundColor: "#f5f5f5",
+                },
+                "&:hover .hover-color": {
+                  color: "#EA001E",
+                },
+              }}
+              onClick={() => {
 
+              }}
+            >
+              <MailIcon className="hover-color" sx={{ fontSize: 20 }} />
+              <Typography
+                className="hover-color"
+                fontSize={20}
+                fontWeight={400}
+                color="#404040"
+              >
+                Surat Saya
+              </Typography>
+            </Stack>
+          </Box>
           <Box
             width={"97%"}
             sx={{

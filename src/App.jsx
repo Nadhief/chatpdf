@@ -15,6 +15,16 @@ import LogoSetting from "./components/LogoSetting";
 import PDFViewer from "./components/PdfViewer";
 
 function App() {
+
+  const logoUrl = "http://localhost:8001/logo";
+
+  let link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+  link.type = 'image/svg+xml';
+  link.rel = 'icon';
+  link.href = logoUrl;
+
+  document.getElementsByTagName('head')[0].appendChild(link);
+
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [selected, setSelected] = useState("personal");
