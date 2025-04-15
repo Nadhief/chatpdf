@@ -153,7 +153,7 @@ const LogoSetting = ({ id }) => {
                       <input
                         id="upload-file2"
                         type="file"
-                        accept=".png"
+                        accept=".png, .jpg, .jpeg, .webp, .svg"
                         hidden
                         onChange={handleFileChange} // Use handleFileChange here
                       />
