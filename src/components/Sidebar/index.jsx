@@ -51,13 +51,20 @@ const Sidebar = ({
       height={"93vh"}
       boxShadow={"5px 0px 10px rgba(0, 0, 0, 0.15)"}
       sx={{ ...scrollbar("#9E9E9E"), overflowX: "hidden", overflowY: "auto" }}
-    >
-      <Box
-        component="img"
-        src={logoUrl}
-        alt="logo"
-        sx={{ width: "40%", height: "20%" }}
-      />
+    > 
+      <Stack direction={'row'} spacing={2} width={'100%'} alignItems={'center'}>
+        <Box p={1} border={'1px solid #E0E0E0'}>
+          <Box
+            component="img"
+            src={logoUrl}
+            alt="logo"
+            sx={{ width: "60%", height: "60%" }}
+          />
+        </Box>      
+        <Typography fontSize={25} fontWeight={700}>
+          Chatalize AI
+        </Typography>
+      </Stack>
       <Box justifyContent={"flex-start"} padding={2} width={"100%"}>
         <Stack direction="row" spacing={3} alignItems="center" width="100%">
           <Box
