@@ -194,7 +194,7 @@ const Sidebar = ({
               </Stack>
             </Box>
           ) : null}
-          <Box width={"100%"} paddingRight={3} paddingLeft={1}>
+          {/* <Box width={"100%"} paddingRight={3} paddingLeft={1}>
             <Stack
               paddingBottom={0.8}
               borderRadius={2}
@@ -228,7 +228,7 @@ const Sidebar = ({
                 Surat Saya
               </Typography>
             </Stack>
-          </Box>
+          </Box> */}
           <Box
             width={"97%"}
             sx={{
