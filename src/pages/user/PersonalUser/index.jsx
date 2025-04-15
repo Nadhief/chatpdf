@@ -30,6 +30,7 @@ import {
 } from "../../../services";
 import CustomSnackbar from "../../../components/CustomSnackbar";
 import { debounce } from "lodash";
+import Topics from "../../../components/Sidebar/Topics";
 
 const PersonalUser = ({
   id,
@@ -47,7 +48,8 @@ const PersonalUser = ({
   const [personalTopics, setPersonalTopics] = useState([]);
 
   const [checkedItems, setCheckedItems] = useState({});
-  const [checkedItemsTopics, setCheckedItemsTopics] = useState({});
+  // Replace checkedItemsTopics with a single selectedTopicIndex
+  const [selectedTopicIndex, setSelectedTopicIndex] = useState(null);
 
   const [selectedUploadFiles, setSelectedUploadFiles] = useState([]);
 
@@ -75,24 +77,23 @@ const PersonalUser = ({
     }));
   };
 
-  const handleCheckTopic = (idx, value) => {
-    setCheckedItemsTopics((prev) => ({
-      ...prev,
-      [idx]: value,
-    }));
+  // Replace handleCheckTopic with handleSelectTopic
+  const handleSelectTopic = (idx) => {
+    setSelectedTopicIndex(idx);
+    // If a topic is selected, set the topic name
+    if (personalTopics.list_files && personalTopics.list_files[idx]) {
+      setTopicName(personalTopics.list_files[idx].topic_name);
+    }
   };
 
   const selectedFiles = Object.entries(checkedItems)
     .filter(([idx, isChecked]) => isChecked)
     .map(([idx]) => personalFiles.list_files[idx]);
 
-  const selectedTopic = Object.entries(checkedItemsTopics)
-    .filter(([idx, isChecked]) => isChecked)
-    .map(([idx]) => personalTopics.list_files[idx]);
-
-  if (selectedTopic.length > 0) {
-    setTopicName(selectedTopic[0].topic_name);
-  }
+  // Get the selected topic (only one)
+  const selectedTopic = selectedTopicIndex !== null && personalTopics.list_files 
+    ? [personalTopics.list_files[selectedTopicIndex]] 
+    : [];
 
   useEffect(() => {
     fetchDataFile();
@@ -194,7 +195,7 @@ const PersonalUser = ({
       .then((res) => {
         console.log("Berhasil menambahkan topik:", res);
         setOpenPaper(false);
-        setCheckedItemsTopics({});
+        setSelectedTopicIndex(null); // Reset selected topic
         fetchDataTopics();
         setIsLoading(false);
         openSnackbar("berhasil", "Topik berhasil ditambah!");
@@ -205,17 +206,19 @@ const PersonalUser = ({
       });
   };
 
-  const handleDeleteTopic = (topic) => {
+  const handleDeleteTopic = () => {
     // setIsLoading(true);
+    if (selectedTopic.length === 0) return;
+    
     const payload = {
       id: String(id),
-      topic_name: selectedTopic?.[0]?.topic_name,
+      topic_name: selectedTopic[0]?.topic_name,
     };
     deleteTopic(payload)
       .then((res) => {
         console.log("Berhasil Menghapus topik:", res);
         setOpenTrash(false);
-        setCheckedItemsTopics({});
+        setSelectedTopicIndex(null); // Reset selected topic
         fetchDataTopics();
         setIsLoading(false);
         openSnackbar("berhasil", "Topik berhasil dihapus!");
@@ -278,7 +281,9 @@ const PersonalUser = ({
             setPersonalTopics((prev) => ({
               ...prev,
               list_files: res.results,
-            }));            
+            }));
+            // Reset selected topic when search results change
+            setSelectedTopicIndex(null);           
           })
           .catch((err) => {
             console.error("Search error:", err);
@@ -295,7 +300,7 @@ const PersonalUser = ({
       debouncedSearchTopic(e.target.value);
     };
   
-    const getSearchHandler = (e) => {
+    const getSearchHandler = () => {
       if (selected === "file")
         return handleSearchFilePersonal;
       if (selected === "topik")
@@ -531,17 +536,15 @@ const PersonalUser = ({
                       label={item.name}
                       checked={checkedItems[idx] || false}
                       onCheck={(val) => handleCheckFile(idx, val)}
-                      filter={selected}
                     />
                   ))
                 : selected === "topik"
                 ? personalTopics?.list_files?.map((item, idx) => (
-                    <Documents
+                    <Topics
                       key={idx}
                       label={item.topic_name}
-                      checked={checkedItemsTopics[idx] || false}
-                      onCheck={(val) => handleCheckTopic(idx, val)}
-                      filter={selected}
+                      selected={selectedTopicIndex === idx}
+                      onSelect={() => handleSelectTopic(idx)}
                     />
                   ))
                 : null}

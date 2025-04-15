@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { Stack, Checkbox, Typography } from "@mui/material";
-import FileIcon from "@mui/icons-material/InsertDriveFileOutlined";
+import React from "react";
+import { Stack, Radio, Typography } from "@mui/material";
 
-const Documents = ({ label, checked, onCheck }) => {
+const Topics = ({ label, selected, onSelect }) => {
   const handleStackClick = () => {
-    onCheck(!checked);
+    onSelect();
   };
 
   return (
@@ -20,9 +19,9 @@ const Documents = ({ label, checked, onCheck }) => {
       }}
       onClick={handleStackClick}
     >
-      <Checkbox
-        checked={checked}
-        onChange={(e) => onCheck(e.target.checked)}
+      <Radio
+        checked={selected}
+        onChange={onSelect}
         sx={{
           padding: 0.8,
           "&.Mui-checked": {
@@ -35,15 +34,14 @@ const Documents = ({ label, checked, onCheck }) => {
         onClick={(e) => e.stopPropagation()}
       />
 
-      <FileIcon sx={{ color: "#404040", fontSize: 20 }} />
       <Typography
         fontSize={12}
         fontWeight={400}
         color="#404040"
         sx={{
           overflowWrap: "anywhere",
-          wordBreak: "break-word", 
-          whiteSpace: "normal", 
+          wordBreak: "break-word",
+          whiteSpace: "normal",
         }}
       >
         {label}
@@ -52,4 +50,4 @@ const Documents = ({ label, checked, onCheck }) => {
   );
 };
 
-export default Documents;
+export default Topics;
