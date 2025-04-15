@@ -30,7 +30,7 @@ const ChatBox = ({
   topicName,
   deptID,
   setIsViewPdf,
-  setPdfSource
+  setPdfSource,
 }) => {
   const [model, setModel] = useState("Llama 3.1");
   const [vectorizer, setVectorizer] = useState("nomic-embed-text");
@@ -73,7 +73,7 @@ const ChatBox = ({
         embedding_model: vectorizer,
         llm_model: model,
         question: currentQuestion,
-        topic: topicName
+        topic: topicName,
       };
       chatTopic(payloadTopic).then((res) => {
         const filenames = res?.sources?.map((item) => {
@@ -318,17 +318,28 @@ const ChatBox = ({
                       </ReactMarkdown>
                     )}
                   </Box>
-                  <Box sx={{ display: "flex", alignItems: "start" }}>
+                  <Box sx={{ alignItems: "start" }}>
                     {res.source.length > 0 && (
-                      <Box sx={{ display: "flex", alignItems: "start", mt: 2 }}>
-                        <Typography sx={{ fontWeight: 500, mr: 1 }}>
-                          Source :
-                        </Typography>
+                      <>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "start",
+                            mt: 2,
+                          }}
+                        >
+                          <Typography
+                            sx={{ fontWeight: 500, mr: 1, width: "100%" }}
+                          >
+                            Source :
+                          </Typography>
+                        </Box>
                         <Box
                           sx={{
                             display: "flex",
                             flexDirection: "column",
                             gap: 1,
+                            cursor:'pointer'
                           }}
                         >
                           {res.source.map((src, i) => (
@@ -342,17 +353,20 @@ const ChatBox = ({
                                 fontSize: "0.9rem",
                                 color: "#666",
                                 backgroundColor: "#fafafa",
+                                "&:hover": {
+                                  borderColor: "red",
+                                },
                               }}
                               onClick={() => {
                                 setIsViewPdf(true);
-                                setPdfSource(src)
+                                setPdfSource(src);
                               }}
                             >
                               <Typography align="start">📄 {src}</Typography>
                             </Box>
                           ))}
                         </Box>
-                      </Box>
+                      </>
                     )}
                   </Box>
                 </Box>
