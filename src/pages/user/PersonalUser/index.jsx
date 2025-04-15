@@ -445,8 +445,7 @@ const PersonalUser = ({
             }}
           >
             <Typography fontSize={16} fontWeight={600} color="#404040">
-              {" "}
-              File Saya{" "}
+              File Saya
             </Typography>
           </Box>
           <Stack direction={"column"} padding={1.5} spacing={1}>
@@ -459,7 +458,7 @@ const PersonalUser = ({
                 paddingY={0.3}
                 paddingX={0.7}
                 borderRadius={100}
-                border={"1px solid #9E9E9E"}
+                border={selected === "file" ? '1px solid red' : "1px solid #9E9E9E"}
                 onClick={() => {
                   setSelectedTopic(false);
                   setSelected("file");
@@ -473,9 +472,8 @@ const PersonalUser = ({
                       : "0px 4px 8px rgba(0, 0, 0, 0.14)",
                 }}
               >
-                <Typography fontSize={12} fontWeight={400} color="black">
-                  {" "}
-                  File{" "}
+                <Typography fontSize={12} fontWeight={400} color= {selected === "file" ? 'red' : 'black'}>
+                  File
                 </Typography>
               </Box>
               <Box
@@ -485,7 +483,7 @@ const PersonalUser = ({
                 paddingY={0.3}
                 paddingX={0.7}
                 borderRadius={100}
-                border={"1px solid #9E9E9E"}
+                border={selected === "topik" ? '1px solid red' : "1px solid #9E9E9E"}
                 onClick={() => {
                   setSelectedTopic(true);
                   setSelected("topik");
@@ -499,7 +497,7 @@ const PersonalUser = ({
                       : "0px 4px 8px rgba(0, 0, 0, 0.14)",
                 }}
               >
-                <Typography fontSize={12} fontWeight={400} color="black">
+                <Typography fontSize={12} fontWeight={400} color={selected === "topik" ? 'red' : 'black'}>
                   {" "}
                   Topik{" "}
                 </Typography>
