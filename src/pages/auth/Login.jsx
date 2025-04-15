@@ -94,7 +94,7 @@ const Login = () => {
             margin="normal"
             sx={{ mt: 0 }}
           />
-          <Typography align="start" sx={{ mt: 2 }}>
+          {/* <Typography align="start" sx={{ mt: 2 }}>
             <Link
               href="/register"
               underline="hover"
@@ -103,7 +103,7 @@ const Login = () => {
             >
               Forgot Password
             </Link>
-          </Typography>
+          </Typography> */}
           <Stack alignItems="center">
             <Button
               variant="contained"
