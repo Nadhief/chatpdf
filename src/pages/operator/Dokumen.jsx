@@ -65,15 +65,15 @@ const Dokumen = ({ id }) => {
 
   const selectedFiles = Object.entries(checkedItems)
     .filter(([idx, isChecked]) => isChecked)
-    .map(([idx]) => personalFiles.list_files[idx]);
+    .map(([idx]) => personalFiles?.list_files[idx]);
 
   const selectedTopic = Object.entries(checkedItemsTopics)
     .filter(([idx, isChecked]) => isChecked)
-    .map(([idx]) => personalTopics.list_files[idx]);
+    .map(([idx]) => personalTopics?.list_files[idx]);
 
   const selectedFileDepartment = Object.entries(checkedItemsFileDepartment)
     .filter(([idx, isChecked]) => isChecked)
-    .map(([idx]) => departmentFile.list_files[idx]);
+    .map(([idx]) => departmentFile?.list_files[idx]);
 
   useEffect(() => {
     fetchDataFile();
@@ -217,9 +217,10 @@ const Dokumen = ({ id }) => {
           console.log("Berhasil Menghapus File:", res);
           setOpenTrash(false);
           setCheckedItems({});
-          fetchDataFile();
-          setIsLoading(false);
-          openSnackbar("berhasil", "File berhasil dihapus!");
+          fetchDataFile().then(() => {
+            setIsLoading(false);
+            openSnackbar("berhasil", "File berhasil dihapus!");
+          });          
         })
         .catch((error) => {
           console.error("Gagal menghapus file:", error);
@@ -271,6 +272,7 @@ const Dokumen = ({ id }) => {
       })
       .catch((error) => {
         console.error("Gagal menambahkan File:", error);
+        setIsLoading(false);
         openSnackbar("gagal", "File gagal ditambah!");
       });
   };
@@ -426,7 +428,6 @@ const Dokumen = ({ id }) => {
     return () => {};
   };
   
-  console.log("Selected File:", departmentFile);
   return (
     <Grid
       sx={{

@@ -1,9 +1,9 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { scrollbar } from "../../utils/scrollbar";
 import AdminIcon from "@mui/icons-material/ManageAccountsOutlined";
-import MailIcon from "@mui/icons-material/Mail"
+import MailIcon from "@mui/icons-material/Mail";
 import LogoutIcon from "@mui/icons-material/logout";
 import Logo from "../../assets/ChatalizeLogo.svg";
 import ProfilPict from "../../assets/malePict.svg";
@@ -16,8 +16,10 @@ import MenuAdmin from "../../pages/admin/MenuAdmin";
 import PersonalAdmin from "../../pages/admin/PersonalAdmin";
 import DepartemenAdmin from "../../pages/admin/DepartemenAdmin";
 import { useNavigate } from "react-router-dom";
+import { getDepartmentName } from "../../services";
 
 const Sidebar = ({
+  dept_id,
   role,
   id,
   username,
@@ -29,13 +31,32 @@ const Sidebar = ({
   setSelectedTopic,
   setTopicName,
   setDeptID,
+  setIsMenu,
 }) => {
   const logoUrl = "http://localhost:8001/logo";
+
+  const [departmentName, setDepartmentName] = useState("");
+
+  const ismenu = localStorage.getItem("isMenu") === "true";
 
   const [itemSelected, setItemSelected] = useState("dokumen");
   const [settingPage, setSettingPage] = useState(false);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (dept_id) {
+      console.log(dept_id);
+      getDepartmentName(dept_id)
+        .then((name) => {
+          setDepartmentName(name || "Tidak diketahui");
+        })
+        .catch((error) => {
+          console.error("Gagal memuat nama departemen:", error);
+          setDepartmentName("Gagal memuat");
+        });
+    }
+  }, [dept_id]);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -52,16 +73,30 @@ const Sidebar = ({
       height={"93vh"}
       boxShadow={"5px 0px 10px rgba(0, 0, 0, 0.15)"}
       sx={{ ...scrollbar("#9E9E9E"), overflowX: "hidden", overflowY: "auto" }}
-    > 
-      <Stack direction={'row'} spacing={3} width={'100%'} alignItems={'center'} justifyContent="flex-start">
-        <Box paddingX={1.5} paddingTop={1.2} paddingBottom={0.8} border={'2px solid #E0E0E0'} borderRadius={4} width={'fit-content'} boxShadow="0px 2px 4px rgba(0, 0, 0, 0.2)">
+    >
+      <Stack
+        direction={"row"}
+        spacing={3}
+        width={"100%"}
+        alignItems={"center"}
+        justifyContent="flex-start"
+      >
+        <Box
+          paddingX={1.5}
+          paddingTop={1.2}
+          paddingBottom={0.8}
+          border={"2px solid #E0E0E0"}
+          borderRadius={4}
+          width={"fit-content"}
+          boxShadow="0px 2px 4px rgba(0, 0, 0, 0.2)"
+        >
           <Box
             component="img"
             src={logoUrl}
             alt="Logo"
-            sx={{ width: '100%', height: 'auto', maxWidth: 40 }}
+            sx={{ width: "100%", height: "auto", maxWidth: 40 }}
           />
-        </Box>      
+        </Box>
         <Typography fontSize={35} fontWeight={700}>
           Chatalize AI
         </Typography>
@@ -84,7 +119,7 @@ const Sidebar = ({
               {username}
             </Typography>
             <Typography variant="body2" fontWeight={400} color="#A0A3B1">
-              Departemen
+              {departmentName}
             </Typography>
           </Stack>
 
@@ -103,18 +138,20 @@ const Sidebar = ({
         </Stack>
       </Box>
 
-      {settingPage ? (
+      {ismenu ? (
         role === "operator" ? (
           <MenuOperator
             itemSelected={itemSelected}
             setItemSelected={setItemSelected}
             setSettingPage={setSettingPage}
+            setIsMenu={setIsMenu}
           />
         ) : role === "admin" ? (
           <MenuAdmin
             itemSelected={itemSelected}
             setItemSelected={setItemSelected}
             setSettingPage={setSettingPage}
+            setIsMenu={setIsMenu}
           />
         ) : null
       ) : (
@@ -143,6 +180,8 @@ const Sidebar = ({
                 onClick={() => {
                   setSettingPage(true);
                   navigate("/operator/coofisai/dokumen");
+                  setIsMenu(true);
+                  localStorage.setItem("isMenu", "true");
                 }}
               >
                 <AdminIcon className="hover-color" sx={{ fontSize: 20 }} />
@@ -180,6 +219,8 @@ const Sidebar = ({
                 onClick={() => {
                   setSettingPage(true);
                   navigate("/admin/coofisai/dokumen");
+                  setIsMenu(true);
+                  localStorage.setItem("isMenu", "true");
                 }}
               >
                 <AdminIcon className="hover-color" sx={{ fontSize: 20 }} />
@@ -283,7 +324,10 @@ const Sidebar = ({
                       : "none",
                   paddingY: 0.8,
                 }}
-                onClick={() => setSelected("departemen")}
+                onClick={() => {
+                  setSelected("departemen");
+                  setSelectedTopic(false);
+                }}
               >
                 <Typography
                   color={selected === "departemen" ? "black" : "#9E9E9E"}
@@ -308,6 +352,7 @@ const Sidebar = ({
               role === "user" ? (
                 <DepartemenUser
                   id={id}
+                  setDeptID={setDeptID}
                   setResponseSummarize={setResponseSummarize}
                   setIsSummarize={setIsSummarize}
                 />

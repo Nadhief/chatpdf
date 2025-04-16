@@ -15,6 +15,8 @@ import CoofisImage from "../../assets/images/Coofis.png"; // Adjust the path as 
 import { login } from "../../services/authservices";
 
 const Login = () => {
+  const logoUrl = "http://localhost:8001/logo";
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -61,12 +63,31 @@ const Login = () => {
     >
       <Card sx={{ width: "454px", height: "595px", p: 2, boxShadow: 3 }}>
         <CardContent>
-          <Stack alignItems={"center"} justifyContent="center">
-            <img
-              src={CoofisImage}
-              alt="Chatbot"
-              style={{ marginBottom: "80px", width: "250px" }}
-            />
+          <Stack
+            direction={"column"}
+            spacing={2}
+            width={"100%"}
+            alignItems={"center"}
+            justifyContent="flex-start"
+          >
+            <Box
+              paddingX={5}
+              paddingTop={3.6}
+              paddingBottom={4}
+              borderRadius={8}
+              width={"fit-content"}
+              boxShadow="0px 6px 8px rgba(0, 0, 0, 0.15)"
+            >
+              <Box
+                component="img"
+                src={logoUrl}
+                alt="Logo"
+                sx={{ width: "100%", height: "auto", maxWidth: 120 }}
+              />
+            </Box>
+            <Typography fontSize={35} fontWeight={700}>
+              Chatalize AI
+            </Typography>
           </Stack>
           <Typography variant="body1" align="start" fontWeight={"bold"}>
             Username

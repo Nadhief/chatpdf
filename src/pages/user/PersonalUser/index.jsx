@@ -48,7 +48,6 @@ const PersonalUser = ({
   const [personalTopics, setPersonalTopics] = useState([]);
 
   const [checkedItems, setCheckedItems] = useState({});
-  // Replace checkedItemsTopics with a single selectedTopicIndex
   const [selectedTopicIndex, setSelectedTopicIndex] = useState(null);
 
   const [selectedUploadFiles, setSelectedUploadFiles] = useState([]);
@@ -91,9 +90,10 @@ const PersonalUser = ({
     .map(([idx]) => personalFiles.list_files[idx]);
 
   // Get the selected topic (only one)
-  const selectedTopic = selectedTopicIndex !== null && personalTopics.list_files 
-    ? [personalTopics.list_files[selectedTopicIndex]] 
-    : [];
+  const selectedTopic =
+    selectedTopicIndex !== null && personalTopics.list_files
+      ? [personalTopics.list_files[selectedTopicIndex]]
+      : [];
 
   useEffect(() => {
     fetchDataFile();
@@ -148,6 +148,7 @@ const PersonalUser = ({
         .then((res) => {
           console.log("Upload berhasil:", res);
           setSelectedUploadFiles([]);
+          setCheckedItems({});
           fetchDataFile();
           setIsLoading(false);
           openSnackbar("berhasil", "File berhasil diunggah!");
@@ -171,6 +172,7 @@ const PersonalUser = ({
         .then((res) => {
           console.log("Berhasil Menghapus File:", res);
           setOpenTrash(false);
+          setSelectedUploadFiles([]);
           setCheckedItems({});
           fetchDataFile();
           setIsLoading(false);
@@ -195,7 +197,9 @@ const PersonalUser = ({
       .then((res) => {
         console.log("Berhasil menambahkan topik:", res);
         setOpenPaper(false);
-        setSelectedTopicIndex(null); // Reset selected topic
+        setSelectedTopicIndex(null);
+        setSelectedUploadFiles([]);
+        setCheckedItems({});
         fetchDataTopics();
         setIsLoading(false);
         openSnackbar("berhasil", "Topik berhasil ditambah!");
@@ -209,7 +213,7 @@ const PersonalUser = ({
   const handleDeleteTopic = () => {
     // setIsLoading(true);
     if (selectedTopic.length === 0) return;
-    
+
     const payload = {
       id: String(id),
       topic_name: selectedTopic[0]?.topic_name,
@@ -218,7 +222,7 @@ const PersonalUser = ({
       .then((res) => {
         console.log("Berhasil Menghapus topik:", res);
         setOpenTrash(false);
-        setSelectedTopicIndex(null); // Reset selected topic
+        setSelectedTopicIndex([]); // Reset selected topic
         fetchDataTopics();
         setIsLoading(false);
         openSnackbar("berhasil", "Topik berhasil dihapus!");
@@ -247,35 +251,35 @@ const PersonalUser = ({
   };
 
   const debouncedSearchFilePersonal = useMemo(
-      () =>
-        debounce((value) => {
-          searchFilePersonal({
-            user_id: String(id),
-            keywords: value,
-            page: 1,
-            per_page: 10,
+    () =>
+      debounce((value) => {
+        searchFilePersonal({
+          user_id: String(id),
+          keywords: value,
+          page: 1,
+          per_page: 10,
+        })
+          .then((res) => {
+            console.log("Search result:", res.list_files);
+            setPersonalFiles((prev) => ({
+              ...prev,
+              list_files: res.list_files,
+            }));
           })
-            .then((res) => {
-              console.log("Search result:", res.list_files);
-              setPersonalFiles((prev) => ({
-                ...prev,
-                list_files: res.list_files,
-              }));            
-            })
-            .catch((err) => {
-              console.error("Search error:", err);
-            });
-        }, 300),
-      [id] 
-    );
-  
-    const debouncedSearchTopic = useMemo(
-      () =>
-        debounce((value) => {
-          searchTopic({
-            user_id: String(id),
-            keywords: value,
-          })
+          .catch((err) => {
+            console.error("Search error:", err);
+          });
+      }, 300),
+    [id]
+  );
+
+  const debouncedSearchTopic = useMemo(
+    () =>
+      debounce((value) => {
+        searchTopic({
+          user_id: String(id),
+          keywords: value,
+        })
           .then((res) => {
             console.log("Search result:", res.results);
             setPersonalTopics((prev) => ({
@@ -283,30 +287,28 @@ const PersonalUser = ({
               list_files: res.results,
             }));
             // Reset selected topic when search results change
-            setSelectedTopicIndex(null);           
+            setSelectedTopicIndex(null);
           })
           .catch((err) => {
             console.error("Search error:", err);
           });
-        }, 300),
-      []
-    );
-  
-    const handleSearchFilePersonal = (e) => {
-      debouncedSearchFilePersonal(e.target.value);
-    };
-  
-    const handleSearchTopic = (e) => {
-      debouncedSearchTopic(e.target.value);
-    };
-  
-    const getSearchHandler = () => {
-      if (selected === "file")
-        return handleSearchFilePersonal;
-      if (selected === "topik")
-        return handleSearchTopic;
-      return () => {};
-    };
+      }, 300),
+    []
+  );
+
+  const handleSearchFilePersonal = (e) => {
+    debouncedSearchFilePersonal(e.target.value);
+  };
+
+  const handleSearchTopic = (e) => {
+    debouncedSearchTopic(e.target.value);
+  };
+
+  const getSearchHandler = () => {
+    if (selected === "file") return handleSearchFilePersonal;
+    if (selected === "topik") return handleSearchTopic;
+    return () => {};
+  };
 
   return (
     <Stack
@@ -343,6 +345,11 @@ const PersonalUser = ({
                   fontSize={12}
                   fontWeight={400}
                   color="#404040"
+                  sx={{
+                    overflowWrap: "anywhere",
+                    wordBreak: "break-word",
+                    whiteSpace: "normal",
+                  }}
                 >
                   {file.name}
                 </Typography>
@@ -449,7 +456,7 @@ const PersonalUser = ({
             </Typography>
           </Box>
           <Stack direction={"column"} padding={1.5} spacing={1}>
-          <InputSearchBar handleSearch={getSearchHandler()} />
+            <InputSearchBar handleSearch={getSearchHandler()} />
             <Stack direction={"row"} spacing={1} alignItems="center">
               <Box
                 width={"30%"}
@@ -458,10 +465,15 @@ const PersonalUser = ({
                 paddingY={0.3}
                 paddingX={0.7}
                 borderRadius={100}
-                border={selected === "file" ? '1px solid #EA001E' : "1px solid #9E9E9E"}
+                border={
+                  selected === "file"
+                    ? "1px solid #EA001E"
+                    : "1px solid #9E9E9E"
+                }
                 onClick={() => {
                   setSelectedTopic(false);
                   setSelected("file");
+                  setSelectedTopicIndex([])
                 }}
                 sx={{
                   cursor: selected === "file" ? "default" : "pointer",
@@ -472,7 +484,11 @@ const PersonalUser = ({
                       : "0px 4px 8px rgba(0, 0, 0, 0.14)",
                 }}
               >
-                <Typography fontSize={12} fontWeight={400} color= {selected === "file" ? '#EA001E' : 'black'}>
+                <Typography
+                  fontSize={12}
+                  fontWeight={400}
+                  color={selected === "file" ? "#EA001E" : "black"}
+                >
                   File
                 </Typography>
               </Box>
@@ -483,8 +499,14 @@ const PersonalUser = ({
                 paddingY={0.3}
                 paddingX={0.7}
                 borderRadius={100}
-                border={selected === "topik" ? '1px solid #EA001E' : "1px solid #9E9E9E"}
+                border={
+                  selected === "topik"
+                    ? "1px solid #EA001E"
+                    : "1px solid #9E9E9E"
+                }
                 onClick={() => {
+                  setSelectedUploadFiles([])
+                  setCheckedItems({})
                   setSelectedTopic(true);
                   setSelected("topik");
                 }}
@@ -497,7 +519,11 @@ const PersonalUser = ({
                       : "0px 4px 8px rgba(0, 0, 0, 0.14)",
                 }}
               >
-                <Typography fontSize={12} fontWeight={400} color={selected === "topik" ? '#EA001E' : 'black'}>
+                <Typography
+                  fontSize={12}
+                  fontWeight={400}
+                  color={selected === "topik" ? "#EA001E" : "black"}
+                >
                   {" "}
                   Topik{" "}
                 </Typography>

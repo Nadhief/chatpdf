@@ -68,7 +68,7 @@ const AddTopic = ({ open, onClose, handleSubmit }) => {
           }}
           value={rawTopic}
           onChange={handleChange}
-          helperText={`Hasil format: ${formattedTopic || "-"}`}
+          helperText={`Nama Topik: ${formattedTopic || "-"}`}
         />
       </DialogContent>
 

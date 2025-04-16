@@ -100,6 +100,21 @@ export const getDepartmentList = async () => {
   }
 };
 
+export const getDepartmentName = async (id) => {
+  try {
+    const data = await getDepartmentList();
+    console.log(data)
+    const departments = data.response;
+
+    const found = departments.find((dept) => dept[0] === id);
+    return found ? found[1] : null;
+  } catch (error) {
+    console.error("Error getting department name by ID:", error);
+    throw error;
+  }
+};
+
+
 export const getDepartmentFile = async ({ dept_id, page, per_page }) => {
   try {
     const response = await api.get("file/department", {
@@ -352,6 +367,23 @@ export const getArrayBufferPDFPersonal = async({user_id, filename, page}) =>{
     const response = await api.get("file/buffer_doc_personal", {
       params: {
         user_id: user_id,
+        filename: filename,
+        page: page,
+      },
+      responseType: 'arraybuffer',
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting pdf:", error);
+    throw error;
+  }
+} 
+
+export const getArrayBufferPDFDepartment = async({dept_id, filename, page}) =>{
+  try {
+    const response = await api.get("file/buffer_doc_department", {
+      params: {
+        dept_id: dept_id,
         filename: filename,
         page: page,
       },

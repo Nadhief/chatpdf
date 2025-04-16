@@ -12,6 +12,16 @@ import PDFViewer from "../components/PdfViewer";
 import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
 
 const Layout = () => {
+  const logoUrl = "http://localhost:8001/logo";
+
+  let link =
+    document.querySelector("link[rel*='icon']") ||
+    document.createElement("link");
+  link.type = "image/svg+xml";
+  link.rel = "icon";
+  link.href = logoUrl;
+
+  document.getElementsByTagName("head")[0].appendChild(link);
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [selected, setSelected] = useState("personal");
@@ -22,11 +32,15 @@ const Layout = () => {
   const [deptID, setDeptID] = useState("");
   const [isViewPdf, setIsViewPdf] = useState(false);
   const [pdfSource, setPdfSource] = useState(null);
+  const [type, setType] = useState("");
+  const [isMenu, setIsMenu] = useState(false);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     setUser(storedUser);
   }, [location.pathname]);
+
+  console.log(type)
 
   if (!user) return <LoadingScreen />;
   return (
@@ -50,6 +64,7 @@ const Layout = () => {
               }}
             >
               <Sidebar
+                dept_id={user?.department_id}
                 role={user?.role?.toLowerCase()}
                 id={user?.id}
                 username={user?.username}
@@ -61,6 +76,7 @@ const Layout = () => {
                 setSelectedTopic={setSelectedTopic}
                 setTopicName={setTopicName}
                 setDeptID={setDeptID}
+                setIsMenu={setIsMenu}
               />
             </Grid>
             <Grid
@@ -84,6 +100,8 @@ const Layout = () => {
                       deptID={deptID}
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
+                      setType={setType}
+
                     />
                   }
                 />
@@ -106,6 +124,7 @@ const Layout = () => {
                       deptID={deptID}
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
+                      setType={setType}
                     />
                   }
                 />
@@ -136,6 +155,7 @@ const Layout = () => {
                       deptID={deptID}
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
+                      setType={setType}
                     />
                   }
                 />
@@ -164,7 +184,10 @@ const Layout = () => {
               <PDFViewer
                 id={user?.id}
                 source={pdfSource}
+                type={type}
                 setIsViewPdf={setIsViewPdf}
+                selected={selected}
+                dept_id={deptID}
               />
             </Grid>
           </>
@@ -178,6 +201,7 @@ const Layout = () => {
               }}
             >
               <Sidebar
+                dept_id={user?.department_id}
                 role={user?.role?.toLowerCase()}
                 id={user?.id}
                 username={user?.username}
@@ -189,6 +213,7 @@ const Layout = () => {
                 setSelectedTopic={setSelectedTopic}
                 setTopicName={setTopicName}
                 setDeptID={setDeptID}
+                setIsMenu={setIsMenu}
               />
             </Grid>
             <Grid
@@ -212,6 +237,7 @@ const Layout = () => {
                       deptID={deptID}
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
+                      setType={setType}
                     />
                   }
                 />
@@ -234,6 +260,7 @@ const Layout = () => {
                       deptID={deptID}
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
+                      setType={setType}
                     />
                   }
                 />
@@ -264,6 +291,7 @@ const Layout = () => {
                       deptID={deptID}
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
+                      setType={setType}
                     />
                   }
                 />

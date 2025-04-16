@@ -272,6 +272,11 @@ const DepartemenOperator = ({ id, setDeptID, setIsSummarize, setResponseSummariz
                     fontSize={12}
                     fontWeight={400}
                     color="#404040"
+                    sx={{
+                      overflowWrap: "anywhere",
+                      wordBreak: "break-word",
+                      whiteSpace: "normal",
+                    }}
                   >
                     {file.name}
                   </Typography>

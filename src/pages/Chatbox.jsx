@@ -31,6 +31,7 @@ const ChatBox = ({
   deptID,
   setIsViewPdf,
   setPdfSource,
+  setType
 }) => {
   const [model, setModel] = useState("Llama 3.1");
   const [vectorizer, setVectorizer] = useState("nomic-embed-text");
@@ -47,7 +48,6 @@ const ChatBox = ({
 
   const handleModelChange = (event) => setModel(event.target.value);
   const handleVectorizerChange = (event) => setVectorizer(event.target.value);
-
   const handleSend = () => {
     if (!question.trim()) return;
 
@@ -58,6 +58,7 @@ const ChatBox = ({
       user: currentQuestion,
       bot: "⌛",
       source: [],
+      type:""
     };
     setResponses((prev) => [...prev, placeholder]);
 
@@ -85,6 +86,7 @@ const ChatBox = ({
           user: currentQuestion,
           bot: res.response,
           source: filenames,
+          type: res.type
         };
 
         setResponses((prev) => {
@@ -105,6 +107,7 @@ const ChatBox = ({
             user: currentQuestion,
             bot: res.response,
             source: filenames,
+            type: res.type
           };
 
           setResponses((prev) => {
@@ -130,6 +133,7 @@ const ChatBox = ({
             user: currentQuestion,
             bot: res.response,
             source: filenames,
+            type: res.type
           };
 
           setResponses((prev) => {
@@ -193,6 +197,7 @@ const ChatBox = ({
 
   useEffect(() => {
     if (responseSummarize) {
+      console.log(responseSummarize)
       const filenames = responseSummarize?.sources?.map((item) => {
         const cleanedItem = item.replace(/^PDF:\s*/, "");
         return cleanedItem.split("/").pop();
@@ -202,6 +207,7 @@ const ChatBox = ({
         user: "Please summarize this document",
         bot: responseSummarize?.response,
         source: filenames,
+        type: responseSummarize?.type
       };
 
       setResponses((prev) => {
@@ -213,6 +219,8 @@ const ChatBox = ({
       setResponseSummarize(null);
     }
   }, [responseSummarize, isSummarize]);
+
+  // console.log(deptID)
   return (
     <Grid
       sx={{
@@ -360,6 +368,7 @@ const ChatBox = ({
                               onClick={() => {
                                 setIsViewPdf(true);
                                 setPdfSource(src);
+                                setType(res.type)
                               }}
                             >
                               <Typography align="start">📄 {src}</Typography>

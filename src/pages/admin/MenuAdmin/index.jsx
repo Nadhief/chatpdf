@@ -7,7 +7,7 @@ import FileIcon from '@mui/icons-material/InsertDriveFileOutlined';
 import ChatIcon from '@mui/icons-material/ChatOutlined';
 import { useNavigate } from 'react-router-dom';
 
-const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
+const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu }) => {
   const navigate = useNavigate();
 
   const MenuItem = ({ label, icon: Icon, selected, onClick }) => (
@@ -105,6 +105,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage }) => {
           setSettingPage(false);
           setItemSelected('dokumen');
           navigate('/admin/coofisai');
+          localStorage.setItem("isMenu", "false");
         }}
       />
     </Stack>

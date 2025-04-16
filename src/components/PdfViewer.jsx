@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { getArrayBufferPDFPersonal } from "../services";
+import { getArrayBufferPDFDepartment, getArrayBufferPDFPersonal } from "../services";
 import * as pdfjsLib from "pdfjs-dist/build/pdf";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker?worker";
 import { Stack } from "@mui/material";
@@ -7,7 +7,7 @@ import { scrollbar } from "../utils/scrollbar";
 
 pdfjsLib.GlobalWorkerOptions.workerPort = new pdfjsWorker();
 
-const PdfViewer = ({ id, source, setIsViewPdf }) => {
+const PdfViewer = ({ id, source, type, setIsViewPdf, selected, dept_id}) => {
   const [scale, setScale] = useState(1);
   const [blobUrl, setBlobUrl] = useState("");
   const canvasRef = useRef();
@@ -25,24 +25,47 @@ const PdfViewer = ({ id, source, setIsViewPdf }) => {
       try {
         setIsLoading(true);
 
-        const response = await getArrayBufferPDFPersonal({
-          user_id: id,
-          filename: filenamePart + ".pdf",
-          page: pageNumber,
-        });
+        if (type === "Personal") {
+          console.log("masuk")
+          const response = await getArrayBufferPDFPersonal({
+            user_id: id,
+            filename: filenamePart + ".pdf",
+            page: pageNumber,
+          });
 
-        const blob = new Blob([response], { type: "application/pdf" });
-        const url = URL.createObjectURL(blob);
-        setBlobUrl(url);
+          const blob = new Blob([response], { type: "application/pdf" });
+          const url = URL.createObjectURL(blob);
+          setBlobUrl(url);
 
-        const loadingTask = pdfjsLib.getDocument({
-          url: url,
-          cMapUrl: "https://unpkg.com/pdfjs-dist/cmaps/",
-          cMapPacked: true,
-        });
+          const loadingTask = pdfjsLib.getDocument({
+            url: url,
+            cMapUrl: "https://unpkg.com/pdfjs-dist/cmaps/",
+            cMapPacked: true,
+          });
 
-        const pdf = await loadingTask.promise;
-        setPdfInstance(pdf);
+          const pdf = await loadingTask.promise;
+          setPdfInstance(pdf);
+        } else {
+          console.log("masuk dept")
+          const response = await getArrayBufferPDFDepartment({
+            dept_id: dept_id,
+            filename: filenamePart + ".pdf",
+            page: pageNumber,
+          });
+
+          const blob = new Blob([response], { type: "application/pdf" });
+          const url = URL.createObjectURL(blob);
+          setBlobUrl(url);
+
+          const loadingTask = pdfjsLib.getDocument({
+            url: url,
+            cMapUrl: "https://unpkg.com/pdfjs-dist/cmaps/",
+            cMapPacked: true,
+          });
+
+          const pdf = await loadingTask.promise;
+          setPdfInstance(pdf);
+        }
       } catch (err) {
         setError("Failed to load PDF");
         console.error("Error fetching PDF:", err);
@@ -83,16 +106,16 @@ const PdfViewer = ({ id, source, setIsViewPdf }) => {
 
       try {
         setPageRendering(true);
-        
+
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d");
-        
+
         // Clear previous rendering
         context.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         // Create viewport with current scale
         const viewport = currentPage.getViewport({ scale });
-        
+
         // Update canvas dimensions to match the viewport
         canvas.height = viewport.height;
         canvas.width = viewport.width;
@@ -115,11 +138,11 @@ const PdfViewer = ({ id, source, setIsViewPdf }) => {
   }, [currentPage, scale]);
 
   const handleZoomIn = () => {
-    setScale(prevScale => prevScale + 0.25);
+    setScale((prevScale) => prevScale + 0.25);
   };
 
   const handleZoomOut = () => {
-    setScale(prevScale => Math.max(0.5, prevScale - 0.25));
+    setScale((prevScale) => Math.max(0.5, prevScale - 0.25));
   };
 
   return (
@@ -140,12 +163,8 @@ const PdfViewer = ({ id, source, setIsViewPdf }) => {
 
       <Stack width={"100%"} spacing={2} sx={{ alignItems: "center" }}>
         <Stack direction="row" spacing={2} justifyContent="center">
-          <button onClick={handleZoomIn}>
-            Zoom In
-          </button>
-          <button onClick={handleZoomOut}>
-            Zoom Out
-          </button>
+          <button onClick={handleZoomIn}>Zoom In</button>
+          <button onClick={handleZoomOut}>Zoom Out</button>
           <button onClick={() => setIsViewPdf(false)}>x</button>
         </Stack>
         <div style={{ maxWidth: "100%", overflow: "auto" }}>

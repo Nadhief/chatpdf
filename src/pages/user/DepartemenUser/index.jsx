@@ -13,7 +13,12 @@ import {
 } from "../../../services";
 import { debounce } from "lodash";
 
-const DepartemenUser = ({ id, setResponseSummarize, setIsSummarize }) => {
+const DepartemenUser = ({
+  id,
+  setDeptID,
+  setResponseSummarize,
+  setIsSummarize,
+}) => {
   const [departmentList, setDepartmentList] = useState([]);
   const departmentOptions = departmentList.map(([id, name, code]) => ({
     id,
@@ -67,6 +72,7 @@ const DepartemenUser = ({ id, setResponseSummarize, setIsSummarize }) => {
   const getDepartment = (department) => {
     setSelectedDepartmentid(department.id);
     fetchDataFileDepartment(department.id);
+    setDeptID(department.id);
   };
 
   const handleSummarize = async () => {
@@ -173,7 +179,7 @@ const DepartemenUser = ({ id, setResponseSummarize, setIsSummarize }) => {
           </Box>
           {departemenSelected ? (
             <Stack direction={"column"} padding={1.5} spacing={1}>
-            <InputSearchBar handleSearch={handleSearchFileDepartment} />
+              <InputSearchBar handleSearch={handleSearchFileDepartment} />
               <Stack direction={"row"} spacing={1} alignItems="center">
                 <Box
                   width={"30%"}
@@ -198,8 +204,7 @@ const DepartemenUser = ({ id, setResponseSummarize, setIsSummarize }) => {
                   justifyContent="flex-end"
                   width="100%"
                   color="white"
-                >
-                </Box>
+                ></Box>
               </Stack>
               <Stack direction={"column"} spacing={1}>
                 {/*MAPPING FILE PDF*/}
@@ -215,7 +220,12 @@ const DepartemenUser = ({ id, setResponseSummarize, setIsSummarize }) => {
               </Stack>
             </Stack>
           ) : (
-            <Typography padding={2} fontSize={14} fontWeight={400} color="#404040">
+            <Typography
+              padding={2}
+              fontSize={14}
+              fontWeight={400}
+              color="#404040"
+            >
               Silakan pilih departemen terlebih dahulu
             </Typography>
           )}
