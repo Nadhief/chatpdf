@@ -39,6 +39,10 @@ const PersonalUser = ({
   selectedTopicc,
   setSelectedTopic,
   setTopicName,
+  model,
+  setModel,
+  vectorizer,
+  setVectorizer,
 }) => {
   const [selected, setSelected] = useState("file");
   const [openPaper, setOpenPaper] = useState(false);
@@ -236,8 +240,8 @@ const PersonalUser = ({
   const handleSummarize = async () => {
     const payload = {
       id: String(id),
-      embedding_model: "nomic-embed-text",
-      llm_model: "Llama 3.1",
+      embedding_model: vectorizer,
+      llm_model: model,
       filename: selectedFiles?.map((file) => file?.name),
     };
     summarizeFilePersonal(payload)
@@ -473,7 +477,7 @@ const PersonalUser = ({
                 onClick={() => {
                   setSelectedTopic(false);
                   setSelected("file");
-                  setSelectedTopicIndex([])
+                  setSelectedTopicIndex([]);
                 }}
                 sx={{
                   cursor: selected === "file" ? "default" : "pointer",
@@ -505,8 +509,8 @@ const PersonalUser = ({
                     : "1px solid #9E9E9E"
                 }
                 onClick={() => {
-                  setSelectedUploadFiles([])
-                  setCheckedItems({})
+                  setSelectedUploadFiles([]);
+                  setCheckedItems({});
                   setSelectedTopic(true);
                   setSelected("topik");
                 }}

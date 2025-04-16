@@ -28,7 +28,16 @@ import CustomSnackbar from "../../../components/CustomSnackbar";
 import DeleteFile from "../../../components/Dialog/DeleteFile";
 import { debounce } from "lodash";
 
-const DepartemenOperator = ({ id, setDeptID, setIsSummarize, setResponseSummarize }) => {
+const DepartemenOperator = ({
+  id,
+  setDeptID,
+  setIsSummarize,
+  setResponseSummarize,
+  model,
+  setModel,
+  vectorizer,
+  setVectorizer,
+}) => {
   const [departmentList, setDepartmentList] = useState([]);
   const departmentOptions = departmentList.map(([id, name, code]) => ({
     id,
@@ -109,8 +118,8 @@ const DepartemenOperator = ({ id, setDeptID, setIsSummarize, setResponseSummariz
   const handleSummarize = async () => {
     const payload = {
       id: String(selectedDepartmentid),
-      embedding_model: "nomic-embed-text",
-      llm_model: "Llama 3.1",
+      embedding_model: vectorizer,
+      llm_model: model,
       filename: selectedFiles?.map((file) => file?.name),
     };
     summarizeFileDepartment(payload)

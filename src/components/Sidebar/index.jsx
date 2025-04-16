@@ -37,7 +37,7 @@ const Sidebar = ({
   vectorizer,
   setVectorizer,
 }) => {
-  const logoUrl = "http://localhost:8001/logo";
+  const logoUrl = "http://192.168.1.77:8001/logo";
 
   const [departmentName, setDepartmentName] = useState("");
 
@@ -351,6 +351,10 @@ const Sidebar = ({
                 selectedTopicc={selectedTopic}
                 setSelectedTopic={setSelectedTopic}
                 setTopicName={setTopicName}
+                model={model}
+                setModel={setModel}
+                vectorizer={vectorizer}
+                setVectorizer={setVectorizer}
               />
             ) : selected === "departemen" ? (
               role === "user" ? (
@@ -359,6 +363,10 @@ const Sidebar = ({
                   setDeptID={setDeptID}
                   setResponseSummarize={setResponseSummarize}
                   setIsSummarize={setIsSummarize}
+                  model={model}
+                  setModel={setModel}
+                  vectorizer={vectorizer}
+                  setVectorizer={setVectorizer}
                 />
               ) : role === "operator" || "admin" ? (
                 <DepartemenOperator
@@ -366,6 +374,10 @@ const Sidebar = ({
                   setDeptID={setDeptID}
                   setIsSummarize={setIsSummarize}
                   setResponseSummarize={setResponseSummarize}
+                  model={model}
+                  setModel={setModel}
+                  vectorizer={vectorizer}
+                  setVectorizer={setVectorizer}
                 />
               ) : null
             ) : null}

@@ -15,7 +15,7 @@ import CoofisImage from "../../assets/images/Coofis.png"; // Adjust the path as 
 import { login } from "../../services/authservices";
 
 const Login = () => {
-  const logoUrl = "http://localhost:8001/logo";
+  const logoUrl = "http://192.168.1.77:8001/logo";
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

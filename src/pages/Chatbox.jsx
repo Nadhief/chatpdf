@@ -446,7 +446,7 @@ const ChatBox = ({
               >
                 <MenuItem value="nomic-embed-text">nomic-embed-text</MenuItem>
                 <MenuItem value="paraphrase-ultilingual-mpnet-base-v2">
-                  paraphrase-ultilingual-mpnet-base-v2
+                  paraphrase-multilingual-mpnet-base-v2
                 </MenuItem>
                 <MenuItem value="all-mpnet-base-v2">all-mpnet-base-v2</MenuItem>
               </Select>
