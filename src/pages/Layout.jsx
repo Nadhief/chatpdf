@@ -35,14 +35,17 @@ const Layout = () => {
   const [type, setType] = useState("");
   const [isMenu, setIsMenu] = useState(false);
 
+  const [isCheckingUser, setIsCheckingUser] = useState(true);
+
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     setUser(storedUser);
+    setIsCheckingUser(false); 
   }, [location.pathname]);
+ 
+  if (isCheckingUser) return <LoadingScreen />;
+  if (!user) return null;
 
-  console.log(type)
-
-  if (!user) return <LoadingScreen />;
   return (
     <>
       <Grid
