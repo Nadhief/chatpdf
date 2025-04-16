@@ -42,6 +42,8 @@ const ChatBox = ({
     return saved ? JSON.parse(saved) : [];
   });
 
+  console.log(vectorizer, model)
+
   const [displayedText, setDisplayedText] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);

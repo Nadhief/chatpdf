@@ -32,6 +32,10 @@ const Sidebar = ({
   setTopicName,
   setDeptID,
   setIsMenu,
+  model,
+  setModel,
+  vectorizer,
+  setVectorizer,
 }) => {
   const logoUrl = "http://localhost:8001/logo";
 

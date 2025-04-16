@@ -35,14 +35,17 @@ const Layout = () => {
   const [type, setType] = useState("");
   const [isMenu, setIsMenu] = useState(false);
 
+  const [model, setModel] = useState("Llama 3.1");
+  const [vectorizer, setVectorizer] = useState("nomic-embed-text");
+
   const [isCheckingUser, setIsCheckingUser] = useState(true);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     setUser(storedUser);
-    setIsCheckingUser(false); 
+    setIsCheckingUser(false);
   }, [location.pathname]);
- 
+
   if (isCheckingUser) return <LoadingScreen />;
   if (!user) return null;
 
@@ -80,6 +83,10 @@ const Layout = () => {
                 setTopicName={setTopicName}
                 setDeptID={setDeptID}
                 setIsMenu={setIsMenu}
+                model={model}
+                setModel={setModel}
+                vectorizer={vectorizer}
+                setVectorizer
               />
             </Grid>
             <Grid
@@ -104,7 +111,6 @@ const Layout = () => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
-
                     />
                   }
                 />
