@@ -86,7 +86,7 @@ const Layout = () => {
                 model={model}
                 setModel={setModel}
                 vectorizer={vectorizer}
-                setVectorizer
+                setVectorizer={setVectorizer}
               />
             </Grid>
             <Grid
@@ -111,6 +111,10 @@ const Layout = () => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      model={model}
+                      setModel={setModel}
+                      vectorizer={vectorizer}
+                      setVectorizer={setVectorizer}
                     />
                   }
                 />
@@ -134,6 +138,10 @@ const Layout = () => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      model={model}
+                      setModel={setModel}
+                      vectorizer={vectorizer}
+                      setVectorizer={setVectorizer}
                     />
                   }
                 />
@@ -165,6 +173,10 @@ const Layout = () => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      model={model}
+                      setModel={setModel}
+                      vectorizer={vectorizer}
+                      setVectorizer={setVectorizer}
                     />
                   }
                 />
@@ -223,6 +235,10 @@ const Layout = () => {
                 setTopicName={setTopicName}
                 setDeptID={setDeptID}
                 setIsMenu={setIsMenu}
+                model={model}
+                setModel={setModel}
+                vectorizer={vectorizer}
+                setVectorizer={setVectorizer}
               />
             </Grid>
             <Grid
@@ -247,6 +263,10 @@ const Layout = () => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      model={model}
+                      setModel={setModel}
+                      vectorizer={vectorizer}
+                      setVectorizer={setVectorizer}
                     />
                   }
                 />
@@ -270,6 +290,10 @@ const Layout = () => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      model={model}
+                      setModel={setModel}
+                      vectorizer={vectorizer}
+                      setVectorizer={setVectorizer}
                     />
                   }
                 />
@@ -301,6 +325,10 @@ const Layout = () => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      model={model}
+                      setModel={setModel}
+                      vectorizer={vectorizer}
+                      setVectorizer={setVectorizer}
                     />
                   }
                 />

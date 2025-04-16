@@ -31,10 +31,14 @@ const ChatBox = ({
   deptID,
   setIsViewPdf,
   setPdfSource,
-  setType
+  setType,
+  model,
+  setModel,
+  vectorizer,
+  setVectorizer,
 }) => {
-  const [model, setModel] = useState("Llama 3.1");
-  const [vectorizer, setVectorizer] = useState("nomic-embed-text");
+  // const [model, setModel] = useState("Llama 3.1");
+  // const [vectorizer, setVectorizer] = useState("nomic-embed-text");
   const [question, setQuestion] = useState("");
 
   const [responses, setResponses] = useState(() => {
@@ -42,7 +46,7 @@ const ChatBox = ({
     return saved ? JSON.parse(saved) : [];
   });
 
-  console.log(vectorizer, model)
+  console.log(vectorizer, model);
 
   const [displayedText, setDisplayedText] = useState("");
 
@@ -60,7 +64,7 @@ const ChatBox = ({
       user: currentQuestion,
       bot: "⌛",
       source: [],
-      type:""
+      type: "",
     };
     setResponses((prev) => [...prev, placeholder]);
 
@@ -88,7 +92,7 @@ const ChatBox = ({
           user: currentQuestion,
           bot: res.response,
           source: filenames,
-          type: res.type
+          type: res.type,
         };
 
         setResponses((prev) => {
@@ -109,7 +113,7 @@ const ChatBox = ({
             user: currentQuestion,
             bot: res.response,
             source: filenames,
-            type: res.type
+            type: res.type,
           };
 
           setResponses((prev) => {
@@ -135,7 +139,7 @@ const ChatBox = ({
             user: currentQuestion,
             bot: res.response,
             source: filenames,
-            type: res.type
+            type: res.type,
           };
 
           setResponses((prev) => {
@@ -199,7 +203,7 @@ const ChatBox = ({
 
   useEffect(() => {
     if (responseSummarize) {
-      console.log(responseSummarize)
+      console.log(responseSummarize);
       const filenames = responseSummarize?.sources?.map((item) => {
         const cleanedItem = item.replace(/^PDF:\s*/, "");
         return cleanedItem.split("/").pop();
@@ -209,7 +213,7 @@ const ChatBox = ({
         user: "Please summarize this document",
         bot: responseSummarize?.response,
         source: filenames,
-        type: responseSummarize?.type
+        type: responseSummarize?.type,
       };
 
       setResponses((prev) => {
@@ -349,7 +353,7 @@ const ChatBox = ({
                             display: "flex",
                             flexDirection: "column",
                             gap: 1,
-                            cursor:'pointer'
+                            cursor: "pointer",
                           }}
                         >
                           {res.source.map((src, i) => (
@@ -370,7 +374,7 @@ const ChatBox = ({
                               onClick={() => {
                                 setIsViewPdf(true);
                                 setPdfSource(src);
-                                setType(res.type)
+                                setType(res.type);
                               }}
                             >
                               <Typography align="start">📄 {src}</Typography>
