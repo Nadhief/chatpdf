@@ -156,7 +156,7 @@ useEffect(() => {
                   path="/coofisai"
                   element={
                     <ChatBox
-                      role={"Admin"}
+                      role={"User"}
                       id={user?.id}
                       selected={selected}
                       responseSummarize={responseSummarize}
@@ -174,6 +174,7 @@ useEffect(() => {
                       vectorizer={vectorizer}
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
+                      isViewPdf={isViewPdf}
                     />
                   }
                 />
@@ -184,7 +185,7 @@ useEffect(() => {
                   path="/operator/coofisai"
                   element={
                     <ChatBox
-                      role={"Admin"}
+                      role={"Operator"}
                       id={user?.id}
                       selected={selected}
                       responseSummarize={responseSummarize}
