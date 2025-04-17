@@ -444,8 +444,8 @@ const Dokumen = ({ id, toggleSidebar }) => {
         onClick={toggleSidebar}
         sx={{
           position: "absolute",
-          top: 32,
-          left: 32,
+          top: 48,
+          left: 22,
           zIndex: 100,
           display: { xs: "flex", sm: "flex", md: "flex", lg: "none" },
           backgroundColor: "#f0f0f0",
@@ -655,40 +655,48 @@ const Dokumen = ({ id, toggleSidebar }) => {
               </Box>
               <Stack direction={"column"} padding={1.5} spacing={1}>
                 <InputSearchBar handleSearch={getSearchHandler()} />
-                <Stack direction={"row"} spacing={1} alignItems="center">
+                <Stack
+                    direction={{ 
+                      xs: "column",
+                      sm: "column", 
+                      md: "row",
+                      lg: "row" 
+                    }}
+                    spacing={1.2}
+                    alignItems="center"
+                  >
                   {mainSelect === "Personal" ? (
-                    <>
-                      {["file", "topik"].map((type) => (
-                        <Box
-                          key={type}
-                          width={"30%"}
-                          display="flex"
-                          justifyContent="center"
-                          paddingY={0.3}
-                          paddingX={0.7}
-                          borderRadius={100}
-                          border={selected === type ? "1px solid #EA001E" : "1px solid #9E9E9E"}
-                          onClick={() => setSelected(type)}
-                          sx={{
-                            cursor: selected === type ? "default" : "pointer",
-                            backgroundColor:
-                              selected === type ? "#FAFBFD" : "white",
-                            boxShadow:
-                              selected === type
-                                ? "none"
-                                : "0px 4px 8px rgba(0, 0, 0, 0.14)",
-                          }}
+                    <Stack direction={'row'} spacing={2} justifyContent="flex-start" >
+                    {["file", "topik"].map((type) => (
+                      <Box
+                        key={type}
+                        sx={{
+                          borderRadius: 100,
+                          border: selected === type ? "1px solid #EA001E" : "1px solid #9E9E9E",
+                          cursor: "pointer",
+                          backgroundColor: "white",
+                          boxShadow: selected === type ? "none" : "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          minWidth: { xs: "80px", sm: "90px", md: "100px" }, // Responsive width
+                          maxWidth: "100%",
+                          padding: "0px 8px",
+                          
+                        }}
+                        onClick={() => setSelected(type)}
+                      >
+                        <Typography
+                          fontSize={{ xs: 12, sm: 13, md: 14 }} // Responsive font size
+                          fontWeight={500}
+                          color={selected === type ? "#EA001E" : "black"}
+                          noWrap // Prevent text from wrapping
                         >
-                          <Typography
-                            fontSize={12}
-                            fontWeight={400}
-                            color= {selected === type ? "#EA001E" : "black"}
-                          >
-                            {type.charAt(0).toUpperCase() + type.slice(1)}
-                          </Typography>
-                        </Box>
-                      ))}
-                    </>
+                          {type.charAt(0).toUpperCase() + type.slice(1)}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Stack>
                   ) : (
                     <>
                       {["file"].map((type) => (
@@ -724,7 +732,14 @@ const Dokumen = ({ id, toggleSidebar }) => {
                     </>
                   )}
 
-                  <Box display="flex" justifyContent="flex-end" width="100%">
+                  <Box display="flex" width="100%" sx={{
+                    justifyContent: {
+                      xs: "center",     
+                      sm: "center",
+                      md: "flex-end",  
+                      lg: "flex-end"
+                    }
+                  }}>
                     {mainSelect === "Personal" && selected === "file" && (
                       <Box
                         display="flex"
