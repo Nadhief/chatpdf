@@ -203,6 +203,8 @@ useEffect(() => {
                       vectorizer={vectorizer}
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
+                      isViewPdf={isViewPdf}
+
                     />
                   }
                 />
@@ -239,6 +241,8 @@ useEffect(() => {
                       vectorizer={vectorizer}
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
+                      isViewPdf={isViewPdf}
+
                     />
                   }
                 />
@@ -342,6 +346,7 @@ useEffect(() => {
                       vectorizer={vectorizer}
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
+                      isViewPdf={isViewPdf}
                       
                     />
                   }
@@ -371,6 +376,8 @@ useEffect(() => {
                       vectorizer={vectorizer}
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
+                      isViewPdf={isViewPdf}
+
                     />
                   }
                 />
@@ -407,6 +414,8 @@ useEffect(() => {
                       vectorizer={vectorizer}
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
+                      isViewPdf={isViewPdf}
+
                     />
                   }
                 />
