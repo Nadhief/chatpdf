@@ -11,6 +11,7 @@ import {
   Dialog,
   DialogContent,
   CircularProgress,
+  IconButton,
 } from "@mui/material";
 import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import FolderPlusIcon from "@mui/icons-material/CreateNewFolderOutlined";
@@ -18,6 +19,7 @@ import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import InputSearchBar from "../../components/Inputs/InputSearchBar";
 import { documents } from "../../components/Sidebar/Documents/DocumentsConfig";
 import Documents from "../../components/Sidebar/Documents";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   deleteDepartmentlFile,
   deletePersonalFile,
@@ -38,7 +40,7 @@ import DeleteFile from "../../components/Dialog/DeleteFile";
 import AddToDepartement from "../../components/Dialog/AddToDepartment";
 import { debounce } from "lodash";
 
-const Dokumen = ({ id }) => {
+const Dokumen = ({ id, toggleSidebar }) => {
   const [mainSelect, setMainSelect] = useState("Personal");
   // const [people, setPeople] = useState("");
   const [departmen, setDepartmen] = useState("");
@@ -438,6 +440,22 @@ const Dokumen = ({ id }) => {
       }}
       direction="column"
     >
+      <IconButton
+        onClick={toggleSidebar}
+        sx={{
+          position: "absolute",
+          top: 32,
+          left: 32,
+          zIndex: 100,
+          display: { xs: "flex", sm: "flex", md: "flex", lg: "none" },
+          backgroundColor: "#f0f0f0",
+          "&:hover": {
+            backgroundColor: "#e0e0e0",
+          },
+        }}
+      >
+        <MenuIcon />
+      </IconButton>
       <Grid
         sx={{
           flex: 1,

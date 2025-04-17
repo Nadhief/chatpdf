@@ -7,7 +7,7 @@ import FileIcon from '@mui/icons-material/InsertDriveFileOutlined';
 import ChatIcon from '@mui/icons-material/ChatOutlined';
 import { useNavigate } from 'react-router-dom';
 
-const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu }) => {
+const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu, setIsSidebarOpen }) => {
   const navigate = useNavigate();
 
   const MenuItem = ({ label, icon: Icon, selected, onClick }) => (
@@ -63,6 +63,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu })
         selected={itemSelected === 'dokumen'}
         onClick={() => {
           setItemSelected('dokumen');
+          setIsSidebarOpen(false);
           navigate('/admin/coofisai/dokumen');
         }}
       />
@@ -73,6 +74,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu })
         selected={itemSelected === 'user'}
         onClick={() => {
           setItemSelected('user');
+          setIsSidebarOpen(false);
           navigate('/admin/coofisai/manageuser');
         }}
       />
@@ -83,6 +85,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu })
         selected={itemSelected === 'departemen'}
         onClick={() => {
           setItemSelected('departemen');
+          setIsSidebarOpen(false);
           navigate('/admin/coofisai/managedepartment');
         }}
       />
@@ -93,6 +96,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu })
         selected={itemSelected === 'pengaturan'}
         onClick={() => {
           setItemSelected('pengaturan');
+          setIsSidebarOpen(false);
           navigate('/admin/coofisai/pengaturan');
         }}
       />

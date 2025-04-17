@@ -1,4 +1,5 @@
 import React, { use, useEffect, useRef, useState } from "react";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   FormControl,
   Grid,
@@ -36,6 +37,7 @@ const ChatBox = ({
   setModel,
   vectorizer,
   setVectorizer,
+  toggleSidebar,
 }) => {
   // const [model, setModel] = useState("Llama 3.1");
   // const [vectorizer, setVectorizer] = useState("nomic-embed-text");
@@ -234,10 +236,27 @@ const ChatBox = ({
         backgroundColor: "#fff",
         borderRadius: "10px",
         width: "100%",
+        position: "relative",
       }}
       direction={"column"}
       justifyContent="spavce-between"
     >
+      <IconButton
+        onClick={toggleSidebar}
+        sx={{
+          position: "absolute",
+          top: 16,
+          left: 16,
+          zIndex: 100,
+          display: { xs: "flex", sm: "flex", md: "flex", lg: "none" },
+          backgroundColor: "#f0f0f0",
+          "&:hover": {
+            backgroundColor: "#e0e0e0",
+          },
+        }}
+      >
+        <MenuIcon />
+      </IconButton>
       {responses.length === 0 && (
         <Grid item xs sx={{ textAlign: "center", pt: 10 }}>
           <img
