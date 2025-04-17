@@ -321,6 +321,15 @@ const PersonalUser = ({
       height={"100%"}
       width={"100%"}
       alignItems="center"
+      sx={{ 
+        width: {
+          xs: 260,
+          sm: 260,
+          md: 280,
+          lg: 'auto'
+        },
+        margin: '0 auto'
+      }}
       spacing={3}
     >
       <Box width="100%" textAlign="left">

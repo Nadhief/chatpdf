@@ -93,7 +93,14 @@ const Sidebar = ({
       padding={3}
       height={"93vh"}
       boxShadow={"5px 0px 10px rgba(0, 0, 0, 0.15)"}
-      sx={{ ...scrollbar("#9E9E9E"), overflowX: "hidden", overflowY: "auto" }}
+      sx={{ 
+        width: {
+          xs: 260,
+          sm: 260,
+          md: 280,
+          lg: 'auto'
+        },
+        ...scrollbar("#9E9E9E"), overflowX: "hidden", overflowY: "auto" }}
     >
       <Stack
         direction={"row"}
