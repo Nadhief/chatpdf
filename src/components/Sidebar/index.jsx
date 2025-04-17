@@ -162,6 +162,7 @@ const Sidebar = ({
             setItemSelected={setItemSelected}
             setSettingPage={setSettingPage}
             setIsMenu={setIsMenu}
+            setIsSidebarOpen={setIsSidebarOpen}
           />
         ) : role === "admin" ? (
           <MenuAdmin
@@ -169,6 +170,7 @@ const Sidebar = ({
             setItemSelected={setItemSelected}
             setSettingPage={setSettingPage}
             setIsMenu={setIsMenu}
+            setIsSidebarOpen={setIsSidebarOpen}
           />
         ) : null
       ) : (
