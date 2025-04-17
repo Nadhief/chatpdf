@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Box, Typography, Stack, Grid, Dialog, DialogContent, CircularProgress } from "@mui/material";
+import { Box, Typography, Stack, Grid, Dialog, DialogContent, CircularProgress, IconButton } from "@mui/material";
 import FolderPlusIcon from "@mui/icons-material/FolderOpenOutlined";
 import { uploadLogo } from "../../services";
 import CustomSnackbar from "../CustomSnackbar";
+import MenuIcon from "@mui/icons-material/Menu";
 
-const LogoSetting = ({ id }) => {
+const LogoSetting = ({ id, toggleSidebar }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Loading");
 
@@ -64,6 +65,22 @@ const LogoSetting = ({ id }) => {
       }}
       direction="column"
     >
+      <IconButton
+        onClick={toggleSidebar}
+        sx={{
+          position: "absolute",
+          top: 32,
+          left: 32,
+          zIndex: 100,
+          display: { xs: "flex", sm: "flex", md: "flex", lg: "none" },
+          backgroundColor: "#f0f0f0",
+          "&:hover": {
+            backgroundColor: "#e0e0e0",
+          },
+        }}
+      >
+        <MenuIcon />
+      </IconButton>
       <Grid
         item
         sx={{
@@ -71,7 +88,8 @@ const LogoSetting = ({ id }) => {
           overflowY: "auto",
           mx: "auto",
           height: "100%",
-          pt: 5,
+          pt: 8,
+          px: 2,
         }}
       >
         <Box
@@ -109,7 +127,7 @@ const LogoSetting = ({ id }) => {
                     Total ukuran berkas yang dapat diproses adalah maksimal 200 MB dengan ekstensi (PDF, JSON)
                   </Typography>
                 )}
-                <Box display="flex" justifyContent="flex-end" width={700}>
+                <Box display="flex" justifyContent="flex-end" width={'100%'}>
                   {file ? (
                     <>
                       <Box

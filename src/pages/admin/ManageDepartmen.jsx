@@ -15,6 +15,7 @@ import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import InputSearchBar from "../../components/Inputs/InputSearchBar";
 import DataTableDepartment from "../../components/Table/DataTableDepartment";
 import CloseIcon from "@mui/icons-material/Close";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   createDepartment,
   getDepartmentList,
@@ -25,7 +26,7 @@ import CustomSnackbar from "../../components/CustomSnackbar";
 import DeleteDepartment from "../../components/Dialog/DeleteDepartment";
 import { debounce } from "lodash";
 
-const ManageDepartmen = () => {
+const ManageDepartmen = ({ toggleSidebar }) => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -156,6 +157,22 @@ const ManageDepartmen = () => {
       direction={"column"}
       justifyContent="spavce-between"
     >
+      <IconButton
+        onClick={toggleSidebar}
+        sx={{
+          position: "absolute",
+          top: 32,
+          left: 32,
+          zIndex: 100,
+          display: { xs: "flex", sm: "flex", md: "flex", lg: "none" },
+          backgroundColor: "#f0f0f0",
+          "&:hover": {
+            backgroundColor: "#e0e0e0",
+          },
+        }}
+      >
+        <MenuIcon />
+      </IconButton>
       <Grid
         sx={{
           flex: 1,
@@ -175,10 +192,18 @@ const ManageDepartmen = () => {
         >
           <Box
             display="flex"
-            justifyContent="space-between"
+            justifyContent="flex-end"
             width="100%"
+            gap={3}
             sx={{ mb: 2 }}
           >
+            <Button
+              variant="contained"
+              onClick={handleOpen}
+              sx={{ backgroundColor: "#474D66", textTransform: "none" }}
+            >
+              + Add Department
+            </Button>
             <Box
               display="flex"
               alignItems={"center"}
@@ -196,13 +221,6 @@ const ManageDepartmen = () => {
             >
               <TrashIcon sx={{ fontSize: 20 }} />
             </Box>
-            <Button
-              variant="contained"
-              onClick={handleOpen}
-              sx={{ backgroundColor: "#474D66", textTransform: "none" }}
-            >
-              + Add Department
-            </Button>
           </Box>
           <InputSearchBar handleSearch={handleSearch} />
         </Box>

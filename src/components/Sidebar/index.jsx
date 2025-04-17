@@ -32,6 +32,8 @@ const Sidebar = ({
   setTopicName,
   setDeptID,
   setIsMenu,
+  isSidebarOpen,
+  setIsSidebarOpen
 }) => {
   const logoUrl = "http://localhost:8001/logo";
 
@@ -45,8 +47,23 @@ const Sidebar = ({
   const navigate = useNavigate();
 
   useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1200) {
+        setIsSidebarOpen(false);
+      }
+    };
+  
+    window.addEventListener('resize', handleResize);
+    
+    handleResize();
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
     if (dept_id) {
-      console.log(dept_id);
       getDepartmentName(dept_id)
         .then((name) => {
           setDepartmentName(name || "Tidak diketahui");
@@ -338,7 +355,7 @@ const Sidebar = ({
               </Box>
             </Stack>
           </Box>
-          <Box width={"100%"} paddingTop={1}>
+          <Box width={isSidebarOpen ? 400 : '100%'} paddingTop={1}>
             {selected === "personal" ? (
               <PersonalUser
                 id={id}

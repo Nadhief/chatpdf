@@ -1,7 +1,7 @@
 import { debounce } from "lodash";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
-import { Grid } from "@mui/material";
+import { Grid, Box } from "@mui/material";
 import Sidebar from "../components/Sidebar";
 import ChatBox from "./Chatbox";
 import Dokumen from "./operator/Dokumen";
@@ -34,8 +34,40 @@ const Layout = () => {
   const [pdfSource, setPdfSource] = useState(null);
   const [type, setType] = useState("");
   const [isMenu, setIsMenu] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
 
   const [isCheckingUser, setIsCheckingUser] = useState(true);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+const sidebarRef = useRef(null);
+
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (isSidebarOpen && window.innerWidth < 1200) {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        const isAutocompleteElement = event.target.closest('.MuiAutocomplete-popper') || 
+                                      event.target.closest('.MuiAutocomplete-listbox') || 
+                                      event.target.closest('.MuiAutocomplete-option');
+        
+        if (!isAutocompleteElement) {
+          setIsSidebarOpen(false);
+        }
+      }
+    }
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+  document.addEventListener('touchstart', handleClickOutside);
+  
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+    document.removeEventListener('touchstart', handleClickOutside);
+  };
+}, [isSidebarOpen]);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -57,14 +89,38 @@ const Layout = () => {
           overflowX: "hidden",
         }}
       >
+        {isSidebarOpen && window.innerWidth < 1200 && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.3)",
+              zIndex: 999, // Just below the sidebar
+            }}
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
         {isViewPdf ? (
           <>
             <Grid
+              item
               size={{ lg: 2.4 }}
               sx={{
-                display: { xs: "none", sm: "none", md: "none", lg: "block" },
-                alignItems: "start",
+                display: { 
+                  xs: isSidebarOpen ? "block" : "none", 
+                  sm: isSidebarOpen ? "block" : "none", 
+                  md: isSidebarOpen ? "block" : "none", 
+                  lg: "block" 
+                },
+                position: { xs: isSidebarOpen ? "absolute" : "static", sm: isSidebarOpen ? "absolute" : "static", md: isSidebarOpen ? "absolute" : "static", lg: "static" },
+                zIndex: 1000,
+                height: "100vh",
+                backgroundColor: "#EEF0F7",
               }}
+              ref={sidebarRef}
             >
               <Sidebar
                 dept_id={user?.department_id}
@@ -80,6 +136,8 @@ const Layout = () => {
                 setTopicName={setTopicName}
                 setDeptID={setDeptID}
                 setIsMenu={setIsMenu}
+                isSidebarOpen={isSidebarOpen}
+                setIsSidebarOpen={setIsSidebarOpen}
               />
             </Grid>
             <Grid
@@ -104,7 +162,7 @@ const Layout = () => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
-
+                      toggleSidebar={toggleSidebar}
                     />
                   }
                 />
@@ -128,16 +186,17 @@ const Layout = () => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      toggleSidebar={toggleSidebar}
                     />
                   }
                 />
                 <Route
                   path="/operator/coofisai/dokumen"
-                  element={<Dokumen id={user?.id} />}
+                  element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar}/>}
                 />
                 <Route
                   path="/operator/coofisai/pengaturan"
-                  element={<LogoSetting id={user?.id} />}
+                  element={<LogoSetting id={user?.id} toggleSidebar={toggleSidebar}/>}
                 />
               </Routes>
 
@@ -159,24 +218,25 @@ const Layout = () => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      toggleSidebar={toggleSidebar}
                     />
                   }
                 />
                 <Route
                   path="/admin/coofisai/dokumen"
-                  element={<Dokumen id={user?.id} />}
+                  element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar} />}
                 />
                 <Route
                   path="/admin/coofisai/manageuser"
-                  element={<ManageUser />}
+                  element={<ManageUser toggleSidebar={toggleSidebar}/>}
                 />
                 <Route
                   path="/admin/coofisai/managedepartment"
-                  element={<ManageDepartmen />}
+                  element={<ManageDepartmen toggleSidebar={toggleSidebar}/>}
                 />
                 <Route
                   path="/admin/coofisai/pengaturan"
-                  element={<LogoSetting id={user?.id} />}
+                  element={<LogoSetting id={user?.id} toggleSidebar={toggleSidebar}/>}
                 />
               </Routes>
             </Grid>
@@ -197,11 +257,21 @@ const Layout = () => {
         ) : (
           <>
             <Grid
+              item
               size={{ lg: 3 }}
               sx={{
-                display: { xs: "none", sm: "none", md: "none", lg: "block" },
-                alignItems: "start",
+                display: { 
+                  xs: isSidebarOpen ? "block" : "none", 
+                  sm: isSidebarOpen ? "block" : "none", 
+                  md: isSidebarOpen ? "block" : "none", 
+                  lg: "block" 
+                },
+                position: { xs: isSidebarOpen ? "absolute" : "static", sm: isSidebarOpen ? "absolute" : "static", md: isSidebarOpen ? "absolute" : "static", lg: "static" },
+                zIndex: 1000,
+                height: "100vh",
+                backgroundColor: "#EEF0F7",
               }}
+              ref={sidebarRef}
             >
               <Sidebar
                 dept_id={user?.department_id}
@@ -217,6 +287,8 @@ const Layout = () => {
                 setTopicName={setTopicName}
                 setDeptID={setDeptID}
                 setIsMenu={setIsMenu}
+                isSidebarOpen={isSidebarOpen}
+                setIsSidebarOpen={setIsSidebarOpen}
               />
             </Grid>
             <Grid
@@ -241,6 +313,7 @@ const Layout = () => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      toggleSidebar={toggleSidebar}
                     />
                   }
                 />
@@ -264,16 +337,17 @@ const Layout = () => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      toggleSidebar={toggleSidebar}
                     />
                   }
                 />
                 <Route
                   path="/operator/coofisai/dokumen"
-                  element={<Dokumen id={user?.id} />}
+                  element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar} />}
                 />
                 <Route
                   path="/operator/coofisai/pengaturan"
-                  element={<LogoSetting id={user?.id} />}
+                  element={<LogoSetting id={user?.id} toggleSidebar={toggleSidebar}/>}
                 />
               </Routes>
 
@@ -295,24 +369,25 @@ const Layout = () => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      toggleSidebar={toggleSidebar}
                     />
                   }
                 />
                 <Route
                   path="/admin/coofisai/dokumen"
-                  element={<Dokumen id={user?.id} />}
+                  element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar} />}
                 />
                 <Route
                   path="/admin/coofisai/manageuser"
-                  element={<ManageUser />}
+                  element={<ManageUser toggleSidebar={toggleSidebar}/>}
                 />
                 <Route
                   path="/admin/coofisai/managedepartment"
-                  element={<ManageDepartmen />}
+                  element={<ManageDepartmen toggleSidebar={toggleSidebar}/>}
                 />
                 <Route
                   path="/admin/coofisai/pengaturan"
-                  element={<LogoSetting id={user?.id} />}
+                  element={<LogoSetting id={user?.id} toggleSidebar={toggleSidebar}/>}
                 />
               </Routes>
             </Grid>

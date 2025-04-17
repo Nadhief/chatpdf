@@ -13,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useMemo, useState } from "react";
+import MenuIcon from "@mui/icons-material/Menu";
 import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import InputSearchBar from "../../components/Inputs/InputSearchBar";
 import DataTable from "../../components/Table/DataTable";
@@ -30,7 +31,7 @@ import CustomSnackbar from "../../components/CustomSnackbar";
 import DeleteUser from "../../components/Dialog/DeleteUser";
 import { debounce } from "lodash";
 
-const ManageUser = () => {
+const ManageUser = ({ toggleSidebar }) => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -219,6 +220,22 @@ const ManageUser = () => {
       direction={"column"}
       justifyContent="spavce-between"
     >
+      <IconButton
+        onClick={toggleSidebar}
+        sx={{
+          position: "absolute",
+          top: 32,
+          left: 32,
+          zIndex: 100,
+          display: { xs: "flex", sm: "flex", md: "flex", lg: "none" },
+          backgroundColor: "#f0f0f0",
+          "&:hover": {
+            backgroundColor: "#e0e0e0",
+          },
+        }}
+      >
+        <MenuIcon />
+      </IconButton>
       <Grid
         sx={{
           flex: 1,
@@ -238,10 +255,18 @@ const ManageUser = () => {
         >
           <Box
             display="flex"
-            justifyContent="space-between"
+            justifyContent="flex-end"
+            gap={3}
             width="100%"
             sx={{ mb: 2 }}
           >
+            <Button
+              variant="contained"
+              onClick={handleOpen}
+              sx={{ backgroundColor: "#474D66", textTransform: "none" }}
+            >
+              + Add User
+            </Button>
             <Box
               display="flex"
               alignItems={"center"}
@@ -259,13 +284,6 @@ const ManageUser = () => {
             >
               <TrashIcon sx={{ fontSize: 20 }} />
             </Box>
-            <Button
-              variant="contained"
-              onClick={handleOpen}
-              sx={{ backgroundColor: "#474D66", textTransform: "none" }}
-            >
-              + Add User
-            </Button>
           </Box>
           <InputSearchBar handleSearch={handleSearch}/>
         </Box>
