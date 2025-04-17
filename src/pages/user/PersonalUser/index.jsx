@@ -109,7 +109,7 @@ const PersonalUser = ({
       const data = await getPersonalFile({
         user_id: id,
         page: 1,
-        per_page: 10,
+        per_page: 20,
       });
       setPersonalFiles(data);
     } catch (error) {
