@@ -12,6 +12,7 @@ import FolderPlusIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import Documents from "../../../components/Sidebar/Documents";
 import { documents } from "../../../components/Sidebar/Documents/DocumentsConfig";
+import GlobalIcon from "@mui/icons-material/Language"
 import AddIcon from "@mui/icons-material/ControlPoint";
 import InputSearchBar from "../../../components/Inputs/InputSearchBar";
 import AddTopic from "../../../components/Dialog/AddTopic";
@@ -27,10 +28,12 @@ import {
   searchTopic,
   searchFileDepartment,
   searchFilePersonal,
+  personalToGlobal,
 } from "../../../services";
 import CustomSnackbar from "../../../components/CustomSnackbar";
 import { debounce } from "lodash";
 import Topics from "../../../components/Sidebar/Topics";
+import ConvertToGlobal from "../../../components/Dialog/ConvertToGlobal";
 
 const PersonalUser = ({
   id,
@@ -47,6 +50,7 @@ const PersonalUser = ({
   const [selected, setSelected] = useState("file");
   const [openPaper, setOpenPaper] = useState(false);
   const [openTrash, setOpenTrash] = useState(false);
+  const [openConvert, setOpenConvert] = useState(false);
 
   const [personalFiles, setPersonalFiles] = useState([]);
   const [personalTopics, setPersonalTopics] = useState([]);
@@ -174,7 +178,6 @@ const PersonalUser = ({
       };
       deletePersonalFile(payload)
         .then((res) => {
-          console.log("Berhasil Menghapus File:", res);
           setOpenTrash(false);
           setSelectedUploadFiles([]);
           setCheckedItems({});
@@ -224,7 +227,6 @@ const PersonalUser = ({
     };
     deleteTopic(payload)
       .then((res) => {
-        console.log("Berhasil Menghapus topik:", res);
         setOpenTrash(false);
         setSelectedTopicIndex([]); // Reset selected topic
         fetchDataTopics();
@@ -312,6 +314,31 @@ const PersonalUser = ({
     if (selected === "file") return handleSearchFilePersonal;
     if (selected === "topik") return handleSearchTopic;
     return () => {};
+  };
+
+  const handleConvertToGlobal = () => {
+    setIsLoading(true);
+    setLoadingMessage("Sedang mengubah file menjadi global...");
+    
+    const payload = {
+      filename: selectedFiles.map(file => file.name),
+      user_id: String(id),
+    };
+    
+    personalToGlobal(payload)
+      .then((res) => {
+        setOpenConvert(false);
+        setSelectedUploadFiles([]);
+        setCheckedItems({});
+        fetchDataFile();
+        setIsLoading(false);
+        openSnackbar("berhasil", "File berhasil diubah menjadi global!");
+      })
+      .catch((error) => {
+        console.error("Gagal mengubah file menjadi global:", error);
+        setIsLoading(false);
+        openSnackbar("gagal", "File gagal diubah menjadi global!");
+      });
   };
 
   return (
@@ -546,19 +573,53 @@ const PersonalUser = ({
                 justifyContent="flex-end"
                 width="100%"
                 color="white"
-              >
+                gap={1}
+              > 
+                {selected === "file" ?
+                  <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  color="white"
+                  paddingY={0.7}
+                  paddingX={2}
+                  borderRadius={2}
+                  gap={0.7}
+                  sx={{
+                    cursor: "pointer",
+                    backgroundColor: "#474D66",
+                  }}
+                  onClick={() => {
+                    if (selectedFiles.length > 0) {
+                      setOpenConvert(true);
+                    } else {
+                      alert("Pilih file terlebih dahulu!");
+                    }
+                  }}
+                  >
+                    <GlobalIcon sx={{ color: "white", fontSize: 16 }} />
+                    <Typography fontSize={12}> Global </Typography>
+                  </Box>
+                : null}
+                
                 <Box
                   display="flex"
                   justifyContent="flex-end"
                   color="white"
                   paddingY={0.7}
                   paddingX={0.7}
-                  borderRadius={1}
+                  borderRadius={2}
                   sx={{
                     cursor: "pointer",
                     backgroundColor: "#CB3A31",
                   }}
-                  onClick={() => setOpenTrash(true)}
+                  onClick={() => {
+                    if (selectedFiles.length > 0) {
+                      setOpenTrash(true);
+                    } else {
+                      alert("Pilih file terlebih dahulu!");
+                    }
+                  }}
                 >
                   <TrashIcon sx={{ color: "white", fontSize: 20 }} />
                 </Box>
@@ -571,6 +632,7 @@ const PersonalUser = ({
                     <Documents
                       key={idx}
                       label={item.name}
+                      status={item.status}
                       checked={checkedItems[idx] || false}
                       onCheck={(val) => handleCheckFile(idx, val)}
                     />
@@ -680,6 +742,11 @@ const PersonalUser = ({
           </Typography>
         </DialogContent>
       </Dialog>
+      <ConvertToGlobal
+        open={openConvert}
+        onClose={() => setOpenConvert(false)}
+        handleConvert={handleConvertToGlobal}
+      />
       <CustomSnackbar
         open={snackbar.open}
         onClose={closeSnackbar}

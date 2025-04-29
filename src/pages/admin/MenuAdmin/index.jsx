@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Stack, Typography } from '@mui/material';
+import StorageIcon from '@mui/icons-material/Storage';
 import SettingIcon from '@mui/icons-material/SettingsOutlined';
 import PersonIcon from '@mui/icons-material/PersonOutlined';
 import DepartmentIcon from '@mui/icons-material/ApartmentOutlined';
@@ -9,6 +10,13 @@ import { useNavigate } from 'react-router-dom';
 
 const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu, setIsSidebarOpen }) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedSelection = localStorage.getItem('itemSelected');
+    if (savedSelection) {
+      setItemSelected(savedSelection);
+    }
+  }, [setItemSelected]);
 
   const MenuItem = ({ label, icon: Icon, selected, onClick }) => (
     <Stack
@@ -63,6 +71,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu, s
         selected={itemSelected === 'dokumen'}
         onClick={() => {
           setItemSelected('dokumen');
+          localStorage.setItem('itemSelected', 'dokumen');
           setIsSidebarOpen(false);
           navigate('/admin/coofisai/dokumen');
         }}
@@ -74,6 +83,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu, s
         selected={itemSelected === 'user'}
         onClick={() => {
           setItemSelected('user');
+          localStorage.setItem('itemSelected', 'user');
           setIsSidebarOpen(false);
           navigate('/admin/coofisai/manageuser');
         }}
@@ -85,8 +95,21 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu, s
         selected={itemSelected === 'departemen'}
         onClick={() => {
           setItemSelected('departemen');
+          localStorage.setItem('itemSelected', 'departemen');
           setIsSidebarOpen(false);
           navigate('/admin/coofisai/managedepartment');
+        }}
+      />
+
+      <MenuItem
+        label="Database"
+        icon={StorageIcon}
+        selected={itemSelected === 'daatabase'}
+        onClick={() => {
+          setItemSelected('database');
+          localStorage.setItem('itemSelected', 'database');
+          setIsSidebarOpen(false);
+          navigate('/operator/coofisai/database');
         }}
       />
 
@@ -96,6 +119,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu, s
         selected={itemSelected === 'pengaturan'}
         onClick={() => {
           setItemSelected('pengaturan');
+          localStorage.setItem('itemSelected', 'pengaturan');
           setIsSidebarOpen(false);
           navigate('/admin/coofisai/pengaturan');
         }}
@@ -108,6 +132,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu, s
         onClick={() => {
           setSettingPage(false);
           setItemSelected('dokumen');
+          localStorage.setItem('itemSelected', 'dokumen');
           navigate('/admin/coofisai');
           localStorage.setItem("isMenu", "false");
         }}
