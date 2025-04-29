@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Stack, Typography } from '@mui/material';
+import StorageIcon from '@mui/icons-material/Storage';
 import SettingIcon from '@mui/icons-material/SettingsOutlined';
 import FileIcon from '@mui/icons-material/InsertDriveFileOutlined';
 import ChatIcon from '@mui/icons-material/ChatOutlined';
@@ -7,6 +8,13 @@ import { useNavigate } from 'react-router-dom';
 
 const MenuOperator = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu, setIsSidebarOpen }) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedSelection = localStorage.getItem('itemSelected');
+    if (savedSelection) {
+      setItemSelected(savedSelection);
+    }
+  }, [setItemSelected]);
 
   const MenuItem = ({ label, icon: Icon, selected, onClick }) => (
     <Stack
@@ -61,8 +69,21 @@ const MenuOperator = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu
         selected={itemSelected === 'dokumen'}
         onClick={() => {
           setItemSelected('dokumen');
+          localStorage.setItem('itemSelected', 'dokumen');
           setIsSidebarOpen(false);
           navigate('/operator/coofisai/dokumen');
+        }}
+      />
+
+      <MenuItem
+        label="Database"
+        icon={StorageIcon}
+        selected={itemSelected === 'daatabase'}
+        onClick={() => {
+          setItemSelected('database');
+          localStorage.setItem('itemSelected', 'database');
+          setIsSidebarOpen(false);
+          navigate('/operator/coofisai/database');
         }}
       />
 
@@ -72,6 +93,7 @@ const MenuOperator = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu
         selected={itemSelected === 'pengaturan'}
         onClick={() => {
           setItemSelected('pengaturan');
+          localStorage.setItem('itemSelected', 'pengaturan');
           setIsSidebarOpen(false);
           navigate('/operator/coofisai/pengaturan');
         }}
@@ -84,7 +106,8 @@ const MenuOperator = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu
         onClick={() => {
           setSettingPage(false);
           setItemSelected('dokumen');
-          setIsMenu(false)
+          localStorage.setItem('itemSelected', 'dokumen');
+          setIsMenu(false);
           localStorage.setItem("isMenu", "false");
           navigate('/operator/coofisai');
         }}

@@ -792,6 +792,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
                             checked={checkedItems[idx] || false}
                             onCheck={(val) => handleCheckFile(idx, val)}
                             filter={selected}
+                            status={item.status}
                           />
                         ))
                       : selected === "topik"

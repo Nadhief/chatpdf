@@ -396,6 +396,19 @@ export const getArrayBufferPDFDepartment = async({dept_id, filename, page}) =>{
   }
 } 
 
+export const personalToGlobal = async ({ filename, user_id }) => {
+  try {
+    const response = await api.post("/file/personal_to_global", {
+      filename: filename,
+      user_id: user_id
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error converting personal file to global:", error);
+    throw error;
+  }
+};
+
 // /file/buffer_doc_personal
 // params: user_id: str, filename: str, page: str
 
