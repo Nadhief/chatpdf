@@ -75,7 +75,7 @@ const MenuOperator = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu
         }}
       />
 
-      <MenuItem
+      {/* <MenuItem
         label="Database"
         icon={StorageIcon}
         selected={itemSelected === 'daatabase'}
@@ -85,7 +85,7 @@ const MenuOperator = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu
           setIsSidebarOpen(false);
           navigate('/operator/coofisai/database');
         }}
-      />
+      /> */}
 
       <MenuItem
         label="Pengaturan"

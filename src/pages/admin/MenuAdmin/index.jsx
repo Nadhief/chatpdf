@@ -101,7 +101,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu, s
         }}
       />
 
-      <MenuItem
+      {/* <MenuItem
         label="Database"
         icon={StorageIcon}
         selected={itemSelected === 'daatabase'}
@@ -111,7 +111,7 @@ const MenuAdmin = ({ itemSelected, setItemSelected, setSettingPage, setIsMenu, s
           setIsSidebarOpen(false);
           navigate('/operator/coofisai/database');
         }}
-      />
+      /> */}
 
       <MenuItem
         label="Pengaturan"

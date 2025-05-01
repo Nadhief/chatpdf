@@ -619,7 +619,8 @@ const Sidebar = ({
                     Chat Baru
                   </Typography>
                 </Stack>
-
+              </Box>
+              <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                 <Stack
                   paddingBottom={0.8}
                   borderRadius={2}
