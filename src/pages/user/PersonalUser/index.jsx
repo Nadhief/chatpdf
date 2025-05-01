@@ -266,6 +266,7 @@ const PersonalUser = ({
           per_page: 10,
         })
           .then((res) => {
+            console.log("Search result:", res);
             console.log("Search result:", res.list_files);
             setPersonalFiles((prev) => ({
               ...prev,
