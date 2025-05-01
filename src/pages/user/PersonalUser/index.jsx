@@ -42,6 +42,8 @@ const PersonalUser = ({
   setTopicName,
   historyId,
   setHistoryId,
+  model,
+  vectorizer
 }) => {
   const [selected, setSelected] = useState("file");
   const [openPaper, setOpenPaper] = useState(false);
@@ -394,8 +396,8 @@ const PersonalUser = ({
     if(historyId) {
     const payload = {
       id: String(id),
-      embedding_model: "nomic-embed-text",
-      llm_model: "Llama 3.1",
+      embedding_model: vectorizer,
+      llm_model: model,
       filename: selectedFiles?.map((file) => file?.name),
       history_id: String(historyId),
     };
@@ -410,8 +412,8 @@ const PersonalUser = ({
     } else {
       const payload = {
         id: String(id),
-        embedding_model: "nomic-embed-text",
-        llm_model: "Llama 3.1",
+        embedding_model: vectorizer,
+        llm_model: model,
         filename: selectedFiles?.map((file) => file?.name),
         history_id: '',
       };

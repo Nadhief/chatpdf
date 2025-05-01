@@ -54,6 +54,8 @@ const Sidebar = ({
   setTopicName,
   setDeptID,
   setIsMenu,
+  model,
+  vectorizer,
   isSidebarOpen,
   setIsSidebarOpen,
   setHistoryId,
@@ -778,6 +780,8 @@ const Sidebar = ({
                     setTopicName={setTopicName}
                     historyId={historyId}
                     setHistoryId={setHistoryId}
+                    model={model}
+                    vectorizer={vectorizer}
                   />
                 ) : selected === "departemen" ? (
                   role === "user" ? (
@@ -787,7 +791,9 @@ const Sidebar = ({
                       setResponseSummarize={setResponseSummarize}
                       setIsSummarize={setIsSummarize}
                       historyId={historyId}
-                    setHistoryId={setHistoryId}
+                      setHistoryId={setHistoryId}
+                      model={model}
+                      vectorizer={vectorizer}
                     />
                   ) : role === "operator" || "admin" ? (
                     <DepartemenOperator
@@ -796,7 +802,9 @@ const Sidebar = ({
                       setIsSummarize={setIsSummarize}
                       setResponseSummarize={setResponseSummarize}
                       historyId={historyId}
-                    setHistoryId={setHistoryId}
+                      setHistoryId={setHistoryId}
+                      model={model}
+                      vectorizer={vectorizer}
                     />
                   ) : null
                 ) : null}

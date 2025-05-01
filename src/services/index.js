@@ -362,8 +362,26 @@ export const uploadLogo = async (file) => {
 };
 
 export const getArrayBufferPDFPersonal = async({user_id, filename, page}) =>{
+  
   try {
     const response = await api.get("file/buffer_doc_personal", {
+      params: {
+        user_id: user_id,
+        filename: filename,
+        page: page,
+      },
+      responseType: 'arraybuffer',
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting pdf:", error);
+    throw error;
+  }
+} 
+
+export const getArrayBufferPDFGlobal = async({user_id, filename, page}) =>{
+  try {
+    const response = await api.get("file/buffer_doc_global", {
       params: {
         user_id: user_id,
         filename: filename,

@@ -33,10 +33,10 @@ const DepartemenOperator = ({
   setDeptID,
   setIsSummarize,
   setResponseSummarize,
+  historyId,
+  setHistoryId,
   model,
-  setModel,
-  vectorizer,
-  setVectorizer,
+  vectorizer
 }) => {
   const [departmentList, setDepartmentList] = useState([]);
   const departmentOptions = departmentList.map(([id, name, code]) => ({
@@ -116,20 +116,40 @@ const DepartemenOperator = ({
   };
 
   const handleSummarize = async () => {
-    const payload = {
-      id: String(selectedDepartmentid),
-      embedding_model: vectorizer,
-      llm_model: model,
-      filename: selectedFiles?.map((file) => file?.name),
-    };
-    summarizeFileDepartment(payload)
-      .then((res) => {
-        setResponseSummarize(res);
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (historyId) {
+      const payload = {
+        id: String(selectedDepartmentid),
+        embedding_model: vectorizer,
+        llm_model: model,
+        filename: selectedFiles?.map((file) => file?.name),
+        history_id: String(historyId),
+      };
+      summarizeFileDepartment(payload)
+        .then((res) => {
+          setResponseSummarize(res);
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      const payload = {
+        id: String(selectedDepartmentid),
+        embedding_model: vectorizer,
+        llm_model: model,
+        filename: selectedFiles?.map((file) => file?.name),
+        history_id: "",
+      };
+      summarizeFileDepartment(payload)
+        .then((res) => {
+          setResponseSummarize(res);
+          setHistoryId(res?.current_history_id);
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   const handleSelectUploadFiles = (event) => {

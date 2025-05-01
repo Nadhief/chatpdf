@@ -151,12 +151,14 @@ const Layout = () => {
                 setTopicName={setTopicName}
                 setDeptID={setDeptID}
                 setIsMenu={setIsMenu}
-                // model={model}
-                // setModel={setModel}
-                // vectorizer={vectorizer}
-                // setVectorizer={setVectorizer}
+                model={model}
+                vectorizer={vectorizer}
                 isSidebarOpen={isSidebarOpen}
                 setIsSidebarOpen={setIsSidebarOpen}
+                setHistoryId={setHistoryId}
+                historyId={historyId}
+                setIsHistorys={setIsHistory}
+                setNewChat={setNewChat}
               />
             </Grid>
             <Grid
@@ -168,7 +170,7 @@ const Layout = () => {
                   path="/coofisai"
                   element={
                     <ChatBox
-                      role={"User"}
+                      role={"Admin"}
                       id={user?.id}
                       selected={selected}
                       responseSummarize={responseSummarize}
@@ -187,6 +189,10 @@ const Layout = () => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
+                      isHistory={isHistory}
+                      newChat={newChat}
+                      historyId={historyId}
+                      setHistoryId={setHistoryId}
                     />
                   }
                 />
@@ -197,7 +203,7 @@ const Layout = () => {
                   path="/operator/coofisai"
                   element={
                     <ChatBox
-                      role={"Operator"}
+                      role={"Admin"}
                       id={user?.id}
                       selected={selected}
                       responseSummarize={responseSummarize}
@@ -216,6 +222,10 @@ const Layout = () => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
+                      isHistory={isHistory}
+                      newChat={newChat}
+                      historyId={historyId}
+                      setHistoryId={setHistoryId}
                     />
                   }
                 />
@@ -257,6 +267,10 @@ const Layout = () => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
+                      isHistory={isHistory}
+                      newChat={newChat}
+                      historyId={historyId}
+                      setHistoryId={setHistoryId}
                     />
                   }
                 />
@@ -335,9 +349,7 @@ const Layout = () => {
                 setDeptID={setDeptID}
                 setIsMenu={setIsMenu}
                 model={model}
-                setModel={setModel}
                 vectorizer={vectorizer}
-                setVectorizer={setVectorizer}
                 isSidebarOpen={isSidebarOpen}
                 setIsSidebarOpen={setIsSidebarOpen}
                 setHistoryId={setHistoryId}
@@ -411,6 +423,10 @@ const Layout = () => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
+                      isHistory={isHistory}
+                      newChat={newChat}
+                      historyId={historyId}
+                      setHistoryId={setHistoryId}
                     />
                   }
                 />
@@ -453,6 +469,10 @@ const Layout = () => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
+                      isHistory={isHistory}
+                      newChat={newChat}
+                      historyId={historyId}
+                      setHistoryId={setHistoryId}
                     />
                   }
                 />
