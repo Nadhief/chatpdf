@@ -12,6 +12,7 @@ import {
   InputAdornment,
   IconButton,
   Box,
+  Stack,
 } from "@mui/material";
 import ChatbotImage from "../assets/images/Chatbot.png";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -33,10 +34,15 @@ const ChatBox = ({
   setIsViewPdf,
   setPdfSource,
   setType,
+  model,
+  setModel,
+  vectorizer,
+  setVectorizer,
   toggleSidebar,
+  isViewPdf,
 }) => {
-  const [model, setModel] = useState("Llama 3.1");
-  const [vectorizer, setVectorizer] = useState("nomic-embed-text");
+  // const [model, setModel] = useState("Llama 3.1");
+  // const [vectorizer, setVectorizer] = useState("nomic-embed-text");
   const [question, setQuestion] = useState("");
 
   const [responses, setResponses] = useState(() => {
@@ -60,7 +66,7 @@ const ChatBox = ({
       user: currentQuestion,
       bot: "⌛",
       source: [],
-      type:""
+      type: "",
     };
     setResponses((prev) => [...prev, placeholder]);
 
@@ -88,7 +94,7 @@ const ChatBox = ({
           user: currentQuestion,
           bot: res.response,
           source: filenames,
-          type: res.type
+          type: res.type,
         };
 
         setResponses((prev) => {
@@ -109,7 +115,7 @@ const ChatBox = ({
             user: currentQuestion,
             bot: res.response,
             source: filenames,
-            type: res.type
+            type: res.type,
           };
 
           setResponses((prev) => {
@@ -135,7 +141,7 @@ const ChatBox = ({
             user: currentQuestion,
             bot: res.response,
             source: filenames,
-            type: res.type
+            type: res.type,
           };
 
           setResponses((prev) => {
@@ -199,7 +205,7 @@ const ChatBox = ({
 
   useEffect(() => {
     if (responseSummarize) {
-      console.log(responseSummarize)
+      console.log(responseSummarize);
       const filenames = responseSummarize?.sources?.map((item) => {
         const cleanedItem = item.replace(/^PDF:\s*/, "");
         return cleanedItem.split("/").pop();
@@ -209,7 +215,7 @@ const ChatBox = ({
         user: "Please summarize this document",
         bot: responseSummarize?.response,
         source: filenames,
-        type: responseSummarize?.type
+        type: responseSummarize?.type,
       };
 
       setResponses((prev) => {
@@ -224,7 +230,7 @@ const ChatBox = ({
 
   // console.log(deptID)
   return (
-    <Grid
+    <Stack
       sx={{
         height: "95vh",
         backgroundColor: "#fff",
@@ -277,26 +283,38 @@ const ChatBox = ({
       )}
 
       {responses.length > 0 && (
-        <Grid
+        <Stack
           sx={{
             flex: 1,
             overflowY: "auto",
-            mx: "auto",
+            // mx: "auto",
             height: "80%",
             pt: 10,
           }}
         >
           {responses?.map((res, idx) => (
-            <Box
+            <Stack
               key={idx}
               sx={{
-                mx: "auto",
+                mx: {
+                  xs: 0,
+                  md: "auto",
+                },
                 mb: 4,
                 px: 1,
-                maxWidth: responses.length > 0 ? "70%" : "80%",
+                maxWidth: {
+                  xs: "100%",
+                  md: responses.length > 0 ? "70%" : "80%",
+                },
               }}
             >
-              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <Stack
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "flex-end",
+                }}
+              >
                 <Box
                   sx={{
                     backgroundColor: "#f0f0f0",
@@ -308,9 +326,9 @@ const ChatBox = ({
                 >
                   <Typography textAlign={"start"}>{res.user}</Typography>
                 </Box>
-              </Box>
+              </Stack>
 
-              <Box sx={{ display: "flex", alignItems: "flex-start", my: 6 }}>
+              <Stack sx={{ display: "flex", alignItems: "flex-start" }}>
                 <Box
                   component="img"
                   src={ChatbotImage}
@@ -339,10 +357,7 @@ const ChatBox = ({
                         <Typography>Thinking...</Typography>
                       </Box>
                     ) : (
-                      <ReactMarkdown>
-                        {/* {idx === responses.length - 1 ? displayedText : res.bot} */}
-                        {res.bot}
-                      </ReactMarkdown>
+                      <ReactMarkdown>{res.bot}</ReactMarkdown>
                     )}
                   </Box>
                   <Box sx={{ alignItems: "start" }}>
@@ -366,7 +381,7 @@ const ChatBox = ({
                             display: "flex",
                             flexDirection: "column",
                             gap: 1,
-                            cursor:'pointer'
+                            cursor: "pointer",
                           }}
                         >
                           {res.source.map((src, i) => (
@@ -387,7 +402,7 @@ const ChatBox = ({
                               onClick={() => {
                                 setIsViewPdf(true);
                                 setPdfSource(src);
-                                setType(res.type)
+                                setType(res.type);
                               }}
                             >
                               <Typography align="start">📄 {src}</Typography>
@@ -398,20 +413,26 @@ const ChatBox = ({
                     )}
                   </Box>
                 </Box>
-              </Box>
-            </Box>
+              </Stack>
+            </Stack>
           ))}
           <Box ref={chatEndRef} />
-        </Grid>
+        </Stack>
       )}
 
-      <Grid
+      <Stack
         sx={{
           position: responses.length > 0 ? "sticky" : "static",
           bottom: 0,
           zIndex: 10,
-          maxWidth: responses.length > 0 ? "70%" : "80%",
-          mx: "auto",
+          maxWidth: {
+            xs: "100%",
+            md: responses.length > 0 ? "100%" : "80%",
+          },
+          mx: {
+            xs: 0,
+            md: "auto",
+          },
           backgroundColor: "white",
         }}
       >
@@ -459,7 +480,7 @@ const ChatBox = ({
               >
                 <MenuItem value="nomic-embed-text">nomic-embed-text</MenuItem>
                 <MenuItem value="paraphrase-ultilingual-mpnet-base-v2">
-                  paraphrase-ultilingual-mpnet-base-v2
+                  paraphrase-multilingual-mpnet-base-v2
                 </MenuItem>
                 <MenuItem value="all-mpnet-base-v2">all-mpnet-base-v2</MenuItem>
               </Select>
@@ -519,8 +540,8 @@ const ChatBox = ({
             />
           </Grid>
         </Grid>
-      </Grid>
-    </Grid>
+      </Stack>
+    </Stack>
   );
 };
 

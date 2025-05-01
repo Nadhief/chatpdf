@@ -18,6 +18,10 @@ const DepartemenUser = ({
   setDeptID,
   setResponseSummarize,
   setIsSummarize,
+  model,
+  setModel,
+  vectorizer,
+  setVectorizer,
 }) => {
   const [departmentList, setDepartmentList] = useState([]);
   const departmentOptions = departmentList.map(([id, name, code]) => ({
@@ -78,8 +82,8 @@ const DepartemenUser = ({
   const handleSummarize = async () => {
     const payload = {
       id: String(selectedDepartmentid),
-      embedding_model: "nomic-embed-text",
-      llm_model: "Llama 3.1",
+      embedding_model: vectorizer,
+      llm_model: model,
       filename: selectedFiles?.map((file) => file?.name),
     };
     summarizeFileDepartment(payload)

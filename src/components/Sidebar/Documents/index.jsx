@@ -51,7 +51,7 @@ const Documents = ({ label, status, checked, onCheck }) => {
         >
           {label}
         </Typography>
-        
+
         <Box 
           sx={{ 
             backgroundColor: status === 'private' ? "#EEF0F7" : "#D6E0FF", 

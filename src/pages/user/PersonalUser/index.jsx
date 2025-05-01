@@ -1,18 +1,17 @@
-import React, { useEffect, useMemo } from "react";
-import { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
   CircularProgress,
   Dialog,
   DialogContent,
+  TablePagination,
   Stack,
   Typography,
 } from "@mui/material";
 import FolderPlusIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import Documents from "../../../components/Sidebar/Documents";
-import { documents } from "../../../components/Sidebar/Documents/DocumentsConfig";
-import GlobalIcon from "@mui/icons-material/Language"
+import GlobalIcon from "@mui/icons-material/Language";
 import AddIcon from "@mui/icons-material/ControlPoint";
 import InputSearchBar from "../../../components/Inputs/InputSearchBar";
 import AddTopic from "../../../components/Dialog/AddTopic";
@@ -26,7 +25,6 @@ import {
   deletePersonalFile,
   uploadPersonalFile,
   searchTopic,
-  searchFileDepartment,
   searchFilePersonal,
   personalToGlobal,
 } from "../../../services";
@@ -59,6 +57,13 @@ const PersonalUser = ({
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Loading");
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [topicPage, setTopicPage] = useState(0);
+  const [topicRowsPerPage, setTopicRowsPerPage] = useState(5);
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -73,6 +78,152 @@ const PersonalUser = ({
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+    if (searchQuery && selected === "file") {
+      searchFilePersonal({
+        user_id: String(id),
+        keywords: searchQuery,
+        page: newPage + 1,
+        per_page: rowsPerPage,
+      })
+        .then((res) => {
+          setPersonalFiles(res);
+        })
+        .catch((err) => {
+          console.error("Search error:", err);
+        });
+    } else {
+      fetchDataFile(newPage + 1, rowsPerPage);
+    }
+  };
+
+  const handleTopicChangePage = (event, newPage) => {
+    setTopicPage(newPage);
+    if (searchQuery && selected === "topik") {
+      searchTopic({
+        user_id: String(id),
+        keywords: searchQuery,
+        page: newPage + 1,
+        per_page: topicRowsPerPage,
+      })
+        .then((res) => {
+          setPersonalTopics((prev) => ({
+            ...prev,
+            list_files: res.results,
+            total_files: res.total || res.results.length,
+          }));
+        })
+        .catch((err) => {
+          console.error("Search error:", err);
+        });
+    } else {
+      fetchDataTopicsWithPagination(newPage + 1, topicRowsPerPage);
+    }
+  };
+
+  const fetchDataTopicsWithPagination = async (pageNum = 1, perPage = 5) => {
+    try {
+      const data = await getTopic({
+        user_id: id,
+        page: pageNum,
+        per_page: perPage,
+      });
+      
+      // If the API is not handling pagination properly, manually paginate the data
+      // This ensures that even if the API returns all topics, we only show the requested number
+      if (data && data.list_files && Array.isArray(data.list_files)) {
+        // Calculate start and end indices for current page
+        const startIndex = (pageNum - 1) * perPage;
+        const endIndex = startIndex + perPage;
+        
+        // Get only the topics for the current page
+        const paginatedTopics = data.list_files.slice(startIndex, endIndex);
+        
+        // Create a new paginated data object
+        const paginatedData = {
+          ...data,
+          list_files: paginatedTopics,
+          total_files: data.total_files || data.list_files.length // Keep the total count
+        };
+        
+        setPersonalTopics(paginatedData);
+      } else {
+        setPersonalTopics(data);
+      }
+      
+      // Reset search query when fetching all topics
+      if (!pageNum || pageNum === 1) {
+        setSearchQuery("");
+      }
+    } catch (error) {
+      console.error("Gagal mengambil topik:", error);
+    }
+  };
+
+  const handleTopicChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setTopicRowsPerPage(newRowsPerPage);
+    setTopicPage(0); // Reset to first page when changing rows per page
+    
+    if (searchQuery && selected === "topik") {
+      searchTopic({
+        user_id: String(id),
+        keywords: searchQuery,
+        page: 1, // Reset to first page
+        per_page: newRowsPerPage,
+      })
+        .then((res) => {
+          // If the API returns all results, manually paginate them
+          if (res && res.results && Array.isArray(res.results)) {
+            const paginatedResults = res.results.slice(0, newRowsPerPage);
+            
+            setPersonalTopics((prev) => ({
+              ...prev,
+              list_files: paginatedResults,
+              total_files: res.total || res.results.length,
+            }));
+          } else {
+            setPersonalTopics((prev) => ({
+              ...prev,
+              list_files: res.results,
+              total_files: res.total || res.results.length,
+            }));
+          }
+        })
+        .catch((err) => {
+          console.error("Search error:", err);
+        });
+    } else {
+      fetchDataTopicsWithPagination(1, newRowsPerPage);
+    }
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
+    setPage(0);
+    
+    if (searchQuery && selected === "file") {
+      // If there's an active search, fetch search results with new rows per page
+      searchFilePersonal({
+        user_id: String(id),
+        keywords: searchQuery,
+        page: 1,
+        per_page: newRowsPerPage,
+      })
+        .then((res) => {
+          setPersonalFiles(res);
+        })
+        .catch((err) => {
+          console.error("Search error:", err);
+        });
+    } else {
+      // Otherwise fetch regular data with new rows per page
+      fetchDataFile(1, newRowsPerPage);
+    }
+  };
+
   const handleCheckFile = (idx, value) => {
     setCheckedItems((prev) => ({
       ...prev,
@@ -80,7 +231,6 @@ const PersonalUser = ({
     }));
   };
 
-  // Replace handleCheckTopic with handleSelectTopic
   const handleSelectTopic = (idx) => {
     setSelectedTopicIndex(idx);
     // If a topic is selected, set the topic name
@@ -104,28 +254,25 @@ const PersonalUser = ({
     fetchDataTopics();
   }, []);
 
-  const fetchDataFile = async () => {
+  const fetchDataFile = async (pageNum = 1, perPage = 5) => {
     try {
       const data = await getPersonalFile({
         user_id: id,
-        page: 1,
-        per_page: 10,
+        page: pageNum,
+        per_page: perPage,
       });
       setPersonalFiles(data);
+      // Reset search query when fetching all files
+      if (!pageNum || pageNum === 1) {
+        setSearchQuery("");
+      }
     } catch (error) {
       console.error("Gagal mengambil file personal:", error);
     }
   };
 
   const fetchDataTopics = async () => {
-    try {
-      const data = await getTopic({
-        user_id: id,
-      });
-      setPersonalTopics(data);
-    } catch (error) {
-      console.error("Gagal mengambil topik:", error);
-    }
+    fetchDataTopicsWithPagination(1, topicRowsPerPage);
   };
 
   const handleSelectUploadFiles = (event) => {
@@ -159,6 +306,7 @@ const PersonalUser = ({
         })
         .catch((error) => {
           console.error("Gagal upload:", error);
+          setIsLoading(false);
           openSnackbar("gagal", "File gagal diunggah!");
         });
     }
@@ -183,6 +331,7 @@ const PersonalUser = ({
         })
         .catch((error) => {
           console.error("Gagal menghapus file:", error);
+          setIsLoading(false);
           openSnackbar("gagal", "File gagal dihapus!");
         });
     });
@@ -209,13 +358,16 @@ const PersonalUser = ({
       })
       .catch((error) => {
         console.error("Gagal menambahkan topik:", error);
+        setIsLoading(false);
         openSnackbar("gagal", "Topik gagal ditambah!");
       });
   };
 
   const handleDeleteTopic = () => {
-    // setIsLoading(true);
     if (selectedTopic.length === 0) return;
+    
+    setIsLoading(true);
+    setLoadingMessage("Sedang menghapus Topik...");
 
     const payload = {
       id: String(id),
@@ -224,13 +376,14 @@ const PersonalUser = ({
     deleteTopic(payload)
       .then((res) => {
         setOpenTrash(false);
-        setSelectedTopicIndex([]); // Reset selected topic
+        setSelectedTopicIndex(null); // Reset selected topic
         fetchDataTopics();
         setIsLoading(false);
         openSnackbar("berhasil", "Topik berhasil dihapus!");
       })
       .catch((error) => {
-        console.error("Gagal menambahkan topik:", error);
+        console.error("Gagal menghapus topik:", error);
+        setIsLoading(false);
         openSnackbar("gagal", "Topik gagal dihapus!");
       });
   };
@@ -252,50 +405,69 @@ const PersonalUser = ({
       });
   };
 
+  // Improved search function for files with pagination
   const debouncedSearchFilePersonal = useMemo(
     () =>
       debounce((value) => {
+        setSearchQuery(value); // Store current search query
+        setPage(0); // Reset to first page on new search
+        
+        if (value.trim() === "") {
+          // If search is cleared, reset to regular data fetching
+          fetchDataFile(1, rowsPerPage);
+          return;
+        }
+        
         searchFilePersonal({
           user_id: String(id),
           keywords: value,
-          page: 1,
-          per_page: 10,
+          page: 1, // Always start from page 1 for new searches
+          per_page: rowsPerPage, // Use current rowsPerPage
         })
           .then((res) => {
-            console.log("Search result:", res.list_files);
-            setPersonalFiles((prev) => ({
-              ...prev,
-              list_files: res.list_files,
-            }));
+            console.log("Search result:", res);
+            // Replace entire object to include total_files for pagination
+            setPersonalFiles(res);
           })
           .catch((err) => {
             console.error("Search error:", err);
           });
       }, 300),
-    [id]
+    [id, rowsPerPage]
   );
 
+  // Improved search function for topics
   const debouncedSearchTopic = useMemo(
     () =>
       debounce((value) => {
+        setSearchQuery(value);
+        setTopicPage(0); // Reset to first page on new search
+        
+        if (value.trim() === "") {
+          fetchDataTopicsWithPagination(1, topicRowsPerPage);
+          return;
+        }
+        
         searchTopic({
           user_id: String(id),
           keywords: value,
+          page: 1,
+          per_page: topicRowsPerPage,
         })
           .then((res) => {
-            console.log("Search result:", res.results);
+            console.log("Search result topics:", res);
             setPersonalTopics((prev) => ({
               ...prev,
               list_files: res.results,
+              total_files: res.total || res.results.length,
             }));
-            // Reset selected topic when search results change
             setSelectedTopicIndex(null);
           })
           .catch((err) => {
             console.error("Search error:", err);
           });
       }, 300),
-    []
+    [id, topicRowsPerPage]
   );
 
   const handleSearchFilePersonal = (e) => {
@@ -353,10 +525,9 @@ const PersonalUser = ({
         },
         margin: '0 auto'
       }}
-      spacing={3}
     >
       <Box width="100%" textAlign="left">
-        <Typography fontSize={18} fontWeight={700} color="#404040">
+        <Typography paddingBottom={3} fontSize={18} fontWeight={700} color="#404040">
           Unggah Dokumen Personal
         </Typography>
       </Box>
@@ -366,6 +537,7 @@ const PersonalUser = ({
           border: "2px solid #E5E6EF",
           borderRadius: "4px",
           backgroundColor: "#FAFBFD",
+          mb: 3
         }}
       >
         <Stack direction="column" padding={1.5} spacing={1}>
@@ -509,7 +681,9 @@ const PersonalUser = ({
                 onClick={() => {
                   setSelectedTopic(false);
                   setSelected("file");
-                  setSelectedTopicIndex([])
+                  setSelectedTopicIndex(null);
+                  setSearchQuery(""); // Clear search when switching tabs
+                  fetchDataFile();
                 }}
                 sx={{
                   cursor: selected === "file" ? "default" : "pointer",
@@ -541,10 +715,12 @@ const PersonalUser = ({
                     : "1px solid #9E9E9E"
                 }
                 onClick={() => {
-                  setSelectedUploadFiles([])
-                  setCheckedItems({})
+                  setSelectedUploadFiles([]);
+                  setCheckedItems({});
                   setSelectedTopic(true);
                   setSelected("topik");
+                  setSearchQuery(""); // Clear search when switching tabs
+                  fetchDataTopics();
                 }}
                 sx={{
                   cursor: selected === "topik" ? "default" : "pointer",
@@ -560,8 +736,7 @@ const PersonalUser = ({
                   fontWeight={400}
                   color={selected === "topik" ? "#EA001E" : "black"}
                 >
-                  {" "}
-                  Topik{" "}
+                  Topik
                 </Typography>
               </Box>
               <Box
@@ -573,25 +748,25 @@ const PersonalUser = ({
               > 
                 {selected === "file" ?
                   <Box
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  color="white"
-                  paddingY={0.7}
-                  paddingX={2}
-                  borderRadius={2}
-                  gap={0.7}
-                  sx={{
-                    cursor: "pointer",
-                    backgroundColor: "#474D66",
-                  }}
-                  onClick={() => {
-                    if (selectedFiles.length > 0) {
-                      setOpenConvert(true);
-                    } else {
-                      alert("Pilih file terlebih dahulu!");
-                    }
-                  }}
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    color="white"
+                    paddingY={0.7}
+                    paddingX={2}
+                    borderRadius={2}
+                    gap={0.7}
+                    sx={{
+                      cursor: "pointer",
+                      backgroundColor: "#474D66",
+                    }}
+                    onClick={() => {
+                      if (selectedFiles.length > 0) {
+                        setOpenConvert(true);
+                      } else {
+                        alert("Pilih file terlebih dahulu!");
+                      }
+                    }}
                   >
                     <GlobalIcon sx={{ color: "white", fontSize: 16 }} />
                     <Typography fontSize={12}> Global </Typography>
@@ -610,10 +785,13 @@ const PersonalUser = ({
                     backgroundColor: "#CB3A31",
                   }}
                   onClick={() => {
-                    if (selectedFiles.length > 0) {
+                    if ((selected === "file" && selectedFiles.length > 0) || 
+                        (selected === "topik" && selectedTopicIndex !== null)) {
                       setOpenTrash(true);
                     } else {
-                      alert("Pilih file terlebih dahulu!");
+                      alert(selected === "file" ? 
+                        "Pilih file terlebih dahulu!" : 
+                        "Pilih topik terlebih dahulu!");
                     }
                   }}
                 >
@@ -647,6 +825,49 @@ const PersonalUser = ({
           </Stack>
         </Stack>
       </Box>
+      
+      {selected === "file" && (
+        <TablePagination
+          component="div"
+          count={personalFiles.total_files || 0}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10]}
+          labelRowsPerPage="Rows:"
+          sx={{ 
+            '.MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon': {
+              fontSize: '12px',
+            },
+            '.MuiTablePagination-displayedRows': {
+              fontSize: '12px',
+            }
+          }}
+        />
+      )}
+
+      {selected === "topik" && (
+        <TablePagination
+          component="div"
+          count={personalTopics.total_files || 0} // Use total_files for pagination count
+          page={topicPage}
+          onPageChange={handleTopicChangePage}
+          rowsPerPage={topicRowsPerPage}
+          onRowsPerPageChange={handleTopicChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10]}
+          labelRowsPerPage="Rows:"
+          sx={{ 
+            '.MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon': {
+              fontSize: '12px',
+            },
+            '.MuiTablePagination-displayedRows': {
+              fontSize: '12px',
+            }
+          }}
+        />
+      )}
+            
       <Stack
         width={"100%"}
         direction={"row"}
@@ -654,7 +875,7 @@ const PersonalUser = ({
         justifyContent={"flex-end"}
         alignItems={"flex-end"}
       >
-        {selectedFiles.length > 0 && (
+        {selected === "file" && selectedFiles.length > 0 && (
           <Box
             display="flex"
             justifyContent="flex-end"
@@ -672,13 +893,12 @@ const PersonalUser = ({
           >
             <AddIcon sx={{ color: "black", marginRight: 1, fontSize: 18 }} />
             <Typography fontSize={12} fontWeight={400}>
-              {" "}
-              Topik{" "}
+              Topik
             </Typography>
           </Box>
         )}
 
-        {selectedTopicc === false && (
+        {selectedTopicc === false && selected === "file" && selectedFiles.length > 0 && (
           <Box
             onClick={() => {
               handleSummarize();
@@ -695,8 +915,7 @@ const PersonalUser = ({
             }}
           >
             <Typography fontSize={12} fontWeight={400}>
-              {" "}
-              Summarize{" "}
+              Summarize
             </Typography>
           </Box>
         )}

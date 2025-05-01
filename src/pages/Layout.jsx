@@ -12,7 +12,7 @@ import PDFViewer from "../components/PdfViewer";
 import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
 
 const Layout = () => {
-  const logoUrl = "http://localhost:8001/logo";
+  const logoUrl = "http://192.168.1.77:8001/logo";
 
   let link =
     document.querySelector("link[rel*='icon']") ||
@@ -34,6 +34,9 @@ const Layout = () => {
   const [pdfSource, setPdfSource] = useState(null);
   const [type, setType] = useState("");
   const [isMenu, setIsMenu] = useState(false);
+
+  const [model, setModel] = useState("Llama 3.1");
+  const [vectorizer, setVectorizer] = useState("nomic-embed-text");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
 
@@ -72,9 +75,9 @@ useEffect(() => {
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     setUser(storedUser);
-    setIsCheckingUser(false); 
+    setIsCheckingUser(false);
   }, [location.pathname]);
- 
+
   if (isCheckingUser) return <LoadingScreen />;
   if (!user) return null;
 
@@ -136,6 +139,10 @@ useEffect(() => {
                 setTopicName={setTopicName}
                 setDeptID={setDeptID}
                 setIsMenu={setIsMenu}
+                model={model}
+                setModel={setModel}
+                vectorizer={vectorizer}
+                setVectorizer={setVectorizer}
                 isSidebarOpen={isSidebarOpen}
                 setIsSidebarOpen={setIsSidebarOpen}
               />
@@ -149,7 +156,7 @@ useEffect(() => {
                   path="/coofisai"
                   element={
                     <ChatBox
-                      role={"Admin"}
+                      role={"User"}
                       id={user?.id}
                       selected={selected}
                       responseSummarize={responseSummarize}
@@ -162,7 +169,12 @@ useEffect(() => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      model={model}
+                      setModel={setModel}
+                      vectorizer={vectorizer}
+                      setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
+                      isViewPdf={isViewPdf}
                     />
                   }
                 />
@@ -173,7 +185,7 @@ useEffect(() => {
                   path="/operator/coofisai"
                   element={
                     <ChatBox
-                      role={"Admin"}
+                      role={"Operator"}
                       id={user?.id}
                       selected={selected}
                       responseSummarize={responseSummarize}
@@ -186,7 +198,13 @@ useEffect(() => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      model={model}
+                      setModel={setModel}
+                      vectorizer={vectorizer}
+                      setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
+                      isViewPdf={isViewPdf}
+
                     />
                   }
                 />
@@ -218,7 +236,13 @@ useEffect(() => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      model={model}
+                      setModel={setModel}
+                      vectorizer={vectorizer}
+                      setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
+                      isViewPdf={isViewPdf}
+
                     />
                   }
                 />
@@ -287,6 +311,10 @@ useEffect(() => {
                 setTopicName={setTopicName}
                 setDeptID={setDeptID}
                 setIsMenu={setIsMenu}
+                model={model}
+                setModel={setModel}
+                vectorizer={vectorizer}
+                setVectorizer={setVectorizer}
                 isSidebarOpen={isSidebarOpen}
                 setIsSidebarOpen={setIsSidebarOpen}
               />
@@ -295,30 +323,40 @@ useEffect(() => {
               size={{ xs: 12, sm: 12, md: 12, lg: 9 }}
               sx={{ padding: "1rem" }}
             >
+              {/* route user */}
               <Routes>
                 <Route
                   path="/coofisai"
                   element={
-                    <ChatBox
-                      role={"Admin"}
-                      id={user?.id}
-                      selected={selected}
-                      responseSummarize={responseSummarize}
-                      setResponseSummarize={setResponseSummarize}
-                      isSummarize={isSummarize}
-                      setIsSummarize={setIsSummarize}
-                      selectedTopic={selectedTopic}
-                      topicName={topicName}
-                      deptID={deptID}
-                      setIsViewPdf={setIsViewPdf}
-                      setPdfSource={setPdfSource}
-                      setType={setType}
-                      toggleSidebar={toggleSidebar}
-                    />
+                    <>
+                      <ChatBox
+                        role={"Admin"}
+                        id={user?.id}
+                        selected={selected}
+                        responseSummarize={responseSummarize}
+                        setResponseSummarize={setResponseSummarize}
+                        isSummarize={isSummarize}
+                        setIsSummarize={setIsSummarize}
+                        selectedTopic={selectedTopic}
+                        topicName={topicName}
+                        deptID={deptID}
+                        setIsViewPdf={setIsViewPdf}
+                        setPdfSource={setPdfSource}
+                        setType={setType}
+                        model={model}
+                        setModel={setModel}
+                        vectorizer={vectorizer}
+                        setVectorizer={setVectorizer}
+                        toggleSidebar={toggleSidebar}
+                        isViewPdf={isViewPdf}
+                        
+                      />
+                    </>
                   }
                 />
               </Routes>
 
+              {/* route operator */}
               <Routes>
                 <Route
                   path="/operator/coofisai"
@@ -337,7 +375,13 @@ useEffect(() => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      model={model}
+                      setModel={setModel}
+                      vectorizer={vectorizer}
+                      setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
+                      isViewPdf={isViewPdf}
+
                     />
                   }
                 />
@@ -350,7 +394,8 @@ useEffect(() => {
                   element={<LogoSetting id={user?.id} toggleSidebar={toggleSidebar}/>}
                 />
               </Routes>
-
+              
+              {/* route admin */}
               <Routes>
                 <Route
                   path="/admin/coofisai"
@@ -369,7 +414,13 @@ useEffect(() => {
                       setIsViewPdf={setIsViewPdf}
                       setPdfSource={setPdfSource}
                       setType={setType}
+                      model={model}
+                      setModel={setModel}
+                      vectorizer={vectorizer}
+                      setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
+                      isViewPdf={isViewPdf}
+
                     />
                   }
                 />

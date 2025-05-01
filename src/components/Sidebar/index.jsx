@@ -20,9 +20,9 @@ import PersonalAdmin from "../../pages/admin/PersonalAdmin";
 import DepartemenAdmin from "../../pages/admin/DepartemenAdmin";
 import { useNavigate } from "react-router-dom";
 import { getDepartmentName } from "../../services";
-import { mails } from "./Mails/MailConfig";
-import Mails from "./Mails";
-import { history } from "./HistoryConfig";
+// import { mails } from "./Mails/MailConfig";
+// import Mails from "./Mails";
+// import { history } from "./HistoryConfig";
 
 const Sidebar = ({
   dept_id,
@@ -325,7 +325,7 @@ const Sidebar = ({
                   </Typography>
                 </Stack>
               </Box>
-              <Box
+              {/* <Box
                 sx={{
                   width: "100%",
                   border: "2px solid #E0E0E0",
@@ -347,7 +347,7 @@ const Sidebar = ({
                     </Typography>
                   </Box>
                   <Stack direction={"column"} padding={1.5} spacing={1.5}>
-                    <InputSearchBar /*handleSearch={getSearchHandler()}*/ />
+                    <InputSearchBar  />
                     <Stack direction={"row"} spacing={1} alignItems="center">
                       <Box
                         width={100}
@@ -372,7 +372,6 @@ const Sidebar = ({
                       </Box>
                     </Stack>
                     <Stack direction={"column"} spacing={1}>
-                      {/*MAPPING SURAT MASUK*/}
                         {mails?.map((item, idx) => (
                             <Mails
                               key={idx}
@@ -385,7 +384,7 @@ const Sidebar = ({
                     </Stack>
                   </Stack>
                 </Stack>
-              </Box>
+              </Box> */}
             </>
           ) : isHistory ? (
             <>
@@ -425,9 +424,8 @@ const Sidebar = ({
                   </Typography>
                 </Stack>
               </Box>
-              {/*MAPPING HISTORY*/}
               <Stack width='100%' direction="column" spacing={1} justifyContent={'flex-start'} sx={{ pl: 2 }}>
-                {history.map((group) => (
+                {/* {history?.map((group) => (
                   <Fragment key={group.id}>
                     <Typography fontSize={17} fontWeight="bold">
                       {group.label}
@@ -440,7 +438,7 @@ const Sidebar = ({
                       ))}
                     </Stack>
                   </Fragment>
-                ))}
+                ))} */}
               </Stack>
             </>
           ) : (
@@ -481,7 +479,7 @@ const Sidebar = ({
                   </Typography>
                 </Stack>
               </Box>
-              <Box width={"100%"} paddingRight={3} paddingLeft={1}>
+              {/* <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                 <Stack
                   paddingBottom={0.8}
                   borderRadius={2}
@@ -516,7 +514,7 @@ const Sidebar = ({
                     Surat Saya
                   </Typography>
                 </Stack>
-              </Box>
+              </Box> */}
               <Box
                 width={"97%"}
                 sx={{
