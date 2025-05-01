@@ -23,9 +23,11 @@ import MenuIcon from "@mui/icons-material/Menu";
 import {
   deleteDepartmentlFile,
   deletePersonalFile,
+  deleteGlobalFile,
   deleteTopic,
   getDepartmentFile,
   getDepartmentList,
+  getGlobalFile,
   getPersonalFile,
   getTopic,
   searchFileDepartment,
@@ -64,6 +66,9 @@ const Dokumen = ({ id, toggleSidebar }) => {
 
   const [selectedDepartmentid, setSelectedDepartmentid] = useState(null);
   const [departmentFile, setDepartmentFile] = useState([]);
+
+  const [globalFiles, setGlobalFiles] = useState([]);
+  const [checkedItemsFileGlobal, setCheckedItemsFileGlobal] = useState({});
 
   const selectedFiles = Object.entries(checkedItems)
     .filter(([idx, isChecked]) => isChecked)
@@ -143,6 +148,16 @@ const Dokumen = ({ id, toggleSidebar }) => {
 
   const handleMainDeptChange = (event) => {
     setMainSelect(event.target.value);
+    if (event.target.value === "Global") {
+      fetchGlobalFiles();
+    }
+  };
+
+  const handleCheckFileGlobal = (idx, value) => {
+    setCheckedItemsFileGlobal((prev) => ({
+      ...prev,
+      [idx]: value,
+    }));
   };
 
   const handleCancel = () => {
@@ -341,6 +356,25 @@ const Dokumen = ({ id, toggleSidebar }) => {
     });
   };
 
+  const debouncedSearchGlobalFile = useMemo(
+    () =>
+      debounce((value) => {
+        getGlobalFile({
+          keyword: value, 
+          page: 1,
+          per_page: 10,
+        })
+        .then((res) => {
+          console.log("Global search result:", res.list_files);
+          setGlobalFiles(res); 
+        })
+        .catch((err) => {
+          console.error("Global search error:", err);
+        });
+      }, 300),
+    []
+  );
+
   const debouncedSearchFilePersonal = useMemo(
     () =>
       debounce((value) => {
@@ -363,6 +397,10 @@ const Dokumen = ({ id, toggleSidebar }) => {
       }, 300),
     [id] 
   );
+
+  const handleSearchGlobalFile = (e) => {
+    debouncedSearchGlobalFile(e.target.value);
+  };
   
   const debouncedSearchFileDepartment = useMemo(
     () =>
@@ -420,14 +458,95 @@ const Dokumen = ({ id, toggleSidebar }) => {
     debouncedSearchTopic(e.target.value);
   };
 
-  const getSearchHandler = (e) => {
+  const getSearchHandler = () => {
     if (mainSelect === "Personal" && selected === "file")
       return handleSearchFilePersonal;
     if (mainSelect === "Departemen" && selected === "file")
       return handleSearchFileDepartment;
     if (mainSelect === "Personal" && selected === "topik")
       return handleSearchTopic;
+    if (mainSelect === "Global" && selected === "file")
+      return handleSearchGlobalFile;
     return () => {};
+  };
+
+  const fetchGlobalFiles = async () => {
+    try {
+      const data = await getGlobalFile({
+        page: 1,
+        per_page: 10,
+      });
+      setGlobalFiles(data);
+      console.log("Global files:", data);
+    } catch (error) {
+      console.error("Gagal mengambil file global:", error);
+    }
+  };
+
+
+  const handleDeleteFileGlobal = () => {
+    setIsLoading(true);
+    setLoadingMessage("Sedang menghapus File...");
+    
+    const selectedFilesGlobal = Object.entries(checkedItemsFileGlobal)
+      .filter(([idx, isChecked]) => isChecked)
+      .map(([idx]) => globalFiles?.list_files[idx]);
+    
+    let completedCount = 0;
+    const totalFiles = selectedFilesGlobal?.length || 0;
+    
+    if (totalFiles === 0) {
+      setIsLoading(false);
+      return;
+    }
+    
+    selectedFilesGlobal?.forEach((file) => {
+      const payload = {
+        filename: file.name,
+      };
+      
+      deleteGlobalFile(payload)
+        .then((res) => {
+          console.log("Berhasil Menghapus File Global:", res);
+          completedCount++;
+          
+          if (completedCount === totalFiles) {
+            setOpenTrash(false);
+            setCheckedItemsFileGlobal({});
+            
+            // First refresh global files
+            fetchGlobalFiles()
+              .then(() => {
+                // Then refresh personal files
+                return fetchDataFile();
+              })
+              .then(() => {
+                setIsLoading(false);
+                openSnackbar("berhasil", "File global berhasil dihapus!");
+              });
+          }
+        })
+        .catch((error) => {
+          console.error("Gagal menghapus file global:", error);
+          completedCount++;
+          
+          if (completedCount === totalFiles) {
+            setOpenTrash(false);
+            setCheckedItemsFileGlobal({});
+            
+            // First refresh global files
+            fetchGlobalFiles()
+              .then(() => {
+                // Then refresh personal files
+                return fetchDataFile();
+              })
+              .then(() => {
+                setIsLoading(false);
+                openSnackbar("gagal", "File global gagal dihapus!");
+              });
+          }
+        });
+    });
   };
   
   return (
@@ -477,12 +596,12 @@ const Dokumen = ({ id, toggleSidebar }) => {
           <Box>
             <Box width="100%" textAlign="left" sx={{ mb: 2 }}>
               <Typography fontSize={18} fontWeight={700} color="#404040">
-                Personal / Departemen
+                Personal / Departemen / Global
               </Typography>
             </Box>
             <FormControl fullWidth sx={{ mb: 4 }}>
               <InputLabel id="departemen-label">
-                Personal / Departemen
+                Personal / Departemen / Global
               </InputLabel>
               <Select
                 labelId="departemen-label"
@@ -492,6 +611,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
               >
                 <MenuItem value="Personal">Personal</MenuItem>
                 <MenuItem value="Departemen">Departemen</MenuItem>
+                <MenuItem value="Global">Global</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -523,7 +643,8 @@ const Dokumen = ({ id, toggleSidebar }) => {
           )}
 
           {/* Upload Dokumen */}
-          <Box sx={{ width: "100%", mb: 4 }}>
+          {mainSelect === "Personal" || mainSelect === "Departemen" ?
+            <Box sx={{ width: "100%", mb: 4 }}>
             <Box width="100%" textAlign="left" sx={{ mb: 2 }}>
               <Typography fontSize={18} fontWeight={700} color="#404040">
                 Unggah Dokumen
@@ -628,200 +749,227 @@ const Dokumen = ({ id, toggleSidebar }) => {
               </Stack>
             </Box>
           </Box>
+          : null}
 
           {/* File List */}
-          <Box
-            sx={{
-              width: "100%",
-              border: "2px solid #E0E0E0",
-              borderRadius: "4px",
-              backgroundColor: "#FFFFFF",
-            }}
-          >
-            <Stack direction={"column"} spacing={1}>
-              <Box
-                sx={{
-                  backgroundColor: "#F5F5F5",
-                  borderRadius: "4px 4px 0 0",
-                  paddingX: 2,
-                  paddingY: 0.5,
-                }}
-              >
-                <Typography fontSize={18} fontWeight={700} color="#404040">
+            <Box
+              sx={{
+                width: "100%",
+                border: "2px solid #E0E0E0",
+                borderRadius: "4px",
+                backgroundColor: "#FFFFFF",
+              }}
+            >
+              <Stack direction={"column"} spacing={1}>
+                <Box
+                  sx={{
+                    backgroundColor: "#F5F5F5",
+                    borderRadius: "4px 4px 0 0",
+                    paddingX: 2,
+                    paddingY: 0.5,
+                  }}
+                >
+                  <Typography fontSize={18} fontWeight={700} color="#404040">
                   {mainSelect === "Personal"
-                    ? "File Personal"
-                    : "File Departemen"}
-                </Typography>
-              </Box>
-              <Stack direction={"column"} padding={1.5} spacing={1}>
-                <InputSearchBar handleSearch={getSearchHandler()} />
-                <Stack
-                    direction={{ 
-                      xs: "column",
-                      sm: "column", 
-                      md: "row",
-                      lg: "row" 
-                    }}
-                    spacing={1.2}
-                    alignItems="center"
-                  >
-                  {mainSelect === "Personal" ? (
-                    <Stack direction={'row'} spacing={2} justifyContent="flex-start" >
-                    {["file", "topik"].map((type) => (
-                      <Box
-                        key={type}
-                        sx={{
-                          borderRadius: 100,
-                          border: selected === type ? "1px solid #EA001E" : "1px solid #9E9E9E",
-                          cursor: "pointer",
-                          backgroundColor: "white",
-                          boxShadow: selected === type ? "none" : "0px 2px 4px rgba(0, 0, 0, 0.2)",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          minWidth: { xs: "80px", sm: "90px", md: "100px" }, // Responsive width
-                          maxWidth: "100%",
-                          padding: "0px 8px",
-                          
-                        }}
-                        onClick={() => setSelected(type)}
-                      >
-                        <Typography
-                          fontSize={{ xs: 12, sm: 13, md: 14 }} // Responsive font size
-                          fontWeight={500}
-                          color={selected === type ? "#EA001E" : "black"}
-                          noWrap // Prevent text from wrapping
-                        >
-                          {type.charAt(0).toUpperCase() + type.slice(1)}
-                        </Typography>
-                      </Box>
-                    ))}
-                  </Stack>
-                  ) : (
-                    <>
-                      {["file"].map((type) => (
-                        <Box
-                          key={type}
-                          width={"30%"}
-                          display="flex"
-                          justifyContent="center"
-                          paddingY={0.3}
-                          paddingX={0.7}
-                          borderRadius={100}
-                          border={"1px solid #9E9E9E"}
-                          onClick={() => setSelected(type)}
-                          sx={{
-                            cursor: selected === type ? "default" : "pointer",
-                            backgroundColor:
-                              selected === type ? "#FAFBFD" : "white",
-                            boxShadow:
-                              selected === type
-                                ? "none"
-                                : "0px 4px 8px rgba(0, 0, 0, 0.14)",
-                          }}
-                        >
-                          <Typography
-                            fontSize={12}
-                            fontWeight={400}
-                            color="black"
-                          >
-                            {type.charAt(0).toUpperCase() + type.slice(1)}
-                          </Typography>
-                        </Box>
-                      ))}
-                    </>
-                  )}
-
-                  <Box display="flex" width="100%" sx={{
-                    justifyContent: {
-                      xs: "center",     
-                      sm: "center",
-                      md: "flex-end",  
-                      lg: "flex-end"
-                    }
-                  }}>
-                    {mainSelect === "Personal" && selected === "file" && (
-                      <Box
-                        display="flex"
-                        alignItems={"center"}
-                        paddingY={0.5}
-                        paddingX={1}
-                        borderRadius={1}
-                        sx={{
-                          cursor: "pointer",
-                          backgroundColor: "#4C4DDC",
-                          color: "white",
-                          mr: 1,
-                        }}
-                        onClick={() => setOpenPaper(true)}
-                      >
-                        <CorporateFareIcon
-                          sx={{ marginRight: 1, fontSize: 18 }}
-                        />
-                        <Typography fontSize={12} fontWeight={400}>
-                          Tambah ke Departemen
-                        </Typography>
-                      </Box>
-                    )}
-                    <Box
-                      display="flex"
-                      alignItems={"center"}
-                      paddingY={0.7}
-                      paddingX={0.7}
-                      borderRadius={1}
-                      sx={{
-                        cursor: "pointer",
-                        backgroundColor: "#CB3A31",
-                        color: "white",
-                      }}
-                      onClick={() => setOpenTrash(true)}
-                    >
-                      <TrashIcon sx={{ fontSize: 20 }} />
-                    </Box>
+                  ? "File Personal"
+                  : mainSelect === "Departemen"
+                  ? "File Departemen"
+                  : "File Global"}
+                  </Typography>
+                </Box>
+                {mainSelect === "Departemen" && !departmen ? (
+                  <Box sx={{ p: 3, textAlign: "left" }}>
+                    <Typography fontSize={16} fontWeight={500} color="#404040">
+                      Silakan pilih departemen terlebih dahulu
+                    </Typography>
                   </Box>
-                </Stack>
-
-                {/* File List */}
-                {mainSelect === "Personal" ? (
-                  <Stack direction={"column"} spacing={1}>
-                    {selected === "file"
-                      ? personalFiles?.list_files?.map((item, idx) => (
-                          <Documents
-                            key={idx}
-                            label={item.name}
-                            checked={checkedItems[idx] || false}
-                            onCheck={(val) => handleCheckFile(idx, val)}
-                            filter={selected}
-                          />
-                        ))
-                      : selected === "topik"
-                      ? personalTopics?.list_files?.map((item, idx) => (
-                          <Documents
-                            key={idx}
-                            label={item.topic_name}
-                            checked={checkedItemsTopics[idx] || false}
-                            onCheck={(val) => handleCheckTopic(idx, val)}
-                            filter={selected}
-                          />
-                        ))
-                      : null}
-                  </Stack>
                 ) : (
-                  <Stack direction={"column"} spacing={1}>
-                    {departmentFile?.list_files?.map((item, idx) => (
-                      <React.Fragment key={idx}>
-                        <Documents
-                          label={item.name}
-                          checked={checkedItemsFileDepartment[idx] || false}
-                          onCheck={(val) => handleCheckFileDepartment(idx, val)}
-                        />
-                      </React.Fragment>
-                    ))}
+                  <Stack direction={"column"} padding={1.5} spacing={1}>
+                    <InputSearchBar handleSearch={getSearchHandler()} />
+                    <Stack
+                        direction={{ 
+                          xs: "column",
+                          sm: "column", 
+                          md: "row",
+                          lg: "row" 
+                        }}
+                        spacing={1.2}
+                        alignItems="center"
+                      >
+                      {mainSelect === "Personal" ? (
+                        <Stack direction={'row'} spacing={2} justifyContent="flex-start" >
+                        {["file", "topik"].map((type) => (
+                          <Box
+                            key={type}
+                            sx={{
+                              borderRadius: 100,
+                              border: selected === type ? "1px solid #EA001E" : "1px solid #9E9E9E",
+                              cursor: "pointer",
+                              backgroundColor: "white",
+                              boxShadow: selected === type ? "none" : "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              minWidth: { xs: "80px", sm: "90px", md: "100px" }, // Responsive width
+                              maxWidth: "100%",
+                              padding: "0px 8px",
+                              
+                            }}
+                            onClick={() => setSelected(type)}
+                          >
+                            <Typography
+                              fontSize={{ xs: 12, sm: 13, md: 14 }} // Responsive font size
+                              fontWeight={500}
+                              color={selected === type ? "#EA001E" : "black"}
+                              noWrap
+                            >
+                              {type.charAt(0).toUpperCase() + type.slice(1)}
+                            </Typography>
+                          </Box>
+                        ))}
+                      </Stack>
+                      ) : (
+                        <>
+                          {["file"].map((type) => (
+                            <Box
+                              key={type}
+                              width={"30%"}
+                              display="flex"
+                              justifyContent="center"
+                              paddingY={0.3}
+                              paddingX={0.7}
+                              borderRadius={100}
+                              border={"1px solid #9E9E9E"}
+                              onClick={() => setSelected(type)}
+                              sx={{
+                                cursor: selected === type ? "default" : "pointer",
+                                backgroundColor:
+                                  selected === type ? "#FAFBFD" : "white",
+                                boxShadow:
+                                  selected === type
+                                    ? "none"
+                                    : "0px 4px 8px rgba(0, 0, 0, 0.14)",
+                              }}
+                            >
+                              <Typography
+                                fontSize={12}
+                                fontWeight={400}
+                                color="black"
+                              >
+                                {type.charAt(0).toUpperCase() + type.slice(1)}
+                              </Typography>
+                            </Box>
+                          ))}
+                        </>
+                      )}
+
+                      <Box display="flex" width="100%" sx={{
+                        justifyContent: {
+                          xs: "center",     
+                          sm: "center",
+                          md: "flex-end",  
+                          lg: "flex-end"
+                        }
+                      }}>
+                        {mainSelect === "Personal" && selected === "file" && (
+                          <Box
+                            display="flex"
+                            alignItems={"center"}
+                            paddingY={0.5}
+                            paddingX={1}
+                            borderRadius={1}
+                            sx={{
+                              cursor: "pointer",
+                              backgroundColor: "#4C4DDC",
+                              color: "white",
+                              mr: 1,
+                            }}
+                            onClick={() => setOpenPaper(true)}
+                          >
+                            <CorporateFareIcon
+                              sx={{ marginRight: 1, fontSize: 18 }}
+                            />
+                            <Typography fontSize={12} fontWeight={400}>
+                              Tambah ke Departemen
+                            </Typography>
+                          </Box>
+                        )}
+                        <Box
+                          display="flex"
+                          alignItems={"center"}
+                          paddingY={0.7}
+                          paddingX={0.7}
+                          borderRadius={1}
+                          sx={{
+                            cursor: "pointer",
+                            backgroundColor: "#CB3A31",
+                            color: "white",
+                          }}
+                          onClick={() => setOpenTrash(true)}
+                        >
+                          <TrashIcon sx={{ fontSize: 20 }} />
+                        </Box>
+                      </Box>
+                    </Stack>
+
+                    {/* File List */}
+                    {mainSelect === "Personal" ? (
+                      <Stack direction={"column"} spacing={1}>
+                        {selected === "file"
+                          ? personalFiles?.list_files?.map((item, idx) => (
+                              <Documents
+                                key={idx}
+                                label={item.name}
+                                checked={checkedItems[idx] || false}
+                                onCheck={(val) => handleCheckFile(idx, val)}
+                                filter={selected}
+                                status={item.status}
+                              />
+                            ))
+                          : selected === "topik"
+                          ? personalTopics?.list_files?.map((item, idx) => (
+                              <Documents
+                                key={idx}
+                                label={item.topic_name}
+                                checked={checkedItemsTopics[idx] || false}
+                                onCheck={(val) => handleCheckTopic(idx, val)}
+                                filter={selected}
+                              />
+                            ))
+                          : null}
+                      </Stack>
+                        ) : mainSelect === "Departemen" ? (
+                          <Stack direction={"column"} spacing={1}>
+                            {departmentFile?.list_files?.map((item, idx) => (
+                              <React.Fragment key={idx}>
+                                <Documents
+                                  label={item.name}
+                                  status={item.status}
+                                  checked={checkedItemsFileDepartment[idx] || false}
+                                  onCheck={(val) => handleCheckFileDepartment(idx, val)}
+                                />
+                              </React.Fragment>
+                            ))}
+                          </Stack>
+                        ) : (
+                          // Global Files
+                          <Stack direction={"column"} spacing={1}>
+                            {globalFiles?.list_files?.map((item, idx) => (
+                              <React.Fragment key={idx}>
+                                <Documents
+                                  label={item.name}
+                                  status={item.status}
+                                  checked={checkedItemsFileGlobal[idx] || false}
+                                  onCheck={(val) => handleCheckFileGlobal(idx, val)}
+                                />
+                              </React.Fragment>
+                            ))}
+                          </Stack>
+                        )}
                   </Stack>
                 )}
               </Stack>
-            </Stack>
-          </Box>
+            </Box>
         </Box>
       </Grid>
       <AddToDepartement
@@ -848,6 +996,12 @@ const Dokumen = ({ id, toggleSidebar }) => {
           open={openTrash}
           onClose={() => setOpenTrash(false)}
           handleDelete={handleDeleteFileDepartment}
+        />
+      ) : selected === "file" && mainSelect === "Global" ? (
+        <DeleteFile
+          open={openTrash}
+          onClose={() => setOpenTrash(false)}
+          handleDelete={handleDeleteFileGlobal}
         />
       ) : null}
 

@@ -408,6 +408,62 @@ export const personalToGlobal = async ({ filename, user_id }) => {
   }
 };
 
+export const getGlobalFile = async ({ page, per_page, keyword }) => {
+  try {
+    const response = await api.get("file/global", {
+      params: {
+        page,
+        per_page,
+        keyword
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting file:", error);
+    throw error;
+  }
+};
+
+export const deleteGlobalFile = async ({ filename }) => {
+  try {
+    const response = await api.delete("file/remove_pdf_global_doc", {
+      data: { filename }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting global file:", error);
+    throw error;
+  }
+}
+
+export const getGlobalFile = async ({ page, per_page, keyword }) => {
+  try {
+    const response = await api.get("file/global", {
+      params: {
+        page,
+        per_page,
+        keyword
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting file:", error);
+    throw error;
+  }
+};
+
+export const deleteGlobalFile = async ({ filename }) => {
+  try {
+    const response = await api.delete("file/remove_pdf_global_doc", {
+      data: { filename }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting global file:", error);
+    throw error;
+  }
+}
+
 export const getHistory = async ({ user_id }) => {
   try {
     const response = await api.get("/chat/history_user/chatdocs", {

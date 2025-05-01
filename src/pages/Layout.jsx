@@ -12,7 +12,7 @@ import PDFViewer from "../components/PdfViewer";
 import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
 
 const Layout = () => {
-  const logoUrl = "http://192.168.1.77:8001/logo";
+  const logoUrl = "http://localhost:8001/logo";
 
   let link =
     document.querySelector("link[rel*='icon']") ||
