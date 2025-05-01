@@ -16,9 +16,15 @@ import {
 } from "@mui/material";
 import ChatbotImage from "../assets/images/Chatbot.png";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import { chatDepartemen, chatPersonal, chatTopic } from "../services";
+import {
+  chatDepartemen,
+  chatPersonal,
+  chatTopic,
+  getChatByHistoryId,
+} from "../services";
 import ReactMarkdown from "react-markdown";
 import LogoSetting from "../components/LogoSetting";
+import { set } from "lodash";
 
 const ChatBox = ({
   role,
@@ -40,6 +46,10 @@ const ChatBox = ({
   setVectorizer,
   toggleSidebar,
   isViewPdf,
+  isHistory,
+  newChat,
+  historyId,
+  setHistoryId,
 }) => {
   // const [model, setModel] = useState("Llama 3.1");
   // const [vectorizer, setVectorizer] = useState("nomic-embed-text");
@@ -58,7 +68,7 @@ const ChatBox = ({
   const handleVectorizerChange = (event) => setVectorizer(event.target.value);
   const handleSend = () => {
     if (!question.trim()) return;
-
+    console.log(historyId);
     const currentQuestion = question;
     setQuestion("");
 
@@ -69,69 +79,24 @@ const ChatBox = ({
       type: "",
     };
     setResponses((prev) => [...prev, placeholder]);
-
-    const payload = {
-      id: String(id),
-      embedding_model: vectorizer,
-      llm_model: model,
-      question: currentQuestion,
-    };
-    if (selectedTopic === true) {
-      const payloadTopic = {
+    if (historyId) {
+      const payload = {
         id: String(id),
         embedding_model: vectorizer,
         llm_model: model,
+        history_id: String(historyId),
         question: currentQuestion,
-        topic: topicName,
       };
-      chatTopic(payloadTopic).then((res) => {
-        const filenames = res?.sources?.map((item) => {
-          const cleanedItem = item.replace(/^PDF:\s*/, "");
-          return cleanedItem.split("/").pop();
-        });
-
-        const updatedEntry = {
-          user: currentQuestion,
-          bot: res.response,
-          source: filenames,
-          type: res.type,
-        };
-
-        setResponses((prev) => {
-          const updated = [...prev];
-          updated[updated.length - 1] = updatedEntry;
-          return updated;
-        });
-      });
-    } else {
-      if (selected === "personal") {
-        chatPersonal(payload).then((res) => {
-          const filenames = res?.sources?.map((item) => {
-            const cleanedItem = item.replace(/^PDF:\s*/, "");
-            return cleanedItem.split("/").pop();
-          });
-
-          const updatedEntry = {
-            user: currentQuestion,
-            bot: res.response,
-            source: filenames,
-            type: res.type,
-          };
-
-          setResponses((prev) => {
-            const updated = [...prev];
-            updated[updated.length - 1] = updatedEntry;
-            return updated;
-          });
-        });
-      } else if (selected === "departemen") {
-        const payloadDepartment = {
-          id: String(deptID),
+      if (selectedTopic === true) {
+        const payloadTopic = {
+          id: String(id),
           embedding_model: vectorizer,
           llm_model: model,
           question: currentQuestion,
+          topic: topicName,
+          history_id: String(historyId),
         };
-        chatDepartemen(payloadDepartment).then((res) => {
+        chatTopic(payloadTopic).then((res) => {
           const filenames = res?.sources?.map((item) => {
             const cleanedItem = item.replace(/^PDF:\s*/, "");
             return cleanedItem.split("/").pop();
@@ -150,10 +115,317 @@ const ChatBox = ({
             return updated;
           });
         });
+      } else {
+        if (selected === "personal") {
+          chatPersonal(payload).then((res) => {
+            const filenames = res?.sources?.map((item) => {
+              const cleanedItem = item.replace(/^PDF:\s*/, "");
+              return cleanedItem.split("/").pop();
+            });
+
+            const updatedEntry = {
+              user: currentQuestion,
+              bot: res.response,
+              source: filenames,
+              type: res.type,
+            };
+
+            setResponses((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1] = updatedEntry;
+              return updated;
+            });
+          });
+        } else if (selected === "departemen") {
+          const payloadDepartment = {
+            id: String(deptID),
+            embedding_model: vectorizer,
+            llm_model: model,
+            question: currentQuestion,
+            history_id: String(historyId),
+          };
+          chatDepartemen(payloadDepartment).then((res) => {
+            const filenames = res?.sources?.map((item) => {
+              const cleanedItem = item.replace(/^PDF:\s*/, "");
+              return cleanedItem.split("/").pop();
+            });
+
+            const updatedEntry = {
+              user: currentQuestion,
+              bot: res.response,
+              source: filenames,
+              type: res.type,
+            };
+
+            setResponses((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1] = updatedEntry;
+              return updated;
+            });
+          });
+        }
+      }
+    } else {
+      const payload = {
+        id: String(id),
+        embedding_model: vectorizer,
+        llm_model: model,
+        history_id: "",
+        question: currentQuestion,
+      };
+      if (selectedTopic === true) {
+        const payloadTopic = {
+          id: String(id),
+          embedding_model: vectorizer,
+          llm_model: model,
+          question: currentQuestion,
+          topic: topicName,
+          history_id: "",
+        };
+        chatTopic(payloadTopic).then((res) => {
+          setHistoryId(res?.current_history_id);
+          const filenames = res?.sources?.map((item) => {
+            const cleanedItem = item.replace(/^PDF:\s*/, "");
+            return cleanedItem.split("/").pop();
+          });
+
+          const updatedEntry = {
+            user: currentQuestion,
+            bot: res.response,
+            source: filenames,
+            type: res.type,
+          };
+
+          setResponses((prev) => {
+            const updated = [...prev];
+            updated[updated.length - 1] = updatedEntry;
+            return updated;
+          });
+        });
+      } else {
+        if (selected === "personal") {
+          chatPersonal(payload).then((res) => {
+            setHistoryId(res?.current_history_id);
+            const filenames = res?.sources?.map((item) => {
+              const cleanedItem = item.replace(/^PDF:\s*/, "");
+              return cleanedItem.split("/").pop();
+            });
+
+            const updatedEntry = {
+              user: currentQuestion,
+              bot: res.response,
+              source: filenames,
+              type: res.type,
+            };
+
+            setResponses((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1] = updatedEntry;
+              return updated;
+            });
+          });
+        } else if (selected === "departemen") {
+          const payloadDepartment = {
+            id: String(deptID),
+            embedding_model: vectorizer,
+            llm_model: model,
+            question: currentQuestion,
+            history_id: "",
+          };
+          chatDepartemen(payloadDepartment).then((res) => {
+            setHistoryId(res?.current_history_id);
+            const filenames = res?.sources?.map((item) => {
+              const cleanedItem = item.replace(/^PDF:\s*/, "");
+              return cleanedItem.split("/").pop();
+            });
+
+            const updatedEntry = {
+              user: currentQuestion,
+              bot: res.response,
+              source: filenames,
+              type: res.type,
+            };
+
+            setResponses((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1] = updatedEntry;
+              return updated;
+            });
+          });
+        }
       }
     }
-  };
 
+    // if (isHistory === false) {
+    //   const payload = {
+    //     id: String(id),
+    //     embedding_model: vectorizer,
+    //     llm_model: model,
+    //     history_id: "",
+    //     question: currentQuestion,
+    //   };
+    //   if (selectedTopic === true) {
+    //     const payloadTopic = {
+    //       id: String(id),
+    //       embedding_model: vectorizer,
+    //       llm_model: model,
+    //       question: currentQuestion,
+    //       topic: topicName,
+    //     };
+    //     chatTopic(payloadTopic).then((res) => {
+    //       const filenames = res?.sources?.map((item) => {
+    //         const cleanedItem = item.replace(/^PDF:\s*/, "");
+    //         return cleanedItem.split("/").pop();
+    //       });
+
+    //       const updatedEntry = {
+    //         user: currentQuestion,
+    //         bot: res.response,
+    //         source: filenames,
+    //         type: res.type,
+    //       };
+
+    //       setResponses((prev) => {
+    //         const updated = [...prev];
+    //         updated[updated.length - 1] = updatedEntry;
+    //         return updated;
+    //       });
+    //     });
+    //   } else {
+    //     if (selected === "personal") {
+    //       chatPersonal(payload).then((res) => {
+    //         const filenames = res?.sources?.map((item) => {
+    //           const cleanedItem = item.replace(/^PDF:\s*/, "");
+    //           return cleanedItem.split("/").pop();
+    //         });
+
+    //         const updatedEntry = {
+    //           user: currentQuestion,
+    //           bot: res.response,
+    //           source: filenames,
+    //           type: res.type,
+    //         };
+
+    //         setResponses((prev) => {
+    //           const updated = [...prev];
+    //           updated[updated.length - 1] = updatedEntry;
+    //           return updated;
+    //         });
+    //       });
+    //     } else if (selected === "departemen") {
+    //       const payloadDepartment = {
+    //         id: String(deptID),
+    //         embedding_model: vectorizer,
+    //         llm_model: model,
+    //         question: currentQuestion,
+    //       };
+    //       chatDepartemen(payloadDepartment).then((res) => {
+    //         const filenames = res?.sources?.map((item) => {
+    //           const cleanedItem = item.replace(/^PDF:\s*/, "");
+    //           return cleanedItem.split("/").pop();
+    //         });
+
+    //         const updatedEntry = {
+    //           user: currentQuestion,
+    //           bot: res.response,
+    //           source: filenames,
+    //           type: res.type,
+    //         };
+
+    //         setResponses((prev) => {
+    //           const updated = [...prev];
+    //           updated[updated.length - 1] = updatedEntry;
+    //           return updated;
+    //         });
+    //       });
+    //     }
+    //   }
+    // } else if (isHistory === true) {
+    //   const payload = {
+    //     id: String(id),
+    //     embedding_model: vectorizer,
+    //     llm_model: model,
+    //     history_id: String(id),
+    //     question: currentQuestion,
+    //   };
+    //   if (selectedTopic === true) {
+    //     const payloadTopic = {
+    //       id: String(id),
+    //       embedding_model: vectorizer,
+    //       llm_model: model,
+    //       question: currentQuestion,
+    //       topic: topicName,
+    //     };
+    //     chatTopic(payloadTopic).then((res) => {
+    //       const filenames = res?.sources?.map((item) => {
+    //         const cleanedItem = item.replace(/^PDF:\s*/, "");
+    //         return cleanedItem.split("/").pop();
+    //       });
+
+    //       const updatedEntry = {
+    //         user: currentQuestion,
+    //         bot: res.response,
+    //         source: filenames,
+    //         type: res.type,
+    //       };
+
+    //       setResponses((prev) => {
+    //         const updated = [...prev];
+    //         updated[updated.length - 1] = updatedEntry;
+    //         return updated;
+    //       });
+    //     });
+    //   } else {
+    //     if (selected === "personal") {
+    //       chatPersonal(payload).then((res) => {
+    //         const filenames = res?.sources?.map((item) => {
+    //           const cleanedItem = item.replace(/^PDF:\s*/, "");
+    //           return cleanedItem.split("/").pop();
+    //         });
+
+    //         const updatedEntry = {
+    //           user: currentQuestion,
+    //           bot: res.response,
+    //           source: filenames,
+    //           type: res.type,
+    //         };
+
+    //         setResponses((prev) => {
+    //           const updated = [...prev];
+    //           updated[updated.length - 1] = updatedEntry;
+    //           return updated;
+    //         });
+    //       });
+    //     } else if (selected === "departemen") {
+    //       const payloadDepartment = {
+    //         id: String(deptID),
+    //         embedding_model: vectorizer,
+    //         llm_model: model,
+    //         question: currentQuestion,
+    //       };
+    //       chatDepartemen(payloadDepartment).then((res) => {
+    //         const filenames = res?.sources?.map((item) => {
+    //           const cleanedItem = item.replace(/^PDF:\s*/, "");
+    //           return cleanedItem.split("/").pop();
+    //         });
+
+    //         const updatedEntry = {
+    //           user: currentQuestion,
+    //           bot: res.response,
+    //           source: filenames,
+    //           type: res.type,
+    //         };
+
+    //         setResponses((prev) => {
+    //           const updated = [...prev];
+    //           updated[updated.length - 1] = updatedEntry;
+    //           return updated;
+    //         });
+    //       });
+    //     }
+    //   }
+    // }
+  };
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -228,7 +500,47 @@ const ChatBox = ({
     }
   }, [responseSummarize, isSummarize]);
 
-  // console.log(deptID)
+  useEffect(() => {
+    console.log("newChat", newChat);
+    if (newChat) {
+      setResponses([]);
+      setIsSummarize(false);
+      setResponseSummarize(null);
+      setQuestion("");
+      setDisplayedText("");
+    }
+  }, [newChat]);
+
+  useEffect(() => {
+    console.log("historyId", historyId);
+    if (historyId) {
+      const payload = {
+        history_id: String(historyId),
+      };
+
+      getChatByHistoryId(payload)
+        .then((res) => {
+          console.log("res", res);
+          const pairedChats = [];
+          for (let i = 0; i < res.length; i += 2) {
+            const humanItem = res[i];
+            const aiItem = res[i + 1];
+
+            pairedChats.push({
+              user: humanItem?.content || "",
+              bot: aiItem?.content || "",
+              source: aiItem?.metadata?.source || [],
+              type: "Personal",
+            });
+          }
+          setResponses(pairedChats);
+        })
+        .catch((error) => {
+          console.error("Gagal memuat chat:", error);
+          setResponses([]);
+        });
+    }
+  }, [historyId]);
   return (
     <Stack
       sx={{

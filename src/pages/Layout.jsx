@@ -38,39 +38,45 @@ const Layout = () => {
   const [model, setModel] = useState("Llama 3.1");
   const [vectorizer, setVectorizer] = useState("nomic-embed-text");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
+
+  const [historyId, setHistoryId] = useState(null);
+
+  const [isHistory, setIsHistory] = useState(false);
 
   const [isCheckingUser, setIsCheckingUser] = useState(true);
+
+  const [newChat, setNewChat] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-const sidebarRef = useRef(null);
+  const sidebarRef = useRef(null);
 
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (isSidebarOpen && window.innerWidth < 1200) {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        const isAutocompleteElement = event.target.closest('.MuiAutocomplete-popper') || 
-                                      event.target.closest('.MuiAutocomplete-listbox') || 
-                                      event.target.closest('.MuiAutocomplete-option');
-        
-        if (!isAutocompleteElement) {
-          setIsSidebarOpen(false);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isSidebarOpen && window.innerWidth < 1200) {
+        if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+          const isAutocompleteElement =
+            event.target.closest(".MuiAutocomplete-popper") ||
+            event.target.closest(".MuiAutocomplete-listbox") ||
+            event.target.closest(".MuiAutocomplete-option");
+
+          if (!isAutocompleteElement) {
+            setIsSidebarOpen(false);
+          }
         }
       }
-    }
-  };
+    };
 
-  document.addEventListener('mousedown', handleClickOutside);
-  document.addEventListener('touchstart', handleClickOutside);
-  
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
-    document.removeEventListener('touchstart', handleClickOutside);
-  };
-}, [isSidebarOpen]);
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isSidebarOpen]);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -106,19 +112,25 @@ useEffect(() => {
             onClick={() => setIsSidebarOpen(false)}
           />
         )}
+
         {isViewPdf ? (
           <>
             <Grid
               item
               size={{ lg: 2.4 }}
               sx={{
-                display: { 
-                  xs: isSidebarOpen ? "block" : "none", 
-                  sm: isSidebarOpen ? "block" : "none", 
-                  md: isSidebarOpen ? "block" : "none", 
-                  lg: "block" 
+                display: {
+                  xs: isSidebarOpen ? "block" : "none",
+                  sm: isSidebarOpen ? "block" : "none",
+                  md: isSidebarOpen ? "block" : "none",
+                  lg: "block",
                 },
-                position: { xs: isSidebarOpen ? "absolute" : "static", sm: isSidebarOpen ? "absolute" : "static", md: isSidebarOpen ? "absolute" : "static", lg: "static" },
+                position: {
+                  xs: isSidebarOpen ? "absolute" : "static",
+                  sm: isSidebarOpen ? "absolute" : "static",
+                  md: isSidebarOpen ? "absolute" : "static",
+                  lg: "static",
+                },
                 zIndex: 1000,
                 height: "100vh",
                 backgroundColor: "#EEF0F7",
@@ -139,10 +151,10 @@ useEffect(() => {
                 setTopicName={setTopicName}
                 setDeptID={setDeptID}
                 setIsMenu={setIsMenu}
-                model={model}
-                setModel={setModel}
-                vectorizer={vectorizer}
-                setVectorizer={setVectorizer}
+                // model={model}
+                // setModel={setModel}
+                // vectorizer={vectorizer}
+                // setVectorizer={setVectorizer}
                 isSidebarOpen={isSidebarOpen}
                 setIsSidebarOpen={setIsSidebarOpen}
               />
@@ -204,17 +216,20 @@ useEffect(() => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
-
                     />
                   }
                 />
                 <Route
                   path="/operator/coofisai/dokumen"
-                  element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar}/>}
+                  element={
+                    <Dokumen id={user?.id} toggleSidebar={toggleSidebar} />
+                  }
                 />
                 <Route
                   path="/operator/coofisai/pengaturan"
-                  element={<LogoSetting id={user?.id} toggleSidebar={toggleSidebar}/>}
+                  element={
+                    <LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />
+                  }
                 />
               </Routes>
 
@@ -242,25 +257,28 @@ useEffect(() => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
-
                     />
                   }
                 />
                 <Route
                   path="/admin/coofisai/dokumen"
-                  element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar} />}
+                  element={
+                    <Dokumen id={user?.id} toggleSidebar={toggleSidebar} />
+                  }
                 />
                 <Route
                   path="/admin/coofisai/manageuser"
-                  element={<ManageUser toggleSidebar={toggleSidebar}/>}
+                  element={<ManageUser toggleSidebar={toggleSidebar} />}
                 />
                 <Route
                   path="/admin/coofisai/managedepartment"
-                  element={<ManageDepartmen toggleSidebar={toggleSidebar}/>}
+                  element={<ManageDepartmen toggleSidebar={toggleSidebar} />}
                 />
                 <Route
                   path="/admin/coofisai/pengaturan"
-                  element={<LogoSetting id={user?.id} toggleSidebar={toggleSidebar}/>}
+                  element={
+                    <LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />
+                  }
                 />
               </Routes>
             </Grid>
@@ -284,13 +302,18 @@ useEffect(() => {
               item
               size={{ lg: 3 }}
               sx={{
-                display: { 
-                  xs: isSidebarOpen ? "block" : "none", 
-                  sm: isSidebarOpen ? "block" : "none", 
-                  md: isSidebarOpen ? "block" : "none", 
-                  lg: "block" 
+                display: {
+                  xs: isSidebarOpen ? "block" : "none",
+                  sm: isSidebarOpen ? "block" : "none",
+                  md: isSidebarOpen ? "block" : "none",
+                  lg: "block",
                 },
-                position: { xs: isSidebarOpen ? "absolute" : "static", sm: isSidebarOpen ? "absolute" : "static", md: isSidebarOpen ? "absolute" : "static", lg: "static" },
+                position: {
+                  xs: isSidebarOpen ? "absolute" : "static",
+                  sm: isSidebarOpen ? "absolute" : "static",
+                  md: isSidebarOpen ? "absolute" : "static",
+                  lg: "static",
+                },
                 zIndex: 1000,
                 height: "100vh",
                 backgroundColor: "#EEF0F7",
@@ -317,6 +340,10 @@ useEffect(() => {
                 setVectorizer={setVectorizer}
                 isSidebarOpen={isSidebarOpen}
                 setIsSidebarOpen={setIsSidebarOpen}
+                setHistoryId={setHistoryId}
+                historyId={historyId}
+                setIsHistorys={setIsHistory}
+                setNewChat={setNewChat}
               />
             </Grid>
             <Grid
@@ -349,7 +376,10 @@ useEffect(() => {
                         setVectorizer={setVectorizer}
                         toggleSidebar={toggleSidebar}
                         isViewPdf={isViewPdf}
-                        
+                        isHistory={isHistory}
+                        newChat={newChat}
+                        historyId={historyId}
+                        setHistoryId={setHistoryId}
                       />
                     </>
                   }
@@ -381,20 +411,23 @@ useEffect(() => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
-
                     />
                   }
                 />
                 <Route
                   path="/operator/coofisai/dokumen"
-                  element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar} />}
+                  element={
+                    <Dokumen id={user?.id} toggleSidebar={toggleSidebar} />
+                  }
                 />
                 <Route
                   path="/operator/coofisai/pengaturan"
-                  element={<LogoSetting id={user?.id} toggleSidebar={toggleSidebar}/>}
+                  element={
+                    <LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />
+                  }
                 />
               </Routes>
-              
+
               {/* route admin */}
               <Routes>
                 <Route
@@ -420,25 +453,28 @@ useEffect(() => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
-
                     />
                   }
                 />
                 <Route
                   path="/admin/coofisai/dokumen"
-                  element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar} />}
+                  element={
+                    <Dokumen id={user?.id} toggleSidebar={toggleSidebar} />
+                  }
                 />
                 <Route
                   path="/admin/coofisai/manageuser"
-                  element={<ManageUser toggleSidebar={toggleSidebar}/>}
+                  element={<ManageUser toggleSidebar={toggleSidebar} />}
                 />
                 <Route
                   path="/admin/coofisai/managedepartment"
-                  element={<ManageDepartmen toggleSidebar={toggleSidebar}/>}
+                  element={<ManageDepartmen toggleSidebar={toggleSidebar} />}
                 />
                 <Route
                   path="/admin/coofisai/pengaturan"
-                  element={<LogoSetting id={user?.id} toggleSidebar={toggleSidebar}/>}
+                  element={
+                    <LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />
+                  }
                 />
               </Routes>
             </Grid>

@@ -22,6 +22,8 @@ const DepartemenUser = ({
   setModel,
   vectorizer,
   setVectorizer,
+  historyId,
+  setHistoryId,
 }) => {
   const [departmentList, setDepartmentList] = useState([]);
   const departmentOptions = departmentList.map(([id, name, code]) => ({
@@ -80,20 +82,40 @@ const DepartemenUser = ({
   };
 
   const handleSummarize = async () => {
-    const payload = {
-      id: String(selectedDepartmentid),
-      embedding_model: vectorizer,
-      llm_model: model,
-      filename: selectedFiles?.map((file) => file?.name),
-    };
-    summarizeFileDepartment(payload)
-      .then((res) => {
-        setResponseSummarize(res);
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (historyId) {
+      const payload = {
+        id: String(selectedDepartmentid),
+        embedding_model: "nomic-embed-text",
+        llm_model: "Llama 3.1",
+        filename: selectedFiles?.map((file) => file?.name),
+        history_id: String(historyId),
+      };
+      summarizeFileDepartment(payload)
+        .then((res) => {
+          setResponseSummarize(res);
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      const payload = {
+        id: String(selectedDepartmentid),
+        embedding_model: "nomic-embed-text",
+        llm_model: "Llama 3.1",
+        filename: selectedFiles?.map((file) => file?.name),
+        history_id: "",
+      };
+      summarizeFileDepartment(payload)
+        .then((res) => {
+          setResponseSummarize(res);
+          setHistoryId(res?.current_history_id);
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   const debouncedSearchFileDepartment = useMemo(
@@ -131,14 +153,14 @@ const DepartemenUser = ({
       height={"100%"}
       width={"100%"}
       alignItems="center"
-      sx={{ 
+      sx={{
         width: {
           xs: 260,
           sm: 260,
           md: 280,
-          lg: 'auto'
+          lg: "auto",
         },
-        margin: '0 auto'
+        margin: "0 auto",
       }}
       spacing={3}
     >

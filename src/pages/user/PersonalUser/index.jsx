@@ -40,6 +40,8 @@ const PersonalUser = ({
   selectedTopicc,
   setSelectedTopic,
   setTopicName,
+  historyId,
+  setHistoryId,
 }) => {
   const [selected, setSelected] = useState("file");
   const [openPaper, setOpenPaper] = useState(false);
@@ -389,11 +391,13 @@ const PersonalUser = ({
   };
 
   const handleSummarize = async () => {
+    if(historyId) {
     const payload = {
       id: String(id),
       embedding_model: "nomic-embed-text",
       llm_model: "Llama 3.1",
       filename: selectedFiles?.map((file) => file?.name),
+      history_id: String(historyId),
     };
     summarizeFilePersonal(payload)
       .then((res) => {
@@ -403,8 +407,25 @@ const PersonalUser = ({
       .catch((err) => {
         console.log(err);
       });
+    } else {
+      const payload = {
+        id: String(id),
+        embedding_model: "nomic-embed-text",
+        llm_model: "Llama 3.1",
+        filename: selectedFiles?.map((file) => file?.name),
+        history_id: '',
+      };
+      summarizeFilePersonal(payload)
+        .then((res) => {
+          setResponseSummarize(res);
+          setHistoryId(res?.current_history_id);
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
-
   // Improved search function for files with pagination
   const debouncedSearchFilePersonal = useMemo(
     () =>
