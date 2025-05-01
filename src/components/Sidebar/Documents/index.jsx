@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Stack, Checkbox, Typography } from "@mui/material";
+import React from "react";
+import { Stack, Checkbox, Typography, Box } from "@mui/material";
 import FileIcon from "@mui/icons-material/InsertDriveFileOutlined";
 
-const Documents = ({ label, checked, onCheck }) => {
+const Documents = ({ label, status, checked, onCheck }) => {
   const handleStackClick = () => {
     onCheck(!checked);
   };
@@ -12,6 +12,7 @@ const Documents = ({ label, checked, onCheck }) => {
       direction="row"
       spacing={0.6}
       padding={0.5}
+      paddingRight={2}
       borderRadius={4}
       alignItems="center"
       sx={{
@@ -36,18 +37,40 @@ const Documents = ({ label, checked, onCheck }) => {
       />
 
       <FileIcon sx={{ color: "#404040", fontSize: 20 }} />
-      <Typography
-        fontSize={12}
-        fontWeight={400}
-        color="#404040"
-        sx={{
-          overflowWrap: "anywhere",
-          wordBreak: "break-word", 
-          whiteSpace: "normal", 
-        }}
-      >
-        {label}
-      </Typography>
+      <Stack direction="row" alignItems="center" spacing={1.5} width={"100%"}>
+        <Typography
+          fontSize={14}
+          fontWeight={400}
+          color="#404040"
+          sx={{
+            overflowWrap: "anywhere",
+            wordBreak: "break-word", 
+            whiteSpace: "normal", 
+            flexGrow: 1,
+          }}
+        >
+          {label}
+        </Typography>
+
+        <Box 
+          sx={{ 
+            backgroundColor: status === 'private' ? "#EEF0F7" : "#D6E0FF", 
+            color: status === 'private' ? "#474D66" : "#3366FF",
+            border: status === 'private' ? "1px solid #8F95B2" : "1px solid #9DB5FF",
+            paddingX: 2,
+            paddingY: 0.2,
+            borderRadius: 100,
+            minWidth: "30px",
+            marginLeft: "auto",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <Typography fontSize={10}>
+            {status}
+          </Typography>
+        </Box>
+      </Stack>
     </Stack>
   );
 };

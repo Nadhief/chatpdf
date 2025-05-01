@@ -323,36 +323,40 @@ useEffect(() => {
               size={{ xs: 12, sm: 12, md: 12, lg: 9 }}
               sx={{ padding: "1rem" }}
             >
+              {/* route user */}
               <Routes>
                 <Route
                   path="/coofisai"
                   element={
-                    <ChatBox
-                      role={"Admin"}
-                      id={user?.id}
-                      selected={selected}
-                      responseSummarize={responseSummarize}
-                      setResponseSummarize={setResponseSummarize}
-                      isSummarize={isSummarize}
-                      setIsSummarize={setIsSummarize}
-                      selectedTopic={selectedTopic}
-                      topicName={topicName}
-                      deptID={deptID}
-                      setIsViewPdf={setIsViewPdf}
-                      setPdfSource={setPdfSource}
-                      setType={setType}
-                      model={model}
-                      setModel={setModel}
-                      vectorizer={vectorizer}
-                      setVectorizer={setVectorizer}
-                      toggleSidebar={toggleSidebar}
-                      isViewPdf={isViewPdf}
-                      
-                    />
+                    <>
+                      <ChatBox
+                        role={"Admin"}
+                        id={user?.id}
+                        selected={selected}
+                        responseSummarize={responseSummarize}
+                        setResponseSummarize={setResponseSummarize}
+                        isSummarize={isSummarize}
+                        setIsSummarize={setIsSummarize}
+                        selectedTopic={selectedTopic}
+                        topicName={topicName}
+                        deptID={deptID}
+                        setIsViewPdf={setIsViewPdf}
+                        setPdfSource={setPdfSource}
+                        setType={setType}
+                        model={model}
+                        setModel={setModel}
+                        vectorizer={vectorizer}
+                        setVectorizer={setVectorizer}
+                        toggleSidebar={toggleSidebar}
+                        isViewPdf={isViewPdf}
+                        
+                      />
+                    </>
                   }
                 />
               </Routes>
 
+              {/* route operator */}
               <Routes>
                 <Route
                   path="/operator/coofisai"
@@ -390,7 +394,8 @@ useEffect(() => {
                   element={<LogoSetting id={user?.id} toggleSidebar={toggleSidebar}/>}
                 />
               </Routes>
-
+              
+              {/* route admin */}
               <Routes>
                 <Route
                   path="/admin/coofisai"
