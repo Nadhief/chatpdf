@@ -121,7 +121,7 @@ const Login = () => {
               />
             </Box>
             <Typography fontSize={35} fontWeight={700}>
-              Chatalize AI gg geming
+              Chatalize AI
             </Typography>
           </Stack>
           <Typography variant="body1" align="start" fontWeight={"bold"}>

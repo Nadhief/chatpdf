@@ -540,14 +540,14 @@ const Sidebar = ({
                           horizontal: "right",
                         }}
                       >
-                        <MenuItem
+                        {/* <MenuItem
                           onClick={() => {
                             handleMenuClose();
                             // handleEdit(menuItem);
                           }}
                         >
                           Edit
-                        </MenuItem>
+                        </MenuItem> */}
                         <MenuItem
                           onClick={() => {
                             handleMenuClose();
