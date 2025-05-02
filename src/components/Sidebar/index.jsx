@@ -16,6 +16,7 @@ import MailIcon from "@mui/icons-material/EmailOutlined";
 import HistoryIcon from "@mui/icons-material/History";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LogoutIcon from "@mui/icons-material/logout";
+import NewChatIcon from "@mui/icons-material/AddCommentOutlined";
 import Logo from "../../assets/ChatalizeLogo.svg";
 import ProfilPict from "../../assets/malePict.svg";
 import PersonalUser from "../../pages/user/PersonalUser";
@@ -449,7 +450,7 @@ const Sidebar = ({
             <>
               <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                 <Stack
-                  paddingBottom={0.8}
+                  paddingY={0.8}
                   borderRadius={2}
                   direction={"row"}
                   spacing={1}
@@ -587,7 +588,7 @@ const Sidebar = ({
             <>
               <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                 <Stack
-                  paddingBottom={0.8}
+                  paddingY={0.8}
                   borderRadius={2}
                   direction={"row"}
                   spacing={1}
@@ -610,6 +611,7 @@ const Sidebar = ({
                     setHistoryId(null);
                   }}
                 >
+                  <NewChatIcon className="hover-color" sx={{ fontSize: 20 }} />
                   <Typography
                     className="hover-color"
                     fontSize={20}
@@ -622,7 +624,7 @@ const Sidebar = ({
               </Box>
               <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                 <Stack
-                  paddingBottom={0.8}
+                  paddingY={0.8}
                   borderRadius={2}
                   direction={"row"}
                   spacing={1}
@@ -666,7 +668,7 @@ const Sidebar = ({
               </Box>
               {/* <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                 <Stack
-                  paddingBottom={0.8}
+                  paddingY={0.8}
                   borderRadius={2}
                   direction={"row"}
                   spacing={1}
