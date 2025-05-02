@@ -49,69 +49,6 @@ const PdfViewer = ({ id, source, type, setIsViewPdf, selected, dept_id }) => {
 
   console.log(filenamePart, pageNumber, isPrefixed);
 
-  // useEffect(() => {
-  //   const fetchPdf = async () => {
-  //     try {
-  //       setIsLoading(true);
-
-  //       if (type === "Personal") {
-  //         console.log("masuk");
-  //         const response = await getArrayBufferPDFPersonal({
-  //           user_id: id,
-  //           filename: filenamePart + ".pdf",
-  //           page: pageNumber,
-  //         });
-
-  //         const blob = new Blob([response], { type: "application/pdf" });
-  //         const url = URL.createObjectURL(blob);
-  //         setBlobUrl(url);
-
-  //         const loadingTask = pdfjsLib.getDocument({
-  //           url: url,
-  //           cMapUrl: "https://unpkg.com/pdfjs-dist/cmaps/",
-  //           cMapPacked: true,
-  //         });
-
-  //         const pdf = await loadingTask.promise;
-  //         setPdfInstance(pdf);
-  //       } else {
-  //         console.log("masuk dept");
-  //         const response = await getArrayBufferPDFDepartment({
-  //           dept_id: dept_id,
-  //           filename: filenamePart + ".pdf",
-  //           page: pageNumber,
-  //         });
-
-  //         const blob = new Blob([response], { type: "application/pdf" });
-  //         const url = URL.createObjectURL(blob);
-  //         setBlobUrl(url);
-
-  //         const loadingTask = pdfjsLib.getDocument({
-  //           url: url,
-  //           cMapUrl: "https://unpkg.com/pdfjs-dist/cmaps/",
-  //           cMapPacked: true,
-  //         });
-
-  //         const pdf = await loadingTask.promise;
-  //         setPdfInstance(pdf);
-  //       }
-  //     } catch (err) {
-  //       setError("Failed to load PDF");
-  //       console.error("Error fetching PDF:", err);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   if (source) fetchPdf();
-
-  //   return () => {
-  //     if (blobUrl) {
-  //       URL.revokeObjectURL(blobUrl);
-  //     }
-  //   };
-  // }, [source, id]);
-
   useEffect(() => {
     const fetchPdf = async () => {
       try {

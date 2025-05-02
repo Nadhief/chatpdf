@@ -98,8 +98,7 @@ const ChatBox = ({
         };
         chatTopic(payloadTopic).then((res) => {
           const filenames = res?.sources?.map((item) => {
-            const cleanedItem = item.replace(/^PDF:\s*/, "");
-            return cleanedItem.split("/").pop();
+            return item
           });
 
           const updatedEntry = {
@@ -119,8 +118,7 @@ const ChatBox = ({
         if (selected === "personal") {
           chatPersonal(payload).then((res) => {
             const filenames = res?.sources?.map((item) => {
-              const cleanedItem = item.replace(/^PDF:\s*/, "");
-              return cleanedItem.split("/").pop();
+              return item
             });
 
             const updatedEntry = {
@@ -146,8 +144,7 @@ const ChatBox = ({
           };
           chatDepartemen(payloadDepartment).then((res) => {
             const filenames = res?.sources?.map((item) => {
-              const cleanedItem = item.replace(/^PDF:\s*/, "");
-              return cleanedItem.split("/").pop();
+              return item
             });
 
             const updatedEntry = {
@@ -235,8 +232,7 @@ const ChatBox = ({
           chatDepartemen(payloadDepartment).then((res) => {
             setHistoryId(res?.current_history_id);
             const filenames = res?.sources?.map((item) => {
-              const cleanedItem = item.replace(/^PDF:\s*/, "");
-              return cleanedItem.split("/").pop();
+              return item
             });
 
             const updatedEntry = {
@@ -309,8 +305,7 @@ const ChatBox = ({
     if (responseSummarize) {
       console.log(responseSummarize);
       const filenames = responseSummarize?.sources?.map((item) => {
-        const cleanedItem = item.replace(/^PDF:\s*/, "");
-        return cleanedItem.split("/").pop();
+        return item
       });
 
       const updatedEntry = {
