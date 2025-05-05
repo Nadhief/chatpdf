@@ -12,6 +12,7 @@ import {
   DialogContent,
   CircularProgress,
   IconButton,
+  TablePagination,
 } from "@mui/material";
 import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import FolderPlusIcon from "@mui/icons-material/CreateNewFolderOutlined";
@@ -64,6 +65,15 @@ const Dokumen = ({ id, toggleSidebar }) => {
     {}
   );
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [personalPage, setPersonalPage] = useState(0);
+  const [personalRowsPerPage, setPersonalRowsPerPage] = useState(5);
+  const [topicPage, setTopicPage] = useState(0);
+  const [topicRowsPerPage, setTopicRowsPerPage] = useState(5);
+  const [globalPage, setGlobalPage] = useState(0);
+  const [globalRowsPerPage, setGlobalRowsPerPage] = useState(5);
+
   const [selectedDepartmentid, setSelectedDepartmentid] = useState(null);
   const [departmentFile, setDepartmentFile] = useState([]);
 
@@ -83,9 +93,16 @@ const Dokumen = ({ id, toggleSidebar }) => {
     .map(([idx]) => departmentFile?.list_files[idx]);
 
   useEffect(() => {
-    fetchDataFile();
-    fetchDataTopics();
-  }, []);
+    if (mainSelect === "Personal") {
+      if (selected === "file") {
+        fetchDataFile(1, personalRowsPerPage);
+      } else if (selected === "topik") {
+        fetchDataTopicsWithPagination(1, topicRowsPerPage);
+      }
+    } else if (mainSelect === "Global") {
+      fetchGlobalFiles(1, globalRowsPerPage);
+    }
+  }, [mainSelect, selected]);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -122,28 +139,78 @@ const Dokumen = ({ id, toggleSidebar }) => {
     }));
   };
 
-  const fetchDataFile = async () => {
+  const handlePersonalChangePage = (event, newPage) => {
+    setPersonalPage(newPage);
+    fetchDataFile(newPage + 1, personalRowsPerPage);
+  };
+  
+  const handlePersonalChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setPersonalRowsPerPage(newRowsPerPage);
+    setPersonalPage(0);
+    fetchDataFile(1, newRowsPerPage);
+  };
+
+  const fetchDataFile = async (pageNum = 1, perPage = personalRowsPerPage) => {
     try {
       const data = await getPersonalFile({
         user_id: id,
-        page: 1,
-        per_page: 10,
+        page: pageNum,
+        per_page: perPage,
       });
       setPersonalFiles(data);
     } catch (error) {
       console.error("Gagal mengambil file personal:", error);
     }
-  };
+  };  
 
   const fetchDataTopics = async () => {
+    fetchDataTopicsWithPagination(1, topicRowsPerPage);
+  };
+
+  const fetchDataTopicsWithPagination = async (pageNum = 1, perPage = 5) => {
     try {
       const data = await getTopic({
         user_id: id,
+        page: pageNum,
+        per_page: perPage,
       });
-      setPersonalTopics(data);
+      
+      if (data && data.list_files && Array.isArray(data.list_files)) {
+        const startIndex = (pageNum - 1) * perPage;
+        const endIndex = startIndex + perPage;
+        
+        const paginatedTopics = data.list_files.slice(startIndex, endIndex);
+        
+        const paginatedData = {
+          ...data,
+          list_files: paginatedTopics,
+          total_files: data.total_files || data.list_files.length
+        };
+        
+        setPersonalTopics(paginatedData);
+      } else {
+        setPersonalTopics(data);
+      }
+      
+      if (!pageNum || pageNum === 1) {
+        setSearchQuery("");
+      }
     } catch (error) {
       console.error("Gagal mengambil topik:", error);
     }
+  };
+
+  const handleTopicChangePage = (event, newPage) => {
+    setTopicPage(newPage);
+    fetchDataTopicsWithPagination(newPage + 1, topicRowsPerPage);
+  };
+  
+  const handleTopicChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setTopicRowsPerPage(newRowsPerPage);
+    setTopicPage(0);
+    fetchDataTopicsWithPagination(1, newRowsPerPage);
   };
 
   const handleMainDeptChange = (event) => {
@@ -305,6 +372,24 @@ const Dokumen = ({ id, toggleSidebar }) => {
     fetchDepartmentList();
   }, []);
 
+  useEffect(() => {
+    if (departmen) {
+      fetchDataFileDepartment(departmen, 1, rowsPerPage);
+    }
+  }, [departmen]);
+
+  useEffect(() => {
+    if (mainSelect === "Personal") {
+      if (selected === "file") {
+        fetchDataFile(1, personalRowsPerPage);
+        setPersonalPage(0);
+      } else if (selected === "topik") {
+        fetchDataTopicsWithPagination(1, topicRowsPerPage);
+        setTopicPage(0);
+      }
+    }
+  }, [selected]);
+
   const fetchDepartmentList = async () => {
     try {
       const data = await getDepartmentList();
@@ -314,22 +399,35 @@ const Dokumen = ({ id, toggleSidebar }) => {
     }
   };
 
-  const fetchDataFileDepartment = async (dept_id) => {
-    console.log(dept_id);
+  const fetchDataFileDepartment = async (dept_id, pageNum = 1, perPage = rowsPerPage) => {
     try {
       const data = await getDepartmentFile({
         dept_id: String(dept_id),
-        page: 1,
-        per_page: 10,
+        page: pageNum,
+        per_page: perPage,
       });
       setDepartmentFile(data);
     } catch (error) {
-      console.error("Gagal mengambil file personal:", error);
+      console.error("Gagal mengambil file departemen:", error);
     }
+  };
+
+  const handleDeptChangePage = (event, newPage) => {
+    setPage(newPage);
+    fetchDataFileDepartment(departmen, newPage + 1, rowsPerPage);
+  };
+  
+  const handleDeptChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
+    setPage(0);
+    fetchDataFileDepartment(departmen, 1, newRowsPerPage);
   };
 
   const getDepartment = (department) => {
     setSelectedDepartmentid(department.id);
+    setPage(0);
+    fetchDataFileDepartment(department.id, 1, rowsPerPage);
   };
 
   const handleDeleteFileDepartment = () => {
@@ -362,17 +460,18 @@ const Dokumen = ({ id, toggleSidebar }) => {
         getGlobalFile({
           keyword: value, 
           page: 1,
-          per_page: 10,
+          per_page: globalRowsPerPage,
         })
         .then((res) => {
           console.log("Global search result:", res.list_files);
-          setGlobalFiles(res); 
+          setGlobalFiles(res);
+          setGlobalPage(0);
         })
         .catch((err) => {
           console.error("Global search error:", err);
         });
       }, 300),
-    []
+    [globalRowsPerPage]
   );
 
   const debouncedSearchFilePersonal = useMemo(
@@ -382,20 +481,18 @@ const Dokumen = ({ id, toggleSidebar }) => {
           user_id: String(id),
           keywords: value,
           page: 1,
-          per_page: 10,
+          per_page: personalRowsPerPage,
         })
           .then((res) => {
             console.log("Search result:", res.list_files);
-            setPersonalFiles((prev) => ({
-              ...prev,
-              list_files: res.list_files,
-            }));            
+            setPersonalFiles(res);
+            setPersonalPage(0);           
           })
           .catch((err) => {
             console.error("Search error:", err);
           });
       }, 300),
-    [id] 
+    [id, personalRowsPerPage]
   );
 
   const handleSearchGlobalFile = (e) => {
@@ -405,24 +502,23 @@ const Dokumen = ({ id, toggleSidebar }) => {
   const debouncedSearchFileDepartment = useMemo(
     () =>
       debounce((value, dept_id) => {
+        setPage(0);
+
         searchFileDepartment({
           dept_id: String(dept_id),
           keywords: value,
           page: 1,
-          per_page: 10,
+          per_page: rowsPerPage,
         })
         .then((res) => {
           console.log("Search result:", res.list_files);
-          setDepartmentFile((prev) => ({
-            ...prev,
-            list_files: res.list_files,
-          }));            
+          setDepartmentFile(res);       
         })
         .catch((err) => {
           console.error("Search error:", err);
         });
       }, 300),
-    []
+    [rowsPerPage]
   );
 
   const debouncedSearchTopic = useMemo(
@@ -470,11 +566,23 @@ const Dokumen = ({ id, toggleSidebar }) => {
     return () => {};
   };
 
-  const fetchGlobalFiles = async () => {
+  const handleGlobalChangePage = (event, newPage) => {
+    setGlobalPage(newPage);
+    fetchGlobalFiles(newPage + 1, globalRowsPerPage);
+  };
+  
+  const handleGlobalChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setGlobalRowsPerPage(newRowsPerPage);
+    setGlobalPage(0);
+    fetchGlobalFiles(1, newRowsPerPage);
+  };
+
+  const fetchGlobalFiles = async (pageNum = 1, perPage = globalRowsPerPage) => {
     try {
       const data = await getGlobalFile({
-        page: 1,
-        per_page: 10,
+        page: pageNum,
+        per_page: perPage,
       });
       setGlobalFiles(data);
       console.log("Global files:", data);
@@ -482,7 +590,6 @@ const Dokumen = ({ id, toggleSidebar }) => {
       console.error("Gagal mengambil file global:", error);
     }
   };
-
 
   const handleDeleteFileGlobal = () => {
     setIsLoading(true);
@@ -514,10 +621,8 @@ const Dokumen = ({ id, toggleSidebar }) => {
             setOpenTrash(false);
             setCheckedItemsFileGlobal({});
             
-            // First refresh global files
             fetchGlobalFiles()
               .then(() => {
-                // Then refresh personal files
                 return fetchDataFile();
               })
               .then(() => {
@@ -534,10 +639,8 @@ const Dokumen = ({ id, toggleSidebar }) => {
             setOpenTrash(false);
             setCheckedItemsFileGlobal({});
             
-            // First refresh global files
             fetchGlobalFiles()
               .then(() => {
-                // Then refresh personal files
                 return fetchDataFile();
               })
               .then(() => {
@@ -966,6 +1069,86 @@ const Dokumen = ({ id, toggleSidebar }) => {
                             ))}
                           </Stack>
                         )}
+                    {mainSelect === "Personal" && selected === "file" && (
+                      <TablePagination
+                        component="div"
+                        count={personalFiles.total_files || 0}
+                        page={personalPage}
+                        onPageChange={handlePersonalChangePage}
+                        rowsPerPage={personalRowsPerPage}
+                        onRowsPerPageChange={handlePersonalChangeRowsPerPage}
+                        rowsPerPageOptions={[5, 10, 25]}
+                        labelRowsPerPage="Rows:"
+                        sx={{ 
+                          '.MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon': {
+                            fontSize: '12px',
+                          },
+                          '.MuiTablePagination-displayedRows': {
+                            fontSize: '12px',
+                          }
+                        }}
+                      />
+                    )}
+                    {mainSelect === "Personal" && selected === "topik" && (
+                      <TablePagination
+                        component="div"
+                        count={personalTopics.total_files || 0}
+                        page={topicPage}
+                        onPageChange={handleTopicChangePage}
+                        rowsPerPage={topicRowsPerPage}
+                        onRowsPerPageChange={handleTopicChangeRowsPerPage}
+                        rowsPerPageOptions={[5, 10, 25]}
+                        labelRowsPerPage="Rows:"
+                        sx={{ 
+                          '.MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon': {
+                            fontSize: '12px',
+                          },
+                          '.MuiTablePagination-displayedRows': {
+                            fontSize: '12px',
+                          }
+                        }}
+                      />
+                    )}
+                    {mainSelect === "Departemen" && (
+                      <TablePagination
+                        component="div"
+                        count={departmentFile.total_files || 0}
+                        page={page}
+                        onPageChange={handleDeptChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleDeptChangeRowsPerPage}
+                        rowsPerPageOptions={[5, 10, 25]}
+                        labelRowsPerPage="Rows:"
+                        sx={{ 
+                          '.MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon': {
+                            fontSize: '12px',
+                          },
+                          '.MuiTablePagination-displayedRows': {
+                            fontSize: '12px',
+                          }
+                        }}
+                      />
+                    )}
+                    {mainSelect === "Global" && (
+                      <TablePagination
+                        component="div"
+                        count={globalFiles.total_files || 0}
+                        page={globalPage}
+                        onPageChange={handleGlobalChangePage}
+                        rowsPerPage={globalRowsPerPage}
+                        onRowsPerPageChange={handleGlobalChangeRowsPerPage}
+                        rowsPerPageOptions={[5, 10, 25]}
+                        labelRowsPerPage="Rows:"
+                        sx={{ 
+                          '.MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon': {
+                            fontSize: '12px',
+                          },
+                          '.MuiTablePagination-displayedRows': {
+                            fontSize: '12px',
+                          }
+                        }}
+                      />
+                    )}
                   </Stack>
                 )}
               </Stack>
