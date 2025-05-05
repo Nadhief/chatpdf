@@ -13,13 +13,21 @@ import {
 import { useNavigate } from "react-router-dom";
 import CoofisImage from "../../assets/images/Coofis.png"; // Adjust the path as necessary
 import { login } from "../../services/authservices";
+import { Alert, Snackbar } from "@mui/material";
 
 const Login = () => {
-  const logoUrl = "http://192.168.1.77:8001/logo";
+  const logoUrl = "http://localhost:8001/logo";
+
+  const [openError, setOpenError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  const handleClose = () => {
+    setOpenError(false);
+  };
 
   const handleLogin = async () => {
     const payload = {
@@ -47,10 +55,21 @@ const Login = () => {
         }
       })
       .catch((error) => {
-        console.error(
-          "Login failed:",
-          error.response?.data?.message || error.message
-        );
+        const msg = error.response?.data?.message || error.message;
+        console.error("Login failed:", msg);
+
+        if (
+          msg.toLowerCase().includes("invalid") ||
+          msg.toLowerCase().includes("unauthorized") ||
+          msg.toLowerCase().includes("username") ||
+          msg.toLowerCase().includes("password")
+        ) {
+          setErrorMessage("Username or password doesn't match.");
+        } else {
+          setErrorMessage("Username or password doesn't match.");
+        }
+
+        setOpenError(true);
       });
   };
 
@@ -61,6 +80,22 @@ const Login = () => {
       alignItems="center"
       height="100vh"
     >
+      <Snackbar
+        open={openError}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        sx={{
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
+
       <Card sx={{ width: "454px", height: "595px", p: 2, boxShadow: 3 }}>
         <CardContent>
           <Stack

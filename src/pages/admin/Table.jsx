@@ -87,6 +87,17 @@ const Table = () => {
         >
           <Button
             variant="contained"
+            sx={{
+              backgroundColor: "#EEAFAF",
+              textTransform: "none",
+              color: "#EA001E",
+            }}
+            onClick={() => navigate("/admin/coofisai/database")}
+          >
+            Kembali
+          </Button>
+          <Button
+            variant="contained"
             startIcon={<AddIcon />}
             sx={{ backgroundColor: "#2f68ff", textTransform: "none" }}
             onClick={() => setOpenDialogAddTable(true)}

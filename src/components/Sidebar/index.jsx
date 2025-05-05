@@ -1,13 +1,22 @@
 import React, { Fragment } from "react";
 import { useState, useEffect } from "react";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Stack,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import { scrollbar } from "../../utils/scrollbar";
 import InputSearchBar from "../../components/Inputs/InputSearchBar";
 import AdminIcon from "@mui/icons-material/ManageAccountsOutlined";
 import MailIcon from "@mui/icons-material/EmailOutlined";
-import HistoryIcon from '@mui/icons-material/History';
+import HistoryIcon from "@mui/icons-material/History";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LogoutIcon from "@mui/icons-material/logout";
+import NewChatIcon from "@mui/icons-material/AddCommentOutlined";
 import Logo from "../../assets/ChatalizeLogo.svg";
 import ProfilPict from "../../assets/malePict.svg";
 import PersonalUser from "../../pages/user/PersonalUser";
@@ -19,10 +28,18 @@ import MenuAdmin from "../../pages/admin/MenuAdmin";
 import PersonalAdmin from "../../pages/admin/PersonalAdmin";
 import DepartemenAdmin from "../../pages/admin/DepartemenAdmin";
 import { useNavigate } from "react-router-dom";
-import { getDepartmentName } from "../../services";
-import { mails } from "./Mails/MailConfig";
-import Mails from "./Mails";
-import { history } from "./HistoryConfig";
+import {
+  deleteHisotryById,
+  getChatByHistoryId,
+  getDepartmentName,
+  getHistory,
+} from "../../services";
+import { set } from "lodash";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { AddIcCallOutlined } from "@mui/icons-material";
+// import { mails } from "./Mails/MailConfig";
+// import Mails from "./Mails";
+// import { history } from "./HistoryConfig";
 
 const Sidebar = ({
   dept_id,
@@ -39,27 +56,37 @@ const Sidebar = ({
   setDeptID,
   setIsMenu,
   model,
-  setModel,
   vectorizer,
-  setVectorizer,
   isSidebarOpen,
-  setIsSidebarOpen
+  setIsSidebarOpen,
+  setHistoryId,
+  historyId,
+  setIsHistorys,
+  setNewChat,
 }) => {
-  const logoUrl = "http://192.168.1.77:8001/logo";
+  const logoUrl = "http://localhost:8001/logo";
 
   const [departmentName, setDepartmentName] = useState("");
 
   const ismenu = localStorage.getItem("isMenu") === "true";
 
-  const [itemSelected, setItemSelected] = useState(localStorage.getItem("itemSelected") === "dokumen");
+  const [itemSelected, setItemSelected] = useState(
+    localStorage.getItem("itemSelected") === "dokumen"
+  );
   const [settingPage, setSettingPage] = useState(false);
 
   const [checkedItems, setCheckedItems] = useState({});
 
+  const [history, setHistory] = useState([]);
+
   const navigate = useNavigate();
 
-  const [isSurat, setIsSurat] = useState(localStorage.getItem("isSurat") === "true");
-  const [isHistory, setIsHistory] = useState(localStorage.getItem("isHistory") === "true");
+  const [isSurat, setIsSurat] = useState(
+    localStorage.getItem("isSurat") === "true"
+  );
+  const [isHistory, setIsHistory] = useState(
+    localStorage.getItem("isHistory") === "true"
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -67,13 +94,13 @@ const Sidebar = ({
         setIsSidebarOpen(false);
       }
     };
-  
-    window.addEventListener('resize', handleResize);
-    
+
+    window.addEventListener("resize", handleResize);
+
     handleResize();
-    
+
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -88,6 +115,14 @@ const Sidebar = ({
           setDepartmentName("Gagal memuat");
         });
     }
+    getHistory({ user_id: id })
+      .then((res) => {
+        setHistory(res);
+      })
+      .catch((error) => {
+        setHistory([]);
+        console.error("Gagal memuat history:", error);
+      });
   }, [dept_id]);
 
   const handleCheckFile = (idx, value) => {
@@ -102,6 +137,21 @@ const Sidebar = ({
     navigate("/");
   };
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuItem, setMenuItem] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenuOpen = (event, item) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setMenuItem(item);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuItem(null);
+  };
+
   return (
     <Stack
       direction="column"
@@ -111,14 +161,17 @@ const Sidebar = ({
       padding={3}
       height={"93vh"}
       boxShadow={"5px 0px 10px rgba(0, 0, 0, 0.15)"}
-      sx={{ 
+      sx={{
         width: {
           xs: 260,
           sm: 260,
           md: 280,
-          lg: 'auto'
+          lg: "auto",
         },
-        ...scrollbar("#9E9E9E"), overflowX: "hidden", overflowY: "auto" }}
+        ...scrollbar("#9E9E9E"),
+        overflowX: "hidden",
+        overflowY: "auto",
+      }}
     >
       <Stack
         direction={"row"}
@@ -231,8 +284,8 @@ const Sidebar = ({
                   setIsMenu(true);
                   setIsSurat(false);
                   setIsHistory(false);
-                  localStorage.setItem('isHistory', 'false');
-                  localStorage.setItem('isSurat', 'false');
+                  localStorage.setItem("isHistory", "false");
+                  localStorage.setItem("isSurat", "false");
                   localStorage.setItem("isMenu", "true");
                 }}
               >
@@ -274,10 +327,10 @@ const Sidebar = ({
                   setIsMenu(true);
                   setIsSurat(false);
                   setIsHistory(false);
-                  localStorage.setItem('isHistory', 'false');
-                  localStorage.setItem('isSurat', 'false');
+                  localStorage.setItem("isHistory", "false");
+                  localStorage.setItem("isSurat", "false");
                   localStorage.setItem("isMenu", "true");
-                }}  
+                }}
               >
                 <AdminIcon className="hover-color" sx={{ fontSize: 20 }} />
                 <Typography
@@ -315,10 +368,13 @@ const Sidebar = ({
                   }}
                   onClick={() => {
                     setIsSurat(false);
-                    localStorage.setItem('isSurat', 'false');
+                    localStorage.setItem("isSurat", "false");
                   }}
                 >
-                  <ArrowBackIcon className="hover-color" sx={{ fontSize: 20 }} />
+                  <ArrowBackIcon
+                    className="hover-color"
+                    sx={{ fontSize: 20 }}
+                  />
                   <Typography
                     className="hover-color"
                     fontSize={20}
@@ -329,7 +385,7 @@ const Sidebar = ({
                   </Typography>
                 </Stack>
               </Box>
-              <Box
+              {/* <Box
                 sx={{
                   width: "100%",
                   border: "2px solid #E0E0E0",
@@ -351,7 +407,7 @@ const Sidebar = ({
                     </Typography>
                   </Box>
                   <Stack direction={"column"} padding={1.5} spacing={1.5}>
-                    <InputSearchBar /*handleSearch={getSearchHandler()}*/ />
+                    <InputSearchBar  />
                     <Stack direction={"row"} spacing={1} alignItems="center">
                       <Box
                         width={100}
@@ -376,7 +432,6 @@ const Sidebar = ({
                       </Box>
                     </Stack>
                     <Stack direction={"column"} spacing={1}>
-                      {/*MAPPING SURAT MASUK*/}
                         {mails?.map((item, idx) => (
                             <Mails
                               key={idx}
@@ -389,13 +444,13 @@ const Sidebar = ({
                     </Stack>
                   </Stack>
                 </Stack>
-              </Box>
+              </Box> */}
             </>
           ) : isHistory ? (
             <>
               <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                 <Stack
-                  paddingBottom={0.8}
+                  paddingY={0.8}
                   borderRadius={2}
                   direction={"row"}
                   spacing={1}
@@ -415,10 +470,13 @@ const Sidebar = ({
                   }}
                   onClick={() => {
                     setIsHistory(false);
-                    localStorage.setItem('isHistory', 'false');
+                    localStorage.setItem("isHistory", "false");
                   }}
                 >
-                  <ArrowBackIcon className="hover-color" sx={{ fontSize: 20 }} />
+                  <ArrowBackIcon
+                    className="hover-color"
+                    sx={{ fontSize: 20 }}
+                  />
                   <Typography
                     className="hover-color"
                     fontSize={20}
@@ -429,29 +487,144 @@ const Sidebar = ({
                   </Typography>
                 </Stack>
               </Box>
-              {/*MAPPING HISTORY*/}
-              <Stack width='100%' direction="column" spacing={1} justifyContent={'flex-start'} sx={{ pl: 2 }}>
-                {history.map((group) => (
-                  <Fragment key={group.id}>
-                    <Typography fontSize={17} fontWeight="bold">
-                      {group.label}
-                    </Typography>
-                    <Stack direction="column" spacing={1.5} pb={2}>
-                      {group.children.map((item) => (
-                        <Typography key={item.id} fontSize={15} sx={{cursor: 'pointer'}}>
-                          {item.label}
+              <Stack
+                width="100%"
+                direction="column"
+                spacing={1}
+                justifyContent={"flex-start"}
+                sx={{ pl: 2 }}
+              >
+                {history && history.length > 0 ? (
+                  history.map((item) => (
+                    <Fragment key={item.id}>
+                      <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        px={1}
+                        py={1}
+                        borderRadius={1}
+                        sx={{
+                          cursor: "pointer",
+                          "&:hover": {
+                            backgroundColor: "#f0f0f0",
+                          },
+                        }}
+                        onClick={() => {
+                          setIsHistorys(true);
+                          setHistoryId(item.id);
+                          setNewChat(false);
+                          localStorage.setItem("isHistorys", "true");
+                        }}
+                      >
+                        <Typography fontSize={15}>
+                          {item.history_name}
                         </Typography>
-                      ))}
-                    </Stack>
-                  </Fragment>
-                ))}
+
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            setHistoryId(item.id);
+                            handleMenuOpen(e, item);
+                          }}
+                        >
+                          <MoreVertIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                      <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleMenuClose}
+                        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                        transformOrigin={{
+                          vertical: "top",
+                          horizontal: "right",
+                        }}
+                      >
+                        {/* <MenuItem
+                          onClick={() => {
+                            handleMenuClose();
+                            // handleEdit(menuItem);
+                          }}
+                        >
+                          Edit
+                        </MenuItem> */}
+                        <MenuItem
+                          onClick={() => {
+                            handleMenuClose();
+                            deleteHisotryById(historyId)
+                              .then(() => getHistory({ user_id: id }))
+                              .then((res) => {
+                                setHistory(res);
+                              })
+                              .catch((error) => {
+                                setHistory([]);
+                                console.error(
+                                  "Gagal memuat atau menghapus history:",
+                                  error
+                                );
+                              });
+                            setNewChat(true);
+                            setHistoryId(null);
+                          }}
+                        >
+                          Hapus
+                        </MenuItem>
+                      </Menu>
+                    </Fragment>
+                  ))
+                ) : (
+                  <Typography
+                    fontSize={15}
+                    fontStyle="italic"
+                    color="text.secondary"
+                  >
+                    Tidak memiliki history
+                  </Typography>
+                )}
               </Stack>
             </>
           ) : (
             <>
-             <Box width={"100%"} paddingRight={3} paddingLeft={1}>
+              <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                 <Stack
-                  paddingBottom={0.8}
+                  paddingY={0.8}
+                  borderRadius={2}
+                  direction={"row"}
+                  spacing={1}
+                  alignItems={"center"}
+                  justifyContent={"flex-start"}
+                  width={"100%"}
+                  paddingLeft={2}
+                  sx={{
+                    cursor: "pointer",
+                    transition: "background-color 0.3s",
+                    "&:hover": {
+                      backgroundColor: "#f5f5f5",
+                    },
+                    "&:hover .hover-color": {
+                      color: "#EA001E",
+                    },
+                  }}
+                  onClick={() => {
+                    setNewChat(true);
+                    setHistoryId(null);
+                  }}
+                >
+                  <NewChatIcon className="hover-color" sx={{ fontSize: 20 }} />
+                  <Typography
+                    className="hover-color"
+                    fontSize={20}
+                    fontWeight={400}
+                    color="#404040"
+                  >
+                    Chat Baru
+                  </Typography>
+                </Stack>
+              </Box>
+              <Box width={"100%"} paddingRight={3} paddingLeft={1}>
+                <Stack
+                  paddingY={0.8}
                   borderRadius={2}
                   direction={"row"}
                   spacing={1}
@@ -471,7 +644,15 @@ const Sidebar = ({
                   }}
                   onClick={() => {
                     setIsHistory(true);
-                    localStorage.setItem('isHistory', 'true');
+                    localStorage.setItem("isHistory", "true");
+                    getHistory({ user_id: id })
+                      .then((res) => {
+                        setHistory(res);
+                      })
+                      .catch((error) => {
+                        setHistory([]);
+                        console.error("Gagal memuat history:", error);
+                      });
                   }}
                 >
                   <HistoryIcon className="hover-color" sx={{ fontSize: 20 }} />
@@ -485,9 +666,9 @@ const Sidebar = ({
                   </Typography>
                 </Stack>
               </Box>
-              <Box width={"100%"} paddingRight={3} paddingLeft={1}>
+              {/* <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                 <Stack
-                  paddingBottom={0.8}
+                  paddingY={0.8}
                   borderRadius={2}
                   direction={"row"}
                   spacing={1}
@@ -520,7 +701,7 @@ const Sidebar = ({
                     Surat Saya
                   </Typography>
                 </Stack>
-              </Box>
+              </Box> */}
               <Box
                 width={"97%"}
                 sx={{
@@ -540,7 +721,8 @@ const Sidebar = ({
                     display="flex"
                     alignItems="center"
                     sx={{
-                      backgroundColor: selected === "personal" ? "white" : "none",
+                      backgroundColor:
+                        selected === "personal" ? "white" : "none",
                       borderRadius: 10,
                       cursor: "pointer",
                       boxShadow:
@@ -566,7 +748,8 @@ const Sidebar = ({
                     display="flex"
                     alignItems="center"
                     sx={{
-                      backgroundColor: selected === "departemen" ? "white" : "none",
+                      backgroundColor:
+                        selected === "departemen" ? "white" : "none",
                       borderRadius: 10,
                       cursor: "pointer",
                       boxShadow:
@@ -589,7 +772,7 @@ const Sidebar = ({
                   </Box>
                 </Stack>
               </Box>
-              <Box width={isSidebarOpen ? 400 : '100%'} paddingTop={1}>
+              <Box width={isSidebarOpen ? 400 : "100%"} paddingTop={1}>
                 {selected === "personal" ? (
                   <PersonalUser
                     id={id}
@@ -598,6 +781,10 @@ const Sidebar = ({
                     selectedTopicc={selectedTopic}
                     setSelectedTopic={setSelectedTopic}
                     setTopicName={setTopicName}
+                    historyId={historyId}
+                    setHistoryId={setHistoryId}
+                    model={model}
+                    vectorizer={vectorizer}
                   />
                 ) : selected === "departemen" ? (
                   role === "user" ? (
@@ -606,6 +793,10 @@ const Sidebar = ({
                       setDeptID={setDeptID}
                       setResponseSummarize={setResponseSummarize}
                       setIsSummarize={setIsSummarize}
+                      historyId={historyId}
+                      setHistoryId={setHistoryId}
+                      model={model}
+                      vectorizer={vectorizer}
                     />
                   ) : role === "operator" || "admin" ? (
                     <DepartemenOperator
@@ -613,6 +804,10 @@ const Sidebar = ({
                       setDeptID={setDeptID}
                       setIsSummarize={setIsSummarize}
                       setResponseSummarize={setResponseSummarize}
+                      historyId={historyId}
+                      setHistoryId={setHistoryId}
+                      model={model}
+                      vectorizer={vectorizer}
                     />
                   ) : null
                 ) : null}

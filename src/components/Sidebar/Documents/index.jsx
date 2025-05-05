@@ -52,7 +52,8 @@ const Documents = ({ label, status, checked, onCheck }) => {
           {label}
         </Typography>
         
-        <Box 
+        {status? (
+          <Box 
           sx={{ 
             backgroundColor: status === 'private' ? "#EEF0F7" : "#D6E0FF", 
             color: status === 'private' ? "#474D66" : "#3366FF",
@@ -70,6 +71,8 @@ const Documents = ({ label, status, checked, onCheck }) => {
             {status}
           </Typography>
         </Box>
+        ) : null}
+
       </Stack>
     </Stack>
   );

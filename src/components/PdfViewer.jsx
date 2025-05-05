@@ -1,17 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   getArrayBufferPDFDepartment,
+  getArrayBufferPDFGlobal,
   getArrayBufferPDFPersonal,
 } from "../services";
 import * as pdfjsLib from "pdfjs-dist/build/pdf";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker?worker";
-import { Button, CircularProgress, IconButton, Stack, Typography } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { scrollbar } from "../utils/scrollbar";
 import ClearIcon from "@mui/icons-material/Clear";
 
 pdfjsLib.GlobalWorkerOptions.workerPort = new pdfjsWorker();
 
 const PdfViewer = ({ id, source, type, setIsViewPdf, selected, dept_id }) => {
+  console.log("masuk", source);
   const [scale, setScale] = useState(1);
   const [blobUrl, setBlobUrl] = useState("");
   const canvasRef = useRef();
@@ -21,55 +29,78 @@ const PdfViewer = ({ id, source, type, setIsViewPdf, selected, dept_id }) => {
   const [pageRendering, setPageRendering] = useState(false);
   const [currentPage, setCurrentPage] = useState(null);
 
-  const [filenamePart, pagePart] = source.split(/\.pdf:|:/);
-  const pageNumber = parseInt(pagePart, 10);
+  // const [filenamePart, pagePart] = source.split(/\.pdf:|:/);
+  // const pageNumber = parseInt(pagePart, 10);
+
+  function extractData(input) {
+    const trimmed = input.trim();
+    const isPrefixed = trimmed.startsWith("GLOBAL:");
+
+    const filenameMatch = trimmed.match(/\/([^\/]+)\.pdf/);
+    const filenamePart = filenameMatch ? filenameMatch[1] : null;
+
+    const pageMatch = trimmed.match(/\.pdf:(\d+):/);
+    const pageNumber = pageMatch ? parseInt(pageMatch[1], 10) : null;
+
+    return { filenamePart, pageNumber, isPrefixed };
+  }
+
+  const { filenamePart, pageNumber, isPrefixed } = extractData(source);
+
+  console.log(filenamePart, pageNumber, isPrefixed);
 
   useEffect(() => {
     const fetchPdf = async () => {
       try {
         setIsLoading(true);
+        const isMobile = window.innerWidth < 600;
+        let response;
 
-        if (type === "Personal") {
-          console.log("masuk");
-          const response = await getArrayBufferPDFPersonal({
-            user_id: id,
-            filename: filenamePart + ".pdf",
+        const filename = filenamePart + ".pdf";
+
+        if (isPrefixed) {
+          console.log("masuk global");
+          response = await getArrayBufferPDFGlobal({
+            filename,
             page: pageNumber,
           });
-
-          const blob = new Blob([response], { type: "application/pdf" });
-          const url = URL.createObjectURL(blob);
-          setBlobUrl(url);
-
-          const loadingTask = pdfjsLib.getDocument({
-            url: url,
-            cMapUrl: "https://unpkg.com/pdfjs-dist/cmaps/",
-            cMapPacked: true,
-          });
-
-          const pdf = await loadingTask.promise;
-          setPdfInstance(pdf);
         } else {
-          console.log("masuk dept");
-          const response = await getArrayBufferPDFDepartment({
-            dept_id: dept_id,
-            filename: filenamePart + ".pdf",
-            page: pageNumber,
-          });
-
-          const blob = new Blob([response], { type: "application/pdf" });
-          const url = URL.createObjectURL(blob);
-          setBlobUrl(url);
-
-          const loadingTask = pdfjsLib.getDocument({
-            url: url,
-            cMapUrl: "https://unpkg.com/pdfjs-dist/cmaps/",
-            cMapPacked: true,
-          });
-
-          const pdf = await loadingTask.promise;
-          setPdfInstance(pdf);
+          if (type === "Personal") {
+            console.log("masuk personal");
+            response = await getArrayBufferPDFPersonal({
+              user_id: id,
+              filename,
+              page: pageNumber,
+            });
+          } else {
+            console.log("masuk dept");
+            response = await getArrayBufferPDFDepartment({
+              dept_id,
+              filename,
+              page: pageNumber,
+            });
+          }
         }
+
+        const blob = new Blob([response], { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+
+        if (isMobile) {
+          window.open(url, "_blank");
+          setIsViewPdf(false);
+          return;
+        }
+
+        setBlobUrl(url);
+
+        const loadingTask = pdfjsLib.getDocument({
+          url,
+          cMapUrl: "https://unpkg.com/pdfjs-dist/cmaps/",
+          cMapPacked: true,
+        });
+
+        const pdf = await loadingTask.promise;
+        setPdfInstance(pdf);
       } catch (err) {
         setError("Failed to load PDF");
         console.error("Error fetching PDF:", err);
@@ -150,92 +181,94 @@ const PdfViewer = ({ id, source, type, setIsViewPdf, selected, dept_id }) => {
   };
 
   return (
-    <Stack
-    direction="column"
-    alignItems="center"
-    spacing={2}
-    paddingY={3}
-    paddingX={0}
-    height={"93vh"}
-    backgroundColor="white"
-    boxShadow={"5px 0px 10px rgba(0, 0, 0, 0.15)"}
-    sx={{ ...scrollbar("#9E9E9E"), overflowX: "auto", overflowY: "auto" }}
-  >
-    {isLoading ? (
-      // Kalau masih loading, tampilkan spinner
+    <>
       <Stack
-        flex={1}
-        justifyContent="center"
+        direction="column"
         alignItems="center"
-        width="100%"
-        height="100%"
+        spacing={2}
+        paddingY={3}
+        paddingX={0}
+        height={"93vh"}
+        backgroundColor="white"
+        boxShadow={"5px 0px 10px rgba(0, 0, 0, 0.15)"}
+        sx={{ ...scrollbar("#9E9E9E"), overflowX: "auto", overflowY: "auto" }}
       >
-        <CircularProgress />
-        <Typography variant="body2" mt={2}>
-          Memuat PDF...
-        </Typography>
-      </Stack>
-    ) : (
-      <>
-        <Stack width={"100%"} alignItems={"center"}>
+        {isLoading ? (
+          // Kalau masih loading, tampilkan spinner
           <Stack
-            direction="row"
-            justifyContent="end"
-            position={"absolute"}
-            right={0}
-            top={5}
-            paddingRight={2}
+            flex={1}
+            justifyContent="center"
+            alignItems="center"
+            width="100%"
+            height="100%"
           >
-            <IconButton
-              aria-label="close"
-              size="small"
-              onClick={() => setIsViewPdf(false)}
-              sx={{
-                border: "1px solid grey",
-                backgroundColor: "grey.200",
-                boxShadow: 2,
-                "&:hover": {
-                  backgroundColor: "grey.300",
-                },
-              }}
-            >
-              <ClearIcon fontSize="inherit" />
-            </IconButton>
+            <CircularProgress />
+            <Typography variant="body2" mt={2}>
+              Memuat PDF...
+            </Typography>
           </Stack>
+        ) : (
+          <>
+            <Stack width={"100%"} alignItems={"center"}>
+              <Stack
+                direction="row"
+                justifyContent="end"
+                position={"absolute"}
+                right={0}
+                top={5}
+                paddingRight={2}
+              >
+                <IconButton
+                  aria-label="close"
+                  size="small"
+                  onClick={() => setIsViewPdf(false)}
+                  sx={{
+                    border: "1px solid grey",
+                    backgroundColor: "grey.200",
+                    boxShadow: 2,
+                    "&:hover": {
+                      backgroundColor: "grey.300",
+                    },
+                  }}
+                >
+                  <ClearIcon fontSize="inherit" />
+                </IconButton>
+              </Stack>
 
-          <div style={{ maxWidth: "100%", }}>
-            <canvas ref={canvasRef} />
-          </div>
-        </Stack>
+              <div style={{ maxWidth: "100%" }}>
+                <canvas ref={canvasRef} />
+              </div>
+            </Stack>
 
-        <Stack
-          direction={"row"}
-          justifyContent={"center"}
-          spacing={2}
-          position={"absolute"}
-          bottom={0}
-          sx={{ paddingBottom: 2 }}
-        >
-          <Button
-            variant="contained"
-            size="small"
-            onClick={handleZoomIn}
-            sx={{ textTransform: "none", backgroundColor: "black" }}
-          >
-            Zoom In
-          </Button>
-          <Button
-            variant="contained"
-            size="small"
-            onClick={handleZoomOut}
-            sx={{ textTransform: "none", backgroundColor: "black" }}
-          >
-            Zoom Out
-          </Button>
-        </Stack>
-      </>
-    )}
-  </Stack>
+            <Stack
+              direction={"row"}
+              justifyContent={"center"}
+              spacing={2}
+              position={"absolute"}
+              bottom={0}
+              sx={{ paddingBottom: 2 }}
+            >
+              <Button
+                variant="contained"
+                size="small"
+                onClick={handleZoomIn}
+                sx={{ textTransform: "none", backgroundColor: "black" }}
+              >
+                Zoom In
+              </Button>
+              <Button
+                variant="contained"
+                size="small"
+                onClick={handleZoomOut}
+                sx={{ textTransform: "none", backgroundColor: "black" }}
+              >
+                Zoom Out
+              </Button>
+            </Stack>
+          </>
+        )}
+      </Stack>
+    </>
   );
 };
 

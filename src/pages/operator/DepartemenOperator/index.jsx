@@ -8,6 +8,7 @@ import {
   Dialog,
   DialogContent,
   CircularProgress,
+  TablePagination,
 } from "@mui/material";
 import ExpandIcon from "@mui/icons-material/ExpandMore";
 import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
@@ -33,10 +34,10 @@ const DepartemenOperator = ({
   setDeptID,
   setIsSummarize,
   setResponseSummarize,
+  historyId,
+  setHistoryId,
   model,
-  setModel,
-  vectorizer,
-  setVectorizer,
+  vectorizer
 }) => {
   const [departmentList, setDepartmentList] = useState([]);
   const departmentOptions = departmentList.map(([id, name, code]) => ({
@@ -44,6 +45,9 @@ const DepartemenOperator = ({
     label: name,
     code,
   }));
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [departemenSelected, setDepartmenSelected] = useState(false);
   const [departmentFile, setDepartmentFile] = useState([]);
@@ -96,40 +100,73 @@ const DepartemenOperator = ({
     }
   };
 
-  const fetchDataFileDepartment = async (dept_id) => {
+  const fetchDataFileDepartment = async (dept_id, pageNum = 1, perPage = rowsPerPage) => {
     try {
       const data = await getDepartmentFile({
         dept_id: String(dept_id),
-        page: 1,
-        per_page: 10,
+        page: pageNum,
+        per_page: perPage,
       });
       setDepartmentFile(data);
     } catch (error) {
-      console.error("Gagal mengambil file personal:", error);
+      console.error("Gagal mengambil file departemen:", error);
     }
   };
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+    fetchDataFileDepartment(selectedDepartmentid, newPage + 1, rowsPerPage);
+  };
+  
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
+    setPage(0);
+    fetchDataFileDepartment(selectedDepartmentid, 1, newRowsPerPage);
+  };    
+
   const getDepartment = (department) => {
     setSelectedDepartmentid(department.id);
-    fetchDataFileDepartment(department.id);
+    setPage(0);
+    fetchDataFileDepartment(department.id, 1, rowsPerPage);
     setDeptID(department.id);
   };
 
   const handleSummarize = async () => {
-    const payload = {
-      id: String(selectedDepartmentid),
-      embedding_model: vectorizer,
-      llm_model: model,
-      filename: selectedFiles?.map((file) => file?.name),
-    };
-    summarizeFileDepartment(payload)
-      .then((res) => {
-        setResponseSummarize(res);
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (historyId) {
+      const payload = {
+        id: String(selectedDepartmentid),
+        embedding_model: vectorizer,
+        llm_model: model,
+        filename: selectedFiles?.map((file) => file?.name),
+        history_id: String(historyId),
+      };
+      summarizeFileDepartment(payload)
+        .then((res) => {
+          setResponseSummarize(res);
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      const payload = {
+        id: String(selectedDepartmentid),
+        embedding_model: vectorizer,
+        llm_model: model,
+        filename: selectedFiles?.map((file) => file?.name),
+        history_id: "",
+      };
+      summarizeFileDepartment(payload)
+        .then((res) => {
+          setResponseSummarize(res);
+          setHistoryId(res?.current_history_id);
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   const handleSelectUploadFiles = (event) => {
@@ -192,27 +229,27 @@ const DepartemenOperator = ({
         });
     });
   };
+
   const debouncedSearchFileDepartment = useMemo(
     () =>
       debounce((value, dept_id) => {
+        setPage(0);
+        
         searchFileDepartment({
           dept_id: String(dept_id),
           keywords: value,
           page: 1,
-          per_page: 10,
+          per_page: rowsPerPage,
         })
           .then((res) => {
-            console.log("Search result:", res.list_files);
-            setDepartmentFile((prev) => ({
-              ...prev,
-              list_files: res.list_files,
-            }));
+            console.log("Search result:", res);
+            setDepartmentFile(res);
           })
           .catch((err) => {
             console.error("Search error:", err);
           });
       }, 300),
-    []
+    [rowsPerPage]
   );
 
   const handleSearchFileDepartment = (e) => {
@@ -235,271 +272,294 @@ const DepartemenOperator = ({
         },
         margin: '0 auto'
       }}
-      spacing={3}
+      spacing={1}
     >
-      <Box width="100%" textAlign="left">
+      <Box width="100%" textAlign="left" paddingBottom={1}>
         <Typography fontSize={18} fontWeight={700} color="#404040">
           Unggah Dokumen Departemen
         </Typography>
       </Box>
-      <Autocomplete
-        options={departmentOptions}
-        sx={{
-          width: "100%",
-          boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.1)",
-          borderRadius: 2,
-          border: "2px solid #E0E0E0",
-          "& .MuiOutlinedInput-root": {
-            padding: 0,
-            paddingX: 2,
-            "& .MuiOutlinedInput-notchedOutline": {
-              border: "none",
+      <Stack width="100%" direction={"column"} spacing={3}>
+        <Autocomplete
+          options={departmentOptions}
+          sx={{
+            width: "100%",
+            boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.1)",
+            borderRadius: 2,
+            border: "2px solid #E0E0E0",
+            "& .MuiOutlinedInput-root": {
+              padding: 0,
+              paddingX: 2,
+              "& .MuiOutlinedInput-notchedOutline": {
+                border: "none",
+              },
             },
-          },
-        }}
-        renderInput={(params) => <TextField {...params} />}
-        clearIcon={false}
-        defaultValue={"Pilih Departemen"}
-        popupIcon={<ExpandIcon />}
-        onChange={(event, value) => {
-          if (value) {
-            setDepartmenSelected(true);
-            getDepartment(value);
-          }
-        }}
-      />
-      {departemenSelected ? (
+          }}
+          renderInput={(params) => <TextField {...params} />}
+          clearIcon={false}
+          defaultValue={"Pilih Departemen"}
+          popupIcon={<ExpandIcon />}
+          onChange={(event, value) => {
+            if (value) {
+              setDepartmenSelected(true);
+              getDepartment(value);
+            }
+          }}
+        />
+        {departemenSelected ? (
+          <Box
+            sx={{
+              width: "100%",
+              border: "2px solid #E5E6EF",
+              borderRadius: "4px",
+              backgroundColor: "#FAFBFD",
+            }}
+          >
+            <Stack direction="column" padding={1.5} spacing={1}>
+              <Typography fontSize={14} fontWeight={600} color="#404040">
+                Unggah File
+              </Typography>
+
+              {selectedUploadFiles.length > 0 ? (
+                <Stack spacing={0.5}>
+                  {selectedUploadFiles.map((file, index) => (
+                    <Typography
+                      key={index}
+                      fontSize={12}
+                      fontWeight={400}
+                      color="#404040"
+                      sx={{
+                        overflowWrap: "anywhere",
+                        wordBreak: "break-word",
+                        whiteSpace: "normal",
+                      }}
+                    >
+                      {file.name}
+                    </Typography>
+                  ))}
+                </Stack>
+              ) : (
+                <Typography fontSize={12} fontWeight={400} color="#404040">
+                  Total ukuran berkas yang dapat diproses adalah maksimal 200 MB
+                  dengan ekstensi (PDF, JSON)
+                </Typography>
+              )}
+
+              <Box
+                display="flex"
+                justifyContent="flex-end"
+                width="100%"
+                color="white"
+                gap={1}
+              >
+                {selectedUploadFiles.length > 0 ? (
+                  <>
+                    <Box
+                      component="button"
+                      onClick={handleCancel}
+                      sx={{
+                        backgroundColor: "#fff",
+                        color: "#4C4DDC",
+                        border: "1px solid #4C4DDC",
+                        borderRadius: 1,
+                        fontSize: 12,
+                        padding: "4px 12px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Batal
+                    </Box>
+                    <Box
+                      component="button"
+                      onClick={handleUploadPersonalFiles}
+                      sx={{
+                        backgroundColor: "#4C4DDC",
+                        color: "#fff",
+                        borderRadius: 1,
+                        fontSize: 12,
+                        padding: "4px 12px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Unggah
+                    </Box>
+                  </>
+                ) : (
+                  <Box
+                    component="label"
+                    htmlFor="upload-file"
+                    display="flex"
+                    justifyContent="flex-end"
+                    paddingY={0.5}
+                    paddingX={1}
+                    borderRadius={1}
+                    alignItems="center"
+                    sx={{
+                      cursor: "pointer",
+                      backgroundColor: "#4C4DDC",
+                    }}
+                  >
+                    <FolderPlusIcon
+                      sx={{ color: "white", marginRight: 1, fontSize: 18 }}
+                    />
+                    <Typography fontSize={12} fontWeight={400}>
+                      Pilih Berkas
+                    </Typography>
+                    <input
+                      id="upload-file"
+                      type="file"
+                      accept=".pdf,.json"
+                      hidden
+                      onChange={handleSelectUploadFiles}
+                    />
+                  </Box>
+                )}
+              </Box>
+            </Stack>
+          </Box>
+        ) : null}
         <Box
           sx={{
             width: "100%",
-            border: "2px solid #E5E6EF",
+            border: "2px solid #E0E0E0",
             borderRadius: "4px",
-            backgroundColor: "#FAFBFD",
+            backgroundColor: "#FFFFFF",
           }}
         >
-          <Stack direction="column" padding={1.5} spacing={1}>
-            <Typography fontSize={14} fontWeight={600} color="#404040">
-              Unggah File
-            </Typography>
-
-            {selectedUploadFiles.length > 0 ? (
-              <Stack spacing={0.5}>
-                {selectedUploadFiles.map((file, index) => (
-                  <Typography
-                    key={index}
-                    fontSize={12}
-                    fontWeight={400}
-                    color="#404040"
-                    sx={{
-                      overflowWrap: "anywhere",
-                      wordBreak: "break-word",
-                      whiteSpace: "normal",
-                    }}
-                  >
-                    {file.name}
-                  </Typography>
-                ))}
-              </Stack>
-            ) : (
-              <Typography fontSize={12} fontWeight={400} color="#404040">
-                Total ukuran berkas yang dapat diproses adalah maksimal 200 MB
-                dengan ekstensi (PDF, JSON)
-              </Typography>
-            )}
-
+          <Stack direction={"column"} spacing={1}>
             <Box
-              display="flex"
-              justifyContent="flex-end"
-              width="100%"
-              color="white"
-              gap={1}
+              sx={{
+                backgroundColor: "#F5F5F5",
+                borderRadius: "4px 4px 0 0",
+                paddingX: 2,
+                paddingY: 1,
+              }}
             >
-              {selectedUploadFiles.length > 0 ? (
-                <>
-                  <Box
-                    component="button"
-                    onClick={handleCancel}
-                    sx={{
-                      backgroundColor: "#fff",
-                      color: "#4C4DDC",
-                      border: "1px solid #4C4DDC",
-                      borderRadius: 1,
-                      fontSize: 12,
-                      padding: "4px 12px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Batal
-                  </Box>
-                  <Box
-                    component="button"
-                    onClick={handleUploadPersonalFiles}
-                    sx={{
-                      backgroundColor: "#4C4DDC",
-                      color: "#fff",
-                      borderRadius: 1,
-                      fontSize: 12,
-                      padding: "4px 12px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Unggah
-                  </Box>
-                </>
-              ) : (
-                <Box
-                  component="label"
-                  htmlFor="upload-file"
-                  display="flex"
-                  justifyContent="flex-end"
-                  paddingY={0.5}
-                  paddingX={1}
-                  borderRadius={1}
-                  alignItems="center"
-                  sx={{
-                    cursor: "pointer",
-                    backgroundColor: "#4C4DDC",
-                  }}
-                >
-                  <FolderPlusIcon
-                    sx={{ color: "white", marginRight: 1, fontSize: 18 }}
-                  />
-                  <Typography fontSize={12} fontWeight={400}>
-                    Pilih Berkas
-                  </Typography>
-                  <input
-                    id="upload-file"
-                    type="file"
-                    accept=".pdf,.json"
-                    hidden
-                    onChange={handleSelectUploadFiles}
-                  />
-                </Box>
-              )}
+              <Typography fontSize={16} fontWeight={600} color="#404040">
+                {" "}
+                File Departemen{" "}
+              </Typography>
             </Box>
-          </Stack>
-        </Box>
-      ) : null}
-      <Box
-        sx={{
-          width: "100%",
-          border: "2px solid #E0E0E0",
-          borderRadius: "4px",
-          backgroundColor: "#FFFFFF",
-        }}
-      >
-        <Stack direction={"column"} spacing={1}>
-          <Box
-            sx={{
-              backgroundColor: "#F5F5F5",
-              borderRadius: "4px 4px 0 0",
-              paddingX: 2,
-              paddingY: 1,
-            }}
-          >
-            <Typography fontSize={16} fontWeight={600} color="#404040">
-              {" "}
-              File Departemen{" "}
-            </Typography>
-          </Box>
-          {departemenSelected ? (
-            <Stack direction={"column"} padding={1.5} spacing={1}>
-              <InputSearchBar handleSearch={handleSearchFileDepartment} />
-              <Stack direction={"row"} spacing={1} alignItems="center">
-                <Box
-                  width={"30%"}
-                  display="flex"
-                  justifyContent="center"
-                  paddingY={0.3}
-                  paddingX={0.7}
-                  borderRadius={100}
-                  border={"1px solid #9E9E9E"}
-                  sx={{
-                    backgroundColor: "#FAFBFD",
-                    boxShadow: "none",
-                  }}
-                >
-                  <Typography fontSize={12} fontWeight={400} color="black">
-                    {" "}
-                    File{" "}
-                  </Typography>
-                </Box>
-                <Box
-                  display="flex"
-                  justifyContent="flex-end"
-                  width="100%"
-                  color="white"
-                >
+            {departemenSelected ? (
+              <Stack direction={"column"} padding={1.5} spacing={1}>
+                <InputSearchBar handleSearch={handleSearchFileDepartment} />
+                <Stack direction={"row"} spacing={1} alignItems="center">
+                  <Box
+                    width={"30%"}
+                    display="flex"
+                    justifyContent="center"
+                    paddingY={0.3}
+                    paddingX={0.7}
+                    borderRadius={100}
+                    border={"1px solid #9E9E9E"}
+                    sx={{
+                      backgroundColor: "#FAFBFD",
+                      boxShadow: "none",
+                    }}
+                  >
+                    <Typography fontSize={12} fontWeight={400} color="black">
+                      {" "}
+                      File{" "}
+                    </Typography>
+                  </Box>
                   <Box
                     display="flex"
                     justifyContent="flex-end"
+                    width="100%"
                     color="white"
-                    paddingY={0.7}
-                    paddingX={0.7}
-                    borderRadius={1}
-                    sx={{
-                      cursor: "pointer",
-                      backgroundColor: "#CB3A31",
-                    }}
-                    onClick={() => setOpenTrash(true)}
                   >
-                    <TrashIcon sx={{ color: "white", fontSize: 20 }} />
+                    <Box
+                      display="flex"
+                      justifyContent="flex-end"
+                      color="white"
+                      paddingY={0.7}
+                      paddingX={0.7}
+                      borderRadius={1}
+                      sx={{
+                        cursor: "pointer",
+                        backgroundColor: "#CB3A31",
+                      }}
+                      onClick={() => setOpenTrash(true)}
+                    >
+                      <TrashIcon sx={{ color: "white", fontSize: 20 }} />
+                    </Box>
                   </Box>
-                </Box>
+                </Stack>
+                <Stack direction={"column"} spacing={1}>
+                  {/*MAPPING FILE PDF*/}
+                  {departmentFile?.list_files?.map((item, idx) => (
+                    <React.Fragment key={idx}>
+                      <Documents
+                        label={item.name}
+                        checked={checkedItems[idx] || false}
+                        onCheck={(val) => handleCheck(idx, val)}
+                      />
+                    </React.Fragment>
+                  ))}
+                </Stack>
               </Stack>
-              <Stack direction={"column"} spacing={1}>
-                {/*MAPPING FILE PDF*/}
-                {departmentFile?.list_files?.map((item, idx) => (
-                  <React.Fragment key={idx}>
-                    <Documents
-                      label={item.name}
-                      checked={checkedItems[idx] || false}
-                      onCheck={(val) => handleCheck(idx, val)}
-                    />
-                  </React.Fragment>
-                ))}
-              </Stack>
-            </Stack>
-          ) : (
-            <Typography
-              padding={2}
-              fontSize={14}
-              fontWeight={400}
-              color="#404040"
-            >
-              Silakan pilih departemen terlebih dahulu
-            </Typography>
-          )}
-        </Stack>
-      </Box>
-      <Stack
-        width={"100%"}
-        direction={"row"}
-        spacing={1}
-        justifyContent={"flex-end"}
-        alignItems={"flex-end"}
-      >
-        <Box
-          onClick={() => {
-            handleSummarize();
-            setIsSummarize(true);
-          }}
-          color="white"
-          paddingY={0.5}
-          paddingX={1}
-          borderRadius={1}
-          alignItems={"center"}
-          sx={{
-            cursor: "pointer",
-            backgroundColor: "#CB3A31",
-          }}
-        >
-          <Typography fontSize={12} fontWeight={400}>
-            {" "}
-            Summarize{" "}
-          </Typography>
+            ) : (
+              <Typography
+                padding={2}
+                fontSize={14}
+                fontWeight={400}
+                color="#404040"
+              >
+                Silakan pilih departemen terlebih dahulu
+              </Typography>
+            )}
+          </Stack>
         </Box>
       </Stack>
+      {departmentFile?.list_files && (
+        <TablePagination
+          component="div"
+          count={departmentFile.total_files || 0}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10]}
+          labelRowsPerPage="Rows:"
+          sx={{ 
+            '.MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon': {
+              fontSize: '12px',
+            },
+            '.MuiTablePagination-displayedRows': {
+              fontSize: '12px',
+            }
+          }}
+        />
+      )}
+      {selectedFiles.length !== 0 ? 
+        <Stack
+          width={"100%"}
+          direction={"row"}
+          spacing={1}
+          justifyContent={"flex-end"}
+          alignItems={"flex-end"}
+        >
+          <Box
+            onClick={() => {
+              handleSummarize();
+              setIsSummarize(true);
+            }}
+            color="white"
+            paddingY={0.5}
+            paddingX={1}
+            borderRadius={1}
+            alignItems={"center"}
+            sx={{
+              cursor: "pointer",
+              backgroundColor: "#CB3A31",
+            }}
+          >
+            <Typography fontSize={12} fontWeight={400}>
+              Summarize
+            </Typography>
+          </Box>
+        </Stack>
+      : null}
 
       <DeleteFile
         open={openTrash}

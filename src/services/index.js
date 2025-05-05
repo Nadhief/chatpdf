@@ -2,7 +2,7 @@ import api from "./api";
 
 export const chatPersonal = async (payload) => {
   try {
-    const response = await api.post("chat/personal/", payload);
+    const response = await api.post("chat/personal_v2/", payload);
     return response.data;
   } catch (error) {
     console.error("Error adding department:", error);
@@ -12,7 +12,7 @@ export const chatPersonal = async (payload) => {
 
 export const chatDepartemen = async (payload) => {
   try {
-    const response = await api.post("chat/department/", payload);
+    const response = await api.post("chat/department_v2/", payload);
     return response.data;
   } catch (error) {
     console.error("Error adding department:", error);
@@ -22,7 +22,7 @@ export const chatDepartemen = async (payload) => {
 
 export const chatTopic = async (payload) => {
   try {
-    const response = await api.post("chat/topic/", payload);
+    const response = await api.post("chat/topic_v2/", payload);
     return response.data;
   } catch (error) {
     console.error("Error adding department:", error);
@@ -103,7 +103,6 @@ export const getDepartmentList = async () => {
 export const getDepartmentName = async (id) => {
   try {
     const data = await getDepartmentList();
-    console.log(data)
     const departments = data.response;
 
     const found = departments.find((dept) => dept[0] === id);
@@ -133,7 +132,7 @@ export const getDepartmentFile = async ({ dept_id, page, per_page }) => {
 
 export const summarizeFilePersonal = async (payload) => {
   try {
-    const response = await api.post("file/summarize_personal", payload);
+    const response = await api.post("file/summarize_personal_v2", payload);
     return response.data;
   } catch (error) {
     console.error("Error getting department:", error);
@@ -143,7 +142,7 @@ export const summarizeFilePersonal = async (payload) => {
 
 export const summarizeFileDepartment = async (payload) => {
   try {
-    const response = await api.post("file/summarize_department", payload);
+    const response = await api.post("file/summarize_department_v2", payload);
     return response.data;
   } catch (error) {
     console.error("Error getting department:", error);
@@ -363,8 +362,26 @@ export const uploadLogo = async (file) => {
 };
 
 export const getArrayBufferPDFPersonal = async({user_id, filename, page}) =>{
+  
   try {
     const response = await api.get("file/buffer_doc_personal", {
+      params: {
+        user_id: user_id,
+        filename: filename,
+        page: page,
+      },
+      responseType: 'arraybuffer',
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting pdf:", error);
+    throw error;
+  }
+} 
+
+export const getArrayBufferPDFGlobal = async({user_id, filename, page}) =>{
+  try {
+    const response = await api.get("file/buffer_doc_global", {
       params: {
         user_id: user_id,
         filename: filename,
@@ -409,8 +426,66 @@ export const personalToGlobal = async ({ filename, user_id }) => {
   }
 };
 
-// /file/buffer_doc_personal
-// params: user_id: str, filename: str, page: str
+export const getGlobalFile = async ({ page, per_page, keyword }) => {
+  try {
+    const response = await api.get("file/global", {
+      params: {
+        page,
+        per_page,
+        keyword
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting file:", error);
+    throw error;
+  }
+};
 
-// /file/buffer_doc_department
-// params: dept_id: str, filename: str, page: str
+export const deleteGlobalFile = async ({ filename }) => {
+  try {
+    const response = await api.delete("file/remove_pdf_global_doc", {
+      data: { filename }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting global file:", error);
+    throw error;
+  }
+}
+
+export const getHistory = async ({ user_id }) => {
+  try {
+    const response = await api.get("/chat/history_user/chatdocs", {
+      params: {
+        user_id,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting history:", error);
+    throw error;
+  }
+}
+
+export const getChatByHistoryId = async (payload) => {  
+  try {
+    const response = await api.post("/chat/load_chat/chatdocs", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting chat by history ID:", error);
+    throw error;
+  }
+}
+
+export const deleteHisotryById = async (historyId) => {
+  try {
+    const response = await api.delete("/chat/history/remove/chatdocs", {
+      params: { history_id: historyId },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting history by ID:", error);
+    throw error;
+  }
+};

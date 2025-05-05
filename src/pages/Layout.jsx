@@ -13,9 +13,8 @@ import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
 import Database from "./admin/Database";
 import Table from "./admin/Table";
 import TableDetail from "./admin/TableDetail";
-
 const Layout = () => {
-  const logoUrl = "http://192.168.1.77:8001/logo";
+  const logoUrl = "http://localhost:8001/logo";
 
   let link =
     document.querySelector("link[rel*='icon']") ||
@@ -42,7 +41,13 @@ const Layout = () => {
   const [vectorizer, setVectorizer] = useState("nomic-embed-text");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const [historyId, setHistoryId] = useState(null);
+
+  const [isHistory, setIsHistory] = useState(false);
+
   const [isCheckingUser, setIsCheckingUser] = useState(true);
+
+  const [newChat, setNewChat] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -109,6 +114,7 @@ const Layout = () => {
             onClick={() => setIsSidebarOpen(false)}
           />
         )}
+
         {isViewPdf ? (
           <>
             <Grid
@@ -148,11 +154,13 @@ const Layout = () => {
                 setDeptID={setDeptID}
                 setIsMenu={setIsMenu}
                 model={model}
-                setModel={setModel}
                 vectorizer={vectorizer}
-                setVectorizer={setVectorizer}
                 isSidebarOpen={isSidebarOpen}
                 setIsSidebarOpen={setIsSidebarOpen}
+                setHistoryId={setHistoryId}
+                historyId={historyId}
+                setIsHistorys={setIsHistory}
+                setNewChat={setNewChat}
               />
             </Grid>
             <Grid
@@ -164,7 +172,7 @@ const Layout = () => {
                   path="/coofisai"
                   element={
                     <ChatBox
-                      role={"User"}
+                      role={"Admin"}
                       id={user?.id}
                       selected={selected}
                       responseSummarize={responseSummarize}
@@ -183,6 +191,10 @@ const Layout = () => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
+                      isHistory={isHistory}
+                      newChat={newChat}
+                      historyId={historyId}
+                      setHistoryId={setHistoryId}
                     />
                   }
                 />
@@ -193,7 +205,7 @@ const Layout = () => {
                   path="/operator/coofisai"
                   element={
                     <ChatBox
-                      role={"Operator"}
+                      role={"Admin"}
                       id={user?.id}
                       selected={selected}
                       responseSummarize={responseSummarize}
@@ -212,6 +224,10 @@ const Layout = () => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
+                      isHistory={isHistory}
+                      newChat={newChat}
+                      historyId={historyId}
+                      setHistoryId={setHistoryId}
                     />
                   }
                 />
@@ -253,6 +269,10 @@ const Layout = () => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
+                      isHistory={isHistory}
+                      newChat={newChat}
+                      historyId={historyId}
+                      setHistoryId={setHistoryId}
                     />
                   }
                 />
@@ -331,48 +351,56 @@ const Layout = () => {
                 setDeptID={setDeptID}
                 setIsMenu={setIsMenu}
                 model={model}
-                setModel={setModel}
                 vectorizer={vectorizer}
-                setVectorizer={setVectorizer}
                 isSidebarOpen={isSidebarOpen}
                 setIsSidebarOpen={setIsSidebarOpen}
+                setHistoryId={setHistoryId}
+                historyId={historyId}
+                setIsHistorys={setIsHistory}
+                setNewChat={setNewChat}
               />
             </Grid>
             <Grid
               size={{ xs: 12, sm: 12, md: 12, lg: 9 }}
               sx={{ padding: "1rem" }}
             >
-              {/* user */}
+              {/* route user */}
               <Routes>
                 <Route
                   path="/coofisai"
                   element={
-                    <ChatBox
-                      role={"Admin"}
-                      id={user?.id}
-                      selected={selected}
-                      responseSummarize={responseSummarize}
-                      setResponseSummarize={setResponseSummarize}
-                      isSummarize={isSummarize}
-                      setIsSummarize={setIsSummarize}
-                      selectedTopic={selectedTopic}
-                      topicName={topicName}
-                      deptID={deptID}
-                      setIsViewPdf={setIsViewPdf}
-                      setPdfSource={setPdfSource}
-                      setType={setType}
-                      model={model}
-                      setModel={setModel}
-                      vectorizer={vectorizer}
-                      setVectorizer={setVectorizer}
-                      toggleSidebar={toggleSidebar}
-                      isViewPdf={isViewPdf}
-                    />
+                    <>
+                      <ChatBox
+                        role={"Admin"}
+                        id={user?.id}
+                        selected={selected}
+                        responseSummarize={responseSummarize}
+                        setResponseSummarize={setResponseSummarize}
+                        isSummarize={isSummarize}
+                        setIsSummarize={setIsSummarize}
+                        selectedTopic={selectedTopic}
+                        topicName={topicName}
+                        deptID={deptID}
+                        setIsViewPdf={setIsViewPdf}
+                        setPdfSource={setPdfSource}
+                        setType={setType}
+                        model={model}
+                        setModel={setModel}
+                        vectorizer={vectorizer}
+                        setVectorizer={setVectorizer}
+                        toggleSidebar={toggleSidebar}
+                        isViewPdf={isViewPdf}
+                        isHistory={isHistory}
+                        newChat={newChat}
+                        historyId={historyId}
+                        setHistoryId={setHistoryId}
+                      />
+                    </>
                   }
                 />
               </Routes>
 
-              {/* operator */}
+              {/* route operator */}
               <Routes>
                 <Route
                   path="/operator/coofisai"
@@ -397,6 +425,10 @@ const Layout = () => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
+                      isHistory={isHistory}
+                      newChat={newChat}
+                      historyId={historyId}
+                      setHistoryId={setHistoryId}
                     />
                   }
                 />
@@ -414,7 +446,7 @@ const Layout = () => {
                 />
               </Routes>
 
-              {/* admin */}
+              {/* route admin */}
               <Routes>
                 <Route
                   path="/admin/coofisai"
@@ -439,6 +471,10 @@ const Layout = () => {
                       setVectorizer={setVectorizer}
                       toggleSidebar={toggleSidebar}
                       isViewPdf={isViewPdf}
+                      isHistory={isHistory}
+                      newChat={newChat}
+                      historyId={historyId}
+                      setHistoryId={setHistoryId}
                     />
                   }
                 />

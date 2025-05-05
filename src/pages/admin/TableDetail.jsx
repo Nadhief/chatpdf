@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Grid,
   IconButton,
   InputBase,
   MenuItem,
@@ -25,9 +26,9 @@ import {
   TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-import DynamicTable from "../../components/TableColumn";
+import DataColumn from "../../components/Table/DataColumn";
 
 const columns = ["Kolom 1", "Kolom 2", "Kolom 3"];
 const rows = [
@@ -38,15 +39,29 @@ const rows = [
 
 const TableDetail = () => {
   const navigate = useNavigate();
-  const [openDialog, setOpenDialog] = useState(false);
-  const [openDialogAddTable, setOpenDialogAddTable] = useState(false);
-  const [databaseName, setDatabaseName] = useState("");
-  const [tableName, setTableName] = useState("");
+  const { id } = useParams();
+  const [openDialogAddData, setOpenDialogAddData] = useState(false);
+  const [openDialogAddColumn, setOpenDialogAddColumn] = useState(false);
+  const [openDialogCSV, setOpenDialogCSV] = useState(false);
+  const [fileName, setFileName] = useState("");
+
   const [selectedItem, setSelectedItem] = useState(null);
+  const dataTypes = ["String", "Number", "Boolean", "Date"];
+  const [newColumns, setNewColumns] = useState([{ name: "", type: "" }]);
 
   const handleSubmit = (type) => {
     console.log(type);
     console.log(selectedItem);
+  };
+
+  const handleAddRow = () => {
+    setNewColumns([...newColumns, { name: "", type: "" }]);
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files.length > 0) {
+      setFileName(e.target.files[0].name);
+    }
   };
   return (
     <Stack
@@ -75,6 +90,17 @@ const TableDetail = () => {
         >
           <Button
             variant="contained"
+            sx={{
+              backgroundColor: "#EEAFAF",
+              textTransform: "none",
+              color: "#EA001E",
+            }}
+            onClick={() => navigate(`/admin/coofisai/database/${id}`)}
+          >
+            Kembali
+          </Button>
+          <Button
+            variant="contained"
             startIcon={<AddIcon />}
             sx={{
               backgroundColor: "#D6E0FF",
@@ -84,7 +110,7 @@ const TableDetail = () => {
               },
               color: "#1F3D99",
             }}
-            onClick={() => setOpenDialogAddColumn(true)}
+            onClick={() => setOpenDialogAddData(true)}
           >
             Tambah Data
           </Button>
@@ -92,7 +118,7 @@ const TableDetail = () => {
             variant="contained"
             startIcon={<AddIcon />}
             sx={{ backgroundColor: "#2f68ff", textTransform: "none" }}
-            onClick={() => setOpenDialog(true)}
+            onClick={() => setOpenDialogAddColumn(true)}
           >
             Tambah Kolom
           </Button>
@@ -104,6 +130,7 @@ const TableDetail = () => {
               backgroundColor: "#FFB020",
               "&:hover": { backgroundColor: "#FFB020" },
             }}
+            onClick={() => setOpenDialogCSV(true)}
           >
             <FileUploadOutlinedIcon />
           </Button>
@@ -164,7 +191,7 @@ const TableDetail = () => {
           </Paper>
         </Box>
         <Box sx={{ border: "1px solid #ccc", borderRadius: 2, mt: 2, p: 2 }}>
-          <DynamicTable columns={columns} rows={rows} />
+          <DataColumn columns={columns} rows={rows} />
           {/* Footer Pagination */}
           <Box
             sx={{
@@ -183,10 +210,13 @@ const TableDetail = () => {
         </Box>
       </Stack>
 
-      {/* Dialog Tambah Database */}
+      {/* Dialog Tambah Data */}
       <Dialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
+        open={openDialogAddData}
+        onClose={() => {
+          setNewColumns([{ name: "", type: "" }]);
+          setOpenDialogAddData(false);
+        }}
         fullWidth
         maxWidth="sm"
       >
@@ -198,44 +228,64 @@ const TableDetail = () => {
           }}
         >
           <Typography variant="h6" fontWeight="bold">
-            Nama Database
+            Tambah Kolom
           </Typography>
-          <IconButton onClick={() => setOpenDialog(false)}>
+          <IconButton
+            onClick={() => {
+              setNewColumns([{ name: "", type: "" }]);
+              setOpenDialogAddData(false);
+            }}
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
 
         <DialogContent>
-          <Typography mb={1}>Database</Typography>
-          <TextField
-            fullWidth
-            placeholder="Masukan nama Database"
-            variant="outlined"
-            size="small"
-            value={databaseName}
-            onChange={(e) => setDatabaseName(e.target.value)}
-          />
+          {columns.map((col, idx) => (
+            <>
+              <Typography>{col}</Typography>
+              <Grid
+                key={idx}
+                container
+                spacing={2}
+                alignItems="center"
+                sx={{ mb: 2 }}
+              >
+                <Grid item size={12}>
+                  <TextField
+                    fullWidth
+                    placeholder="Masukan nama kolom"
+                    size="small"
+                    value={col.name}
+                    onChange={(e) => handleChange(idx, "name", e.target.value)}
+                  />
+                </Grid>
+              </Grid>
+            </>
+          ))}
+          <Box display={"flex"} justifyContent={"flex-end"}>
+            <Button
+              variant="contained"
+              onClick={() => handleSubmit("column")}
+              sx={{
+                backgroundColor: "#4caf50",
+                textTransform: "none",
+                "&:hover": { backgroundColor: "#43a047" },
+              }}
+            >
+              Tambahkan
+            </Button>
+          </Box>
         </DialogContent>
-
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button
-            variant="contained"
-            onClick={() => handleSubmit("database")}
-            sx={{
-              backgroundColor: "#4caf50",
-              textTransform: "none",
-              "&:hover": { backgroundColor: "#43a047" },
-            }}
-          >
-            Tambahkan
-          </Button>
-        </DialogActions>
       </Dialog>
 
-      {/* Dialog Tambah Table */}
+      {/* Dialog Tambah Column */}
       <Dialog
-        open={openDialogAddTable}
-        onClose={() => setOpenDialogAddTable(false)}
+        open={openDialogAddColumn}
+        onClose={() => {
+          setNewColumns([{ name: "", type: "" }]);
+          setOpenDialogAddColumn(false);
+        }}
         fullWidth
         maxWidth="sm"
       >
@@ -247,36 +297,157 @@ const TableDetail = () => {
           }}
         >
           <Typography variant="h6" fontWeight="bold">
-            Nama Tabel
+            Tambah Kolom
           </Typography>
-          <IconButton onClick={() => setOpenDialogAddTable(false)}>
+          <IconButton
+            onClick={() => {
+              setNewColumns([{ name: "", type: "" }]);
+              setOpenDialogAddColumn(false);
+            }}
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
 
         <DialogContent>
-          <Typography mb={1}>Tabel</Typography>
-          <TextField
-            fullWidth
-            placeholder="Masukan nama Tabel"
-            variant="outlined"
-            size="small"
-            value={tableName}
-            onChange={(e) => setTableName(e.target.value)}
-          />
-        </DialogContent>
+          {newColumns.map((col, idx) => (
+            <Grid
+              key={idx}
+              container
+              spacing={2}
+              alignItems="center"
+              sx={{ mb: 2 }}
+            >
+              <Grid item size={6}>
+                <TextField
+                  fullWidth
+                  placeholder="Masukan nama kolom"
+                  size="small"
+                  value={col.name}
+                  onChange={(e) => handleChange(idx, "name", e.target.value)}
+                />
+              </Grid>
+              <Grid item size={6}>
+                <TextField
+                  fullWidth
+                  select
+                  size="small"
+                  value={col.type}
+                  onChange={(e) => handleChange(idx, "type", e.target.value)}
+                >
+                  {dataTypes.map((type) => (
+                    <MenuItem key={type} value={type}>
+                      {type}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            </Grid>
+          ))}
 
-        <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button
+            fullWidth
             variant="contained"
-            onClick={() => handleSubmit("table")}
+            startIcon={<AddIcon />}
+            onClick={handleAddRow}
             sx={{
-              backgroundColor: "#4caf50",
+              mb: 2,
+              backgroundColor: "#3c3f52",
+              "&:hover": { backgroundColor: "#2f2f3f" },
               textTransform: "none",
-              "&:hover": { backgroundColor: "#43a047" },
             }}
           >
-            Tambahkan
+            Tambah
+          </Button>
+          <Box display={"flex"} justifyContent={"flex-end"}>
+            <Button
+              variant="contained"
+              onClick={() => handleSubmit("column")}
+              sx={{
+                backgroundColor: "#4caf50",
+                textTransform: "none",
+                "&:hover": { backgroundColor: "#43a047" },
+              }}
+            >
+              Tambahkan
+            </Button>
+          </Box>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog Upload CSV */}
+      <Dialog
+        open={openDialogCSV}
+        onClose={() => {
+          setOpenDialogCSV(false);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }}>
+          Unggah File
+          <IconButton
+            aria-label="close"
+            onClick={() => {
+              setOpenDialogCSV(false);
+            }}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          <Button
+            variant="outlined"
+            component="label"
+            fullWidth
+            sx={{
+              justifyContent: "flex-start",
+              borderColor: "#D8DAE5",
+              color: "#3F3F3F",
+              textTransform: "none",
+            }}
+          >
+            📄 {fileName || "File CSV"}
+            <input
+              type="file"
+              accept=".csv"
+              hidden
+              onChange={handleFileChange}
+            />
+            <Typography
+              variant="body2"
+              sx={{
+                marginLeft: "auto",
+                color: "#007BFF",
+                fontWeight: 500,
+              }}
+            >
+              Ubah
+            </Typography>
+          </Button>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#4CAF8E",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "#4CAF8E",
+              },
+              textTransform: "none",
+            }}
+            onClick={() => {
+              // upload logic
+              setOpenDialogCSV(false);
+            }}
+          >
+            Unggah
           </Button>
         </DialogActions>
       </Dialog>
