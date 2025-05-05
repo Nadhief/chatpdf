@@ -27,7 +27,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { Navigate, useNavigate } from "react-router-dom";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-// import DynamicTable from "../../components/TableColumn";
+import DataColumn from "../../components/Table/DataColumn";
 
 const columns = ["Kolom 1", "Kolom 2", "Kolom 3"];
 const rows = [
@@ -164,7 +164,7 @@ const TableDetail = () => {
           </Paper>
         </Box>
         <Box sx={{ border: "1px solid #ccc", borderRadius: 2, mt: 2, p: 2 }}>
-          {/* <DynamicTable columns={columns} rows={rows} /> */}
+          <DataColumn columns={columns} rows={rows} />
           {/* Footer Pagination */}
           <Box
             sx={{
