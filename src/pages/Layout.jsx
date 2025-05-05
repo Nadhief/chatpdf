@@ -114,411 +114,205 @@ const Layout = () => {
             onClick={() => setIsSidebarOpen(false)}
           />
         )}
+        {/* sidebar */}
+        <Grid
+          item
+          size={{ lg: isViewPdf ? 2.4 : 3 }}
+          sx={{
+            display: {
+              xs: isSidebarOpen ? "block" : "none",
+              sm: isSidebarOpen ? "block" : "none",
+              md: isSidebarOpen ? "block" : "none",
+              lg: "block",
+            },
+            position: {
+              xs: isSidebarOpen ? "absolute" : "static",
+              sm: isSidebarOpen ? "absolute" : "static",
+              md: isSidebarOpen ? "absolute" : "static",
+              lg: "static",
+            },
+            zIndex: 1000,
+            height: "100vh",
+            backgroundColor: "#EEF0F7",
+          }}
+          ref={sidebarRef}
+        >
+          <Sidebar
+            dept_id={user?.department_id}
+            role={user?.role?.toLowerCase()}
+            id={user?.id}
+            username={user?.username}
+            selected={selected}
+            setSelected={setSelected}
+            setResponseSummarize={setResponseSummarize}
+            setIsSummarize={setIsSummarize}
+            selectedTopic={selectedTopic}
+            setSelectedTopic={setSelectedTopic}
+            setTopicName={setTopicName}
+            setDeptID={setDeptID}
+            setIsMenu={setIsMenu}
+            model={model}
+            vectorizer={vectorizer}
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+            setHistoryId={setHistoryId}
+            historyId={historyId}
+            setIsHistorys={setIsHistory}
+            setNewChat={setNewChat}
+          />
+        </Grid>
 
-        {isViewPdf ? (
-          <>
-            <Grid
-              item
-              size={{ lg: 2.4 }}
-              sx={{
-                display: {
-                  xs: isSidebarOpen ? "block" : "none",
-                  sm: isSidebarOpen ? "block" : "none",
-                  md: isSidebarOpen ? "block" : "none",
-                  lg: "block",
-                },
-                position: {
-                  xs: isSidebarOpen ? "absolute" : "static",
-                  sm: isSidebarOpen ? "absolute" : "static",
-                  md: isSidebarOpen ? "absolute" : "static",
-                  lg: "static",
-                },
-                zIndex: 1000,
-                height: "100vh",
-                backgroundColor: "#EEF0F7",
-              }}
-              ref={sidebarRef}
-            >
-              <Sidebar
-                dept_id={user?.department_id}
-                role={user?.role?.toLowerCase()}
-                id={user?.id}
-                username={user?.username}
-                selected={selected}
-                setSelected={setSelected}
-                setResponseSummarize={setResponseSummarize}
-                setIsSummarize={setIsSummarize}
-                selectedTopic={selectedTopic}
-                setSelectedTopic={setSelectedTopic}
-                setTopicName={setTopicName}
-                setDeptID={setDeptID}
-                setIsMenu={setIsMenu}
-                model={model}
-                vectorizer={vectorizer}
-                isSidebarOpen={isSidebarOpen}
-                setIsSidebarOpen={setIsSidebarOpen}
-                setHistoryId={setHistoryId}
-                historyId={historyId}
-                setIsHistorys={setIsHistory}
-                setNewChat={setNewChat}
-              />
-            </Grid>
-            <Grid
-              size={{ xs: 12, sm: 12, md: 12, lg: 5.2 }}
-              sx={{ padding: "1rem" }}
-            >
-              <Routes>
-                <Route
-                  path="/coofisai"
-                  element={
-                    <ChatBox
-                      role={"Admin"}
-                      id={user?.id}
-                      selected={selected}
-                      responseSummarize={responseSummarize}
-                      setResponseSummarize={setResponseSummarize}
-                      isSummarize={isSummarize}
-                      setIsSummarize={setIsSummarize}
-                      selectedTopic={selectedTopic}
-                      topicName={topicName}
-                      deptID={deptID}
-                      setIsViewPdf={setIsViewPdf}
-                      setPdfSource={setPdfSource}
-                      setType={setType}
-                      model={model}
-                      setModel={setModel}
-                      vectorizer={vectorizer}
-                      setVectorizer={setVectorizer}
-                      toggleSidebar={toggleSidebar}
-                      isViewPdf={isViewPdf}
-                      isHistory={isHistory}
-                      newChat={newChat}
-                      historyId={historyId}
-                      setHistoryId={setHistoryId}
-                    />
-                  }
+        {/* content */}
+        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 9 }} sx={{ padding: "1rem" }}>
+          {/* route user */}
+          <Routes>
+            <Route path="/coofisai" 
+              element={
+                <ChatBox
+                  role={user?.username}
+                  id={user?.id}
+                  selected={selected}
+                  responseSummarize={responseSummarize}
+                  setResponseSummarize={setResponseSummarize}
+                  isSummarize={isSummarize}
+                  setIsSummarize={setIsSummarize}
+                  selectedTopic={selectedTopic}
+                  topicName={topicName}
+                  deptID={deptID}
+                  setIsViewPdf={setIsViewPdf}
+                  setPdfSource={setPdfSource}
+                  setType={setType}
+                  model={model}
+                  setModel={setModel}
+                  vectorizer={vectorizer}
+                  setVectorizer={setVectorizer}
+                  toggleSidebar={toggleSidebar}
+                  isViewPdf={isViewPdf}
+                  isHistory={isHistory}
+                  newChat={newChat}
+                  historyId={historyId}
+                  setHistoryId={setHistoryId}
                 />
-              </Routes>
+              }
+            />
+          </Routes>
 
-              <Routes>
-                <Route
-                  path="/operator/coofisai"
-                  element={
-                    <ChatBox
-                      role={"Admin"}
-                      id={user?.id}
-                      selected={selected}
-                      responseSummarize={responseSummarize}
-                      setResponseSummarize={setResponseSummarize}
-                      isSummarize={isSummarize}
-                      setIsSummarize={setIsSummarize}
-                      selectedTopic={selectedTopic}
-                      topicName={topicName}
-                      deptID={deptID}
-                      setIsViewPdf={setIsViewPdf}
-                      setPdfSource={setPdfSource}
-                      setType={setType}
-                      model={model}
-                      setModel={setModel}
-                      vectorizer={vectorizer}
-                      setVectorizer={setVectorizer}
-                      toggleSidebar={toggleSidebar}
-                      isViewPdf={isViewPdf}
-                      isHistory={isHistory}
-                      newChat={newChat}
-                      historyId={historyId}
-                      setHistoryId={setHistoryId}
-                    />
-                  }
+          {/* route operator */}
+          <Routes>
+            <Route path="/operator/coofisai" 
+              element={
+                <ChatBox
+                  role={user?.username}
+                  id={user?.id}
+                  selected={selected}
+                  responseSummarize={responseSummarize}
+                  setResponseSummarize={setResponseSummarize}
+                  isSummarize={isSummarize}
+                  setIsSummarize={setIsSummarize}
+                  selectedTopic={selectedTopic}
+                  topicName={topicName}
+                  deptID={deptID}
+                  setIsViewPdf={setIsViewPdf}
+                  setPdfSource={setPdfSource}
+                  setType={setType}
+                  model={model}
+                  setModel={setModel}
+                  vectorizer={vectorizer}
+                  setVectorizer={setVectorizer}
+                  toggleSidebar={toggleSidebar}
+                  isViewPdf={isViewPdf}
+                  isHistory={isHistory}
+                  newChat={newChat}
+                  historyId={historyId}
+                  setHistoryId={setHistoryId}
                 />
-                <Route
-                  path="/operator/coofisai/dokumen"
-                  element={
-                    <Dokumen id={user?.id} toggleSidebar={toggleSidebar} />
-                  }
-                />
-                <Route
-                  path="/operator/coofisai/pengaturan"
-                  element={
-                    <LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />
-                  }
-                />
-              </Routes>
+              }
+            />
+            <Route path="/operator/coofisai/dokumen" element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar} />} />
+            <Route path="/operator/coofisai/pengaturan" element={<LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />} />
+          </Routes>
 
-              <Routes>
-                <Route
-                  path="/admin/coofisai"
-                  element={
-                    <ChatBox
-                      role={"Admin"}
-                      id={user?.id}
-                      selected={selected}
-                      responseSummarize={responseSummarize}
-                      setResponseSummarize={setResponseSummarize}
-                      isSummarize={isSummarize}
-                      setIsSummarize={setIsSummarize}
-                      selectedTopic={selectedTopic}
-                      topicName={topicName}
-                      deptID={deptID}
-                      setIsViewPdf={setIsViewPdf}
-                      setPdfSource={setPdfSource}
-                      setType={setType}
-                      model={model}
-                      setModel={setModel}
-                      vectorizer={vectorizer}
-                      setVectorizer={setVectorizer}
-                      toggleSidebar={toggleSidebar}
-                      isViewPdf={isViewPdf}
-                      isHistory={isHistory}
-                      newChat={newChat}
-                      historyId={historyId}
-                      setHistoryId={setHistoryId}
-                    />
-                  }
+          {/* route admin */}
+          <Routes>
+            <Route path="/admin/coofisai"
+              element={
+                <ChatBox
+                  role={"Admin"}
+                  id={user?.id}
+                  selected={selected}
+                  responseSummarize={responseSummarize}
+                  setResponseSummarize={setResponseSummarize}
+                  isSummarize={isSummarize}
+                  setIsSummarize={setIsSummarize}
+                  selectedTopic={selectedTopic}
+                  topicName={topicName}
+                  deptID={deptID}
+                  setIsViewPdf={setIsViewPdf}
+                  setPdfSource={setPdfSource}
+                  setType={setType}
+                  model={model}
+                  setModel={setModel}
+                  vectorizer={vectorizer}
+                  setVectorizer={setVectorizer}
+                  toggleSidebar={toggleSidebar}
+                  isViewPdf={isViewPdf}
+                  isHistory={isHistory}
+                  newChat={newChat}
+                  historyId={historyId}
+                  setHistoryId={setHistoryId}
                 />
-                <Route
-                  path="/admin/coofisai/dokumen"
-                  element={
-                    <Dokumen id={user?.id} toggleSidebar={toggleSidebar} />
-                  }
-                />
-                <Route
-                  path="/admin/coofisai/manageuser"
-                  element={<ManageUser toggleSidebar={toggleSidebar} />}
-                />
-                <Route
-                  path="/admin/coofisai/managedepartment"
-                  element={<ManageDepartmen toggleSidebar={toggleSidebar} />}
-                />
-                <Route
-                  path="/admin/coofisai/pengaturan"
-                  element={
-                    <LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />
-                  }
-                />
-              </Routes>
-            </Grid>
-            <Grid
-              size={{ xs: 12, sm: 12, md: 12, lg: 4.4 }}
-              sx={{ backgroundColor: "#D8DAE5", padding: 0 }}
-            >
-              <PDFViewer
-                id={user?.id}
-                source={pdfSource}
-                type={type}
-                setIsViewPdf={setIsViewPdf}
-                selected={selected}
-                dept_id={deptID}
-              />
-            </Grid>
-          </>
-        ) : (
-          <>
-            <Grid
-              item
-              size={{ lg: 3 }}
-              sx={{
-                display: {
-                  xs: isSidebarOpen ? "block" : "none",
-                  sm: isSidebarOpen ? "block" : "none",
-                  md: isSidebarOpen ? "block" : "none",
-                  lg: "block",
-                },
-                position: {
-                  xs: isSidebarOpen ? "absolute" : "static",
-                  sm: isSidebarOpen ? "absolute" : "static",
-                  md: isSidebarOpen ? "absolute" : "static",
-                  lg: "static",
-                },
-                zIndex: 1000,
-                height: "100vh",
-                backgroundColor: "#EEF0F7",
-              }}
-              ref={sidebarRef}
-            >
-              <Sidebar
-                dept_id={user?.department_id}
-                role={user?.role?.toLowerCase()}
-                id={user?.id}
-                username={user?.username}
-                selected={selected}
-                setSelected={setSelected}
-                setResponseSummarize={setResponseSummarize}
-                setIsSummarize={setIsSummarize}
-                selectedTopic={selectedTopic}
-                setSelectedTopic={setSelectedTopic}
-                setTopicName={setTopicName}
-                setDeptID={setDeptID}
-                setIsMenu={setIsMenu}
-                model={model}
-                vectorizer={vectorizer}
-                isSidebarOpen={isSidebarOpen}
-                setIsSidebarOpen={setIsSidebarOpen}
-                setHistoryId={setHistoryId}
-                historyId={historyId}
-                setIsHistorys={setIsHistory}
-                setNewChat={setNewChat}
-              />
-            </Grid>
-            <Grid
-              size={{ xs: 12, sm: 12, md: 12, lg: 9 }}
-              sx={{ padding: "1rem" }}
-            >
-              {/* route user */}
-              <Routes>
-                <Route
-                  path="/coofisai"
-                  element={
-                    <>
-                      <ChatBox
-                        role={"Admin"}
-                        id={user?.id}
-                        selected={selected}
-                        responseSummarize={responseSummarize}
-                        setResponseSummarize={setResponseSummarize}
-                        isSummarize={isSummarize}
-                        setIsSummarize={setIsSummarize}
-                        selectedTopic={selectedTopic}
-                        topicName={topicName}
-                        deptID={deptID}
-                        setIsViewPdf={setIsViewPdf}
-                        setPdfSource={setPdfSource}
-                        setType={setType}
-                        model={model}
-                        setModel={setModel}
-                        vectorizer={vectorizer}
-                        setVectorizer={setVectorizer}
-                        toggleSidebar={toggleSidebar}
-                        isViewPdf={isViewPdf}
-                        isHistory={isHistory}
-                        newChat={newChat}
-                        historyId={historyId}
-                        setHistoryId={setHistoryId}
-                      />
-                    </>
-                  }
-                />
-              </Routes>
+              }
+            />
+            <Route
+              path="/admin/coofisai/dokumen"
+              element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/admin/coofisai/manageuser"
+              element={<ManageUser toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/admin/coofisai/managedepartment"
+              element={<ManageDepartmen toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/admin/coofisai/pengaturan"
+              element={
+                <LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />
+              }
+            />
+            <Route
+              path="/admin/coofisai/database"
+              element={<Database id={user?.id} toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/admin/coofisai/database/:id"
+              element={<Table id={user?.id} toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/admin/coofisai/database/:id/:table_id"
+              element={
+                <TableDetail id={user?.id} toggleSidebar={toggleSidebar} />
+              }
+            />
+          </Routes>
+        </Grid>
 
-              {/* route operator */}
-              <Routes>
-                <Route
-                  path="/operator/coofisai"
-                  element={
-                    <ChatBox
-                      role={"Admin"}
-                      id={user?.id}
-                      selected={selected}
-                      responseSummarize={responseSummarize}
-                      setResponseSummarize={setResponseSummarize}
-                      isSummarize={isSummarize}
-                      setIsSummarize={setIsSummarize}
-                      selectedTopic={selectedTopic}
-                      topicName={topicName}
-                      deptID={deptID}
-                      setIsViewPdf={setIsViewPdf}
-                      setPdfSource={setPdfSource}
-                      setType={setType}
-                      model={model}
-                      setModel={setModel}
-                      vectorizer={vectorizer}
-                      setVectorizer={setVectorizer}
-                      toggleSidebar={toggleSidebar}
-                      isViewPdf={isViewPdf}
-                      isHistory={isHistory}
-                      newChat={newChat}
-                      historyId={historyId}
-                      setHistoryId={setHistoryId}
-                    />
-                  }
-                />
-                <Route
-                  path="/operator/coofisai/dokumen"
-                  element={
-                    <Dokumen id={user?.id} toggleSidebar={toggleSidebar} />
-                  }
-                />
-                <Route
-                  path="/operator/coofisai/pengaturan"
-                  element={
-                    <LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />
-                  }
-                />
-              </Routes>
-
-              {/* route admin */}
-              <Routes>
-                <Route
-                  path="/admin/coofisai"
-                  element={
-                    <ChatBox
-                      role={"Admin"}
-                      id={user?.id}
-                      selected={selected}
-                      responseSummarize={responseSummarize}
-                      setResponseSummarize={setResponseSummarize}
-                      isSummarize={isSummarize}
-                      setIsSummarize={setIsSummarize}
-                      selectedTopic={selectedTopic}
-                      topicName={topicName}
-                      deptID={deptID}
-                      setIsViewPdf={setIsViewPdf}
-                      setPdfSource={setPdfSource}
-                      setType={setType}
-                      model={model}
-                      setModel={setModel}
-                      vectorizer={vectorizer}
-                      setVectorizer={setVectorizer}
-                      toggleSidebar={toggleSidebar}
-                      isViewPdf={isViewPdf}
-                      isHistory={isHistory}
-                      newChat={newChat}
-                      historyId={historyId}
-                      setHistoryId={setHistoryId}
-                    />
-                  }
-                />
-                <Route
-                  path="/admin/coofisai/dokumen"
-                  element={
-                    <Dokumen id={user?.id} toggleSidebar={toggleSidebar} />
-                  }
-                />
-                <Route
-                  path="/admin/coofisai/manageuser"
-                  element={<ManageUser toggleSidebar={toggleSidebar} />}
-                />
-                <Route
-                  path="/admin/coofisai/managedepartment"
-                  element={<ManageDepartmen toggleSidebar={toggleSidebar} />}
-                />
-                <Route
-                  path="/admin/coofisai/pengaturan"
-                  element={
-                    <LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />
-                  }
-                />
-                <Route
-                  path="/admin/coofisai/database"
-                  element={
-                    <Database id={user?.id} toggleSidebar={toggleSidebar} />
-                  }
-                />
-                <Route
-                  path="/admin/coofisai/database/:id"
-                  element={
-                    <Table id={user?.id} toggleSidebar={toggleSidebar} />
-                  }
-                />
-                <Route
-                  path="/admin/coofisai/database/:id/:table_id"
-                  element={
-                    <TableDetail id={user?.id} toggleSidebar={toggleSidebar} />
-                  }
-                />
-              </Routes>
-            </Grid>
-          </>
+        {/* pdf */}
+        {isViewPdf && (
+          <Grid
+            size={{ xs: 12, sm: 12, md: 12, lg: 4.4 }}
+            sx={{ backgroundColor: "#D8DAE5", padding: 0 }}
+          >
+            <PDFViewer
+              id={user?.id}
+              source={pdfSource}
+              type={type}
+              setIsViewPdf={setIsViewPdf}
+              selected={selected}
+              dept_id={deptID}
+            />
+          </Grid>
         )}
       </Grid>
     </>
