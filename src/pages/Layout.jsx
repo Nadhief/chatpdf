@@ -10,7 +10,9 @@ import ManageDepartmen from "./admin/ManageDepartmen";
 import ManageUser from "./admin/ManageUser";
 import PDFViewer from "../components/PdfViewer";
 import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
-
+import Database from "./admin/Database";
+import Table from "./admin/Table";
+import TableDetail from "./admin/TableDetail";
 const Layout = () => {
   const logoUrl = "http://localhost:8001/logo";
 
@@ -494,6 +496,24 @@ const Layout = () => {
                   path="/admin/coofisai/pengaturan"
                   element={
                     <LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />
+                  }
+                />
+                <Route
+                  path="/admin/coofisai/database"
+                  element={
+                    <Database id={user?.id} toggleSidebar={toggleSidebar} />
+                  }
+                />
+                <Route
+                  path="/admin/coofisai/database/:id"
+                  element={
+                    <Table id={user?.id} toggleSidebar={toggleSidebar} />
+                  }
+                />
+                <Route
+                  path="/admin/coofisai/database/:id/:table_id"
+                  element={
+                    <TableDetail id={user?.id} toggleSidebar={toggleSidebar} />
                   }
                 />
               </Routes>
