@@ -134,21 +134,16 @@ const PersonalUser = ({
         per_page: perPage,
       });
       
-      // If the API is not handling pagination properly, manually paginate the data
-      // This ensures that even if the API returns all topics, we only show the requested number
       if (data && data.list_files && Array.isArray(data.list_files)) {
-        // Calculate start and end indices for current page
         const startIndex = (pageNum - 1) * perPage;
         const endIndex = startIndex + perPage;
         
-        // Get only the topics for the current page
         const paginatedTopics = data.list_files.slice(startIndex, endIndex);
         
-        // Create a new paginated data object
         const paginatedData = {
           ...data,
           list_files: paginatedTopics,
-          total_files: data.total_files || data.list_files.length // Keep the total count
+          total_files: data.total_files || data.list_files.length
         };
         
         setPersonalTopics(paginatedData);
@@ -156,7 +151,6 @@ const PersonalUser = ({
         setPersonalTopics(data);
       }
       
-      // Reset search query when fetching all topics
       if (!pageNum || pageNum === 1) {
         setSearchQuery("");
       }
