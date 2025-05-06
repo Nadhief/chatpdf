@@ -478,6 +478,7 @@ const ChatBox = ({
                     borderRadius: "20px",
                     px: 2,
                     py: 1,
+                    width: {lg: "100%"},
                   }}
                 >
                   <Box
