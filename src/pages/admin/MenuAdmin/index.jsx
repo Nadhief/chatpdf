@@ -107,7 +107,7 @@ const MenuAdmin = ({
         }}
       />
 
-      <MenuItem
+      {/* <MenuItem
         label="Database"
         icon={StorageIcon}
         selected={itemSelected === "database"}
@@ -117,7 +117,7 @@ const MenuAdmin = ({
           setIsSidebarOpen(false);
           navigate("/admin/coofisai/database");
         }}
-      />
+      /> */}
 
       <MenuItem
         label="Pengaturan"
@@ -144,7 +144,7 @@ const MenuAdmin = ({
         }}
       />
 
-      <MenuItem
+      {/* <MenuItem
         label="Ask Chatalize AI CSV"
         icon={ChatIcon}
         selected={false}
@@ -155,7 +155,7 @@ const MenuAdmin = ({
           navigate("/admin/coofisai");
           localStorage.setItem("isMenu", "false");
         }}
-      />
+      /> */}
     </Stack>
   );
 };
