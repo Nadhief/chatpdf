@@ -163,7 +163,7 @@ const Layout = () => {
         </Grid>
 
         {/* content */}
-        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 9 }} sx={{ padding: "1rem" }}>
+        <Grid size={{ xs: 12, sm: 12, md: 12, lg: isViewPdf ? 5.2 : 9 }} sx={{ padding: "1rem" }}>
           {/* route user */}
           <Routes>
             <Route path="/coofisai" 

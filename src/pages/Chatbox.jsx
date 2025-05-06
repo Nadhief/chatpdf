@@ -98,7 +98,7 @@ const ChatBox = ({
         };
         chatTopic(payloadTopic).then((res) => {
           const filenames = res?.sources?.map((item) => {
-            return item
+            return item;
           });
 
           const updatedEntry = {
@@ -118,7 +118,7 @@ const ChatBox = ({
         if (selected === "personal") {
           chatPersonal(payload).then((res) => {
             const filenames = res?.sources?.map((item) => {
-              return item
+              return item;
             });
 
             const updatedEntry = {
@@ -144,7 +144,7 @@ const ChatBox = ({
           };
           chatDepartemen(payloadDepartment).then((res) => {
             const filenames = res?.sources?.map((item) => {
-              return item
+              return item;
             });
 
             const updatedEntry = {
@@ -232,7 +232,7 @@ const ChatBox = ({
           chatDepartemen(payloadDepartment).then((res) => {
             setHistoryId(res?.current_history_id);
             const filenames = res?.sources?.map((item) => {
-              return item
+              return item;
             });
 
             const updatedEntry = {
@@ -305,7 +305,7 @@ const ChatBox = ({
     if (responseSummarize) {
       console.log(responseSummarize);
       const filenames = responseSummarize?.sources?.map((item) => {
-        return item
+        return item;
       });
 
       const updatedEntry = {
@@ -424,9 +424,8 @@ const ChatBox = ({
           sx={{
             flex: 1,
             overflowY: "auto",
-            // mx: "auto",
             height: "80%",
-            pt: 10,
+            pt: 5,
           }}
         >
           {responses?.map((res, idx) => (
@@ -441,7 +440,7 @@ const ChatBox = ({
                 px: 1,
                 maxWidth: {
                   xs: "100%",
-                  md: responses.length > 0 ? "70%" : "80%",
+                  md: responses.length > 0 ? "80%" : "80%",
                 },
               }}
             >
@@ -465,39 +464,59 @@ const ChatBox = ({
                 </Box>
               </Stack>
 
-              <Stack sx={{ display: "flex", alignItems: "flex-start" }}>
+              <Stack
+                sx={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  pt: 3,
+                }}
+              >
                 <Box
-                  component="img"
-                  src={ChatbotImage}
-                  alt="Bot Avatar"
-                  sx={{ width: 32, height: 32, mr: 1 }}
-                />
-                <Box>
-                  <Box sx={{ mb: 1, typography: "body1", textAlign: "start" }}>
+                  sx={{
+                    backgroundColor: "#f0f0f0",
+                    borderRadius: "20px",
+                    px: 2,
+                    py: 1,
+                    maxWidth: "100%",
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={ChatbotImage}
+                    alt="Bot Avatar"
+                    sx={{ width: 30, height: 32 }}
+                  />
+                  <Box
+                    sx={{
+                      mb: 1,
+                      typography: "body1",
+                      textAlign: "start",
+                    }}
+                  >
                     {res.bot === "⌛" ? (
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
+                      <>
                         <Box
-                          sx={{
-                            display: "inline-block",
-                            fontSize: "1.2rem",
-                            animation: "spin 1s linear infinite",
-                            "@keyframes spin": {
-                              from: { transform: "rotate(0deg)" },
-                              to: { transform: "rotate(360deg)" },
-                            },
-                          }}
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
                         >
-                          ⌛
+                          <Box
+                            sx={{
+                              display: "inline-block",
+                              fontSize: "1.2rem",
+                              animation: "spin 1s linear infinite",
+                              "@keyframes spin": {
+                                from: { transform: "rotate(0deg)" },
+                                to: { transform: "rotate(360deg)" },
+                              },
+                            }}
+                          >
+                            ⌛
+                          </Box>
+                          <Typography>Thinking...</Typography>
                         </Box>
-                        <Typography>Thinking...</Typography>
-                      </Box>
+                      </>
                     ) : (
                       <ReactMarkdown>{res.bot}</ReactMarkdown>
                     )}
-                  </Box>
-                  <Box sx={{ alignItems: "start" }}>
                     {res.source.length > 0 && (
                       <>
                         <Box
@@ -507,9 +526,7 @@ const ChatBox = ({
                             mt: 2,
                           }}
                         >
-                          <Typography
-                            sx={{ fontWeight: 500, mr: 1, width: "100%" }}
-                          >
+                          <Typography sx={{ fontWeight: 500, mr: 1 }}>
                             Source :
                           </Typography>
                         </Box>
@@ -542,7 +559,14 @@ const ChatBox = ({
                                 setType(res.type);
                               }}
                             >
-                              <Typography align="start">📄 {src}</Typography>
+                              <Typography
+                                align="start"
+                                sx={{
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                📄 {src}
+                              </Typography>
                             </Box>
                           ))}
                         </Box>
