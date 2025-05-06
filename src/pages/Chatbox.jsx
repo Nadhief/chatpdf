@@ -442,6 +442,7 @@ const ChatBox = ({
                   xs: "100%",
                   md: responses.length > 0 ? "80%" : "80%",
                 },
+                width: "100%",
               }}
             >
               <Stack
@@ -477,14 +478,13 @@ const ChatBox = ({
                     borderRadius: "20px",
                     px: 2,
                     py: 1,
-                    maxWidth: "100%",
                   }}
                 >
                   <Box
                     component="img"
                     src={ChatbotImage}
                     alt="Bot Avatar"
-                    sx={{ width: 30, height: 32 }}
+                    sx={{ width: 30, height: 32}}
                   />
                   <Box
                     sx={{
