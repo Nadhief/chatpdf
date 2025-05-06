@@ -506,8 +506,9 @@ const Sidebar = ({
                         borderRadius={1}
                         sx={{
                           cursor: "pointer",
+                          backgroundColor: historyId === item.id ? "#f0f0f0" : "transparent",
                           "&:hover": {
-                            backgroundColor: "#f0f0f0",
+                            backgroundColor: historyId === item.id ? "#f0f0f0" : "#f0f0f0",
                           },
                         }}
                         onClick={() => {
