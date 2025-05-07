@@ -188,7 +188,7 @@ const ManageUser = ({ toggleSidebar }) => {
   };
   const handleTrashClick = () => {
     if (selectedIds.length === 0) {
-      alert("Pilih department yang ingin dihapus.");
+      alert("Pilih user yang ingin dihapus.");
       return;
     }
     setDeleteDialogOpen(true);

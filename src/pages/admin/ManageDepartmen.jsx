@@ -264,7 +264,7 @@ const ManageDepartmen = ({ toggleSidebar }) => {
             <TextField
               size="small"
               fullWidth
-              placeholder="MMasukan nama Departemen"
+              placeholder="Masukan nama Departemen"
               value={namaDept}
               onChange={(e) => setNamaDept(e.target.value)}
               sx={{ mb: 3 }}

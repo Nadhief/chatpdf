@@ -196,7 +196,7 @@ export default function DataTable({
 
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ m: 0, p: 2 }}>
-          <Typography fontWeight="bold">Edit Departemen</Typography>
+          <Typography fontWeight="bold">Edit User</Typography>
           <IconButton
             aria-label="close"
             onClick={handleClose}
