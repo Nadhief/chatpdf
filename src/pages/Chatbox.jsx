@@ -529,7 +529,10 @@ const ChatBox = ({
                                 <img
                                   src={
                                     "https://" +
-                                    res.bot_chart.split("https://")[1]
+                                    res.bot_chart
+                                      .replace(/^"/, "")
+                                      .replace(/"$/, "")
+                                      .split("https://")[1]
                                   }
                                   alt="Chart Komposisi Pegawai"
                                   style={{
@@ -544,7 +547,7 @@ const ChatBox = ({
                                 />
                               </Box>
                               <Typography>
-                                {res.bot_chart.split("https://")[0]}
+                              {res.bot_chart.split("https://")[0].replace(/"/g, "")}
                               </Typography>
                             </Box>
                           )}
