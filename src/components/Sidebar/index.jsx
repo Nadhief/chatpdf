@@ -64,7 +64,7 @@ const Sidebar = ({
   setIsHistorys,
   setNewChat,
 }) => {
-  const logoUrl = "http://localhost:8001/logo";
+  const logoUrl = "http://192.168.1.65:8001/logo";
 
   const [departmentName, setDepartmentName] = useState("");
 

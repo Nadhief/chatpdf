@@ -16,7 +16,7 @@ import { login } from "../../services/authservices";
 import { Alert, Snackbar } from "@mui/material";
 
 const Login = () => {
-  const logoUrl = "http://localhost:8001/logo";
+  const logoUrl = "http://192.168.1.65:8001/logo";
 
   const [openError, setOpenError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");

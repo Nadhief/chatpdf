@@ -14,7 +14,7 @@ import Database from "./admin/Database";
 import Table from "./admin/Table";
 import TableDetail from "./admin/TableDetail";
 const Layout = () => {
-  const logoUrl = "http://localhost:8001/logo";
+  const logoUrl = "http://192.168.65:8001/logo";
 
   let link =
     document.querySelector("link[rel*='icon']") ||
