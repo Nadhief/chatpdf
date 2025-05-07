@@ -73,6 +73,27 @@ const Login = () => {
       });
   };
 
+  React.useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      switch (userData.role) {
+        case "Admin":
+          navigate("/admin/coofisai");
+          break;
+        case "User":
+          navigate("/coofisai");
+          break;
+        case "Operator":
+          navigate("/operator/coofisai");
+          break;
+        default:
+          navigate("/");
+      }
+    }
+  }, [navigate]);
+  
+
   return (
     <Box
       display="flex"

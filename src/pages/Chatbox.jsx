@@ -68,7 +68,6 @@ const ChatBox = ({
   const handleVectorizerChange = (event) => setVectorizer(event.target.value);
   const handleSend = () => {
     if (!question.trim()) return;
-    console.log(historyId);
     const currentQuestion = question;
     setQuestion("");
 
@@ -106,7 +105,10 @@ const ChatBox = ({
             bot: res.response,
             source: filenames,
             type: res.type,
+            bot_chart: res.response_chart,
           };
+
+          console.log("updatedEntry", updatedEntry);
 
           setResponses((prev) => {
             const updated = [...prev];
@@ -126,7 +128,9 @@ const ChatBox = ({
               bot: res.response,
               source: filenames,
               type: res.type,
+              bot_chart: res.response_chart,
             };
+            console.log("updatedEntry", updatedEntry);
 
             setResponses((prev) => {
               const updated = [...prev];
@@ -152,7 +156,9 @@ const ChatBox = ({
               bot: res.response,
               source: filenames,
               type: res.type,
+              bot_chart: res.response_chart,
             };
+            console.log("updatedEntry", updatedEntry);
 
             setResponses((prev) => {
               const updated = [...prev];
@@ -191,7 +197,10 @@ const ChatBox = ({
             bot: res.response,
             source: filenames,
             type: res.type,
+            bot_chart: res.response_chart,
           };
+
+          console.log("updatedEntry", updatedEntry);
 
           setResponses((prev) => {
             const updated = [...prev];
@@ -213,7 +222,10 @@ const ChatBox = ({
               bot: res.response,
               source: filenames,
               type: res.type,
+              bot_chart: res.response_chart,
             };
+
+            console.log("updatedEntry", updatedEntry);
 
             setResponses((prev) => {
               const updated = [...prev];
@@ -240,7 +252,9 @@ const ChatBox = ({
               bot: res.response,
               source: filenames,
               type: res.type,
+              bot_chart: res.response_chart,
             };
+            console.log("updatedEntry", updatedEntry);
 
             setResponses((prev) => {
               const updated = [...prev];
@@ -313,7 +327,10 @@ const ChatBox = ({
         bot: responseSummarize?.response,
         source: filenames,
         type: responseSummarize?.type,
+        bot_chart: [],
       };
+
+      console.log("updatedEntry", updatedEntry);
 
       setResponses((prev) => {
         const updated = [...prev];
@@ -326,7 +343,6 @@ const ChatBox = ({
   }, [responseSummarize, isSummarize]);
 
   useEffect(() => {
-    console.log("newChat", newChat);
     if (newChat) {
       setResponses([]);
       setIsSummarize(false);
@@ -337,7 +353,6 @@ const ChatBox = ({
   }, [newChat]);
 
   useEffect(() => {
-    console.log("historyId", historyId);
     if (historyId) {
       const payload = {
         history_id: String(historyId),
@@ -345,7 +360,6 @@ const ChatBox = ({
 
       getChatByHistoryId(payload)
         .then((res) => {
-          console.log("res", res);
           const pairedChats = [];
           for (let i = 0; i < res.length; i += 2) {
             const humanItem = res[i];
@@ -356,8 +370,10 @@ const ChatBox = ({
               bot: aiItem?.content || "",
               source: aiItem?.metadata?.source || [],
               type: "Personal",
+              bot_chart: aiItem?.metadata?.url_chart || [],
             });
           }
+          console.log("pairedChats", pairedChats);
           setResponses(pairedChats);
         })
         .catch((error) => {
@@ -366,6 +382,8 @@ const ChatBox = ({
         });
     }
   }, [historyId]);
+  // console.log("responses", responses);
+
   return (
     <Stack
       sx={{
@@ -478,14 +496,14 @@ const ChatBox = ({
                     borderRadius: "20px",
                     px: 2,
                     py: 1,
-                    width: {lg: "100%"},
+                    width: { lg: "100%" },
                   }}
                 >
                   <Box
                     component="img"
                     src={ChatbotImage}
                     alt="Bot Avatar"
-                    sx={{ width: 30, height: 32}}
+                    sx={{ width: 30, height: 32 }}
                   />
                   <Box
                     sx={{
@@ -494,6 +512,46 @@ const ChatBox = ({
                       textAlign: "start",
                     }}
                   >
+                    {/* response chart */}
+                    {res?.bot_chart?.length > 0 && (
+                      <>
+                        {!res?.bot_chart?.includes("```") &&
+                          res?.bot_chart?.includes("https") && (
+                            <Box>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  width: "100%",
+                                }}
+                              >
+                                <img
+                                  src={
+                                    "https://" +
+                                    res.bot_chart.split("https://")[1]
+                                  }
+                                  alt="Chart Komposisi Pegawai"
+                                  style={{
+                                    width: "50%",
+                                    height: "auto",
+                                    backgroundColor: "white",
+                                    borderRadius: "10px",
+                                    paddingTop: "10px",
+                                    paddingBottom: "20px",
+                                    marginBottom: "20px",
+                                  }}
+                                />
+                              </Box>
+                              <Typography>
+                                {res.bot_chart.split("https://")[0]}
+                              </Typography>
+                            </Box>
+                          )}
+                      </>
+                    )}
+
+                    {/* response bot */}
                     {res.bot === "⌛" ? (
                       <>
                         <Box
@@ -518,6 +576,8 @@ const ChatBox = ({
                     ) : (
                       <ReactMarkdown>{res.bot}</ReactMarkdown>
                     )}
+
+                    {/* response source */}
                     {res.source.length > 0 && (
                       <>
                         <Box
