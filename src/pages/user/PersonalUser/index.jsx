@@ -23,7 +23,12 @@ import {
   getTopic,
   summarizeFilePersonal,
   deletePersonalFile,
+  deleteImagePersonal,
+  deleteJsonPersonal,
   uploadPersonalFile,
+  uploadJsonPersonal,
+  uploadImagePersonal,
+  uploadDocxPersonal,
   searchTopic,
   searchFilePersonal,
   personalToGlobal,
@@ -122,40 +127,7 @@ const PersonalUser = ({
           console.error("Search error:", err);
         });
     } else {
-      fetchDataTopicsWithPagination(newPage + 1, topicRowsPerPage);
-    }
-  };
-
-  const fetchDataTopicsWithPagination = async (pageNum = 1, perPage = 5) => {
-    try {
-      const data = await getTopic({
-        user_id: id,
-        page: pageNum,
-        per_page: perPage,
-      });
-      
-      if (data && data.list_files && Array.isArray(data.list_files)) {
-        const startIndex = (pageNum - 1) * perPage;
-        const endIndex = startIndex + perPage;
-        
-        const paginatedTopics = data.list_files.slice(startIndex, endIndex);
-        
-        const paginatedData = {
-          ...data,
-          list_files: paginatedTopics,
-          total_files: data.total_files || data.list_files.length
-        };
-        
-        setPersonalTopics(paginatedData);
-      } else {
-        setPersonalTopics(data);
-      }
-      
-      if (!pageNum || pageNum === 1) {
-        setSearchQuery("");
-      }
-    } catch (error) {
-      console.error("Gagal mengambil topik:", error);
+      fetchDataTopics(newPage + 1, topicRowsPerPage);
     }
   };
 
@@ -172,28 +144,13 @@ const PersonalUser = ({
         per_page: newRowsPerPage,
       })
         .then((res) => {
-          // If the API returns all results, manually paginate them
-          if (res && res.results && Array.isArray(res.results)) {
-            const paginatedResults = res.results.slice(0, newRowsPerPage);
-            
-            setPersonalTopics((prev) => ({
-              ...prev,
-              list_files: paginatedResults,
-              total_files: res.total || res.results.length,
-            }));
-          } else {
-            setPersonalTopics((prev) => ({
-              ...prev,
-              list_files: res.results,
-              total_files: res.total || res.results.length,
-            }));
-          }
+          setPersonalTopics(res);
         })
         .catch((err) => {
           console.error("Search error:", err);
         });
     } else {
-      fetchDataTopicsWithPagination(1, newRowsPerPage);
+      fetchDataTopics(1, newRowsPerPage);
     }
   };
 
@@ -269,9 +226,23 @@ const PersonalUser = ({
     }
   };
 
-  const fetchDataTopics = async () => {
-    fetchDataTopicsWithPagination(1, topicRowsPerPage);
-  };
+const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
+  try {
+    const data = await getTopic({
+      user_id: id,
+      page: pageNum,
+      per_page: perPage,
+    });
+    
+    setPersonalTopics(data);
+    
+    if (!pageNum || pageNum === 1) {
+      setSearchQuery("");
+    }
+  } catch (error) {
+    console.error("Gagal mengambil topik:", error);
+  }
+};
 
   const handleSelectUploadFiles = (event) => {
     const files = Array.from(event.target.files || []);
@@ -287,25 +258,47 @@ const PersonalUser = ({
       setIsLoading(true);
       setLoadingMessage("Sedang mengunggah file...");
       console.log("Uploading files:", selectedUploadFiles);
-      const formData = new FormData();
-      formData.append("id", String(id));
 
-      selectedUploadFiles.forEach((file) => {
-        formData.append("files_upload", file);
+      const uploadPromises = selectedUploadFiles.map((file) => {
+        const extension = file.name.split(".").pop().toLowerCase();
+        const formData = new FormData();
+        formData.append("id", String(id));
+
+        let uploadFunction;
+
+        if (extension === "pdf") {
+          formData.append("files_upload", file);
+          uploadFunction = uploadPersonalFile;
+        } else if (extension === "json") {
+          formData.append("files_upload", file);
+          uploadFunction = uploadJsonPersonal;
+        } else if (["png", "jpg", "jpeg", "webp", "svg"].includes(extension)) {
+          formData.append("image", file);
+          uploadFunction = uploadImagePersonal;
+        } else if (["docx"].includes(extension)) {
+          formData.append("files_upload", file);
+          uploadFunction = uploadDocxPersonal;
+        } else {
+          return Promise.reject(new Error(`Format tidak didukung: .${extension}`));
+        }
+
+        return uploadFunction(formData);
       });
-      uploadPersonalFile(formData)
-        .then((res) => {
-          console.log("Upload berhasil:", res);
+
+      Promise.all(uploadPromises)
+        .then((results) => {
+          console.log("Upload berhasil:", results);
           setSelectedUploadFiles([]);
           setCheckedItems({});
           fetchDataFile();
-          setIsLoading(false);
-          openSnackbar("berhasil", "File berhasil diunggah!");
+          openSnackbar("berhasil", "Semua file berhasil diunggah!");
         })
         .catch((error) => {
           console.error("Gagal upload:", error);
+          openSnackbar("gagal", "Beberapa atau semua file gagal diunggah!");
+        })
+        .finally(() => {
           setIsLoading(false);
-          openSnackbar("gagal", "File gagal diunggah!");
         });
     }
   };
@@ -313,25 +306,40 @@ const PersonalUser = ({
   const handleDeleteFile = () => {
     setIsLoading(true);
     setLoadingMessage("Sedang menghapus File...");
-    selectedFiles?.forEach((idx) => {
+
+    const deletePromises = selectedFiles.map((file) => {
       const payload = {
         id: String(id),
-        filename: idx.name,
+        filename: file.name,
       };
-      deletePersonalFile(payload)
-        .then((res) => {
-          setOpenTrash(false);
-          setSelectedUploadFiles([]);
-          setCheckedItems({});
-          fetchDataFile();
-          setIsLoading(false);
-          openSnackbar("berhasil", "File berhasil dihapus!");
-        })
-        .catch((error) => {
-          console.error("Gagal menghapus file:", error);
-          setIsLoading(false);
-          openSnackbar("gagal", "File gagal dihapus!");
-        });
+
+      const extension = file.name.split(".").pop().toLowerCase();
+
+      if (["pdf", "docx"].includes(extension)) {
+        return deletePersonalFile(payload);
+      } else if (extension === "json") {
+        return deleteJsonPersonal(payload);
+      } else if (["png", "jpg", "jpeg", "webp", "svg"].includes(extension)) {
+        return deleteImagePersonal(payload);
+      } else {
+        return Promise.reject(new Error("Tipe file tidak didukung"));
+      }
+  });
+
+    Promise.allSettled(deletePromises).then((results) => {
+      const allSuccess = results.every((res) => res.status === "fulfilled");
+
+      setOpenTrash(false);
+      setCheckedItems({});
+      fetchDataFile();
+      setIsLoading(false);
+
+      if (allSuccess) {
+        openSnackbar("berhasil", "Semua file berhasil dihapus!");
+      } else {
+        openSnackbar("gagal", "Beberapa file gagal dihapus. Lihat konsol.");
+        console.error("Detail kegagalan:", results);
+      }
     });
   };
 
@@ -422,7 +430,7 @@ const PersonalUser = ({
         });
     }
   };
-  // Improved search function for files with pagination
+
   const debouncedSearchFilePersonal = useMemo(
     () =>
       debounce((value) => {
@@ -443,7 +451,6 @@ const PersonalUser = ({
         })
           .then((res) => {
             console.log("Search result:", res);
-            // Replace entire object to include total_files for pagination
             setPersonalFiles(res);
           })
           .catch((err) => {
@@ -453,7 +460,6 @@ const PersonalUser = ({
     [id, rowsPerPage]
   );
 
-  // Improved search function for topics
   const debouncedSearchTopic = useMemo(
     () =>
       debounce((value) => {
@@ -461,7 +467,7 @@ const PersonalUser = ({
         setTopicPage(0); // Reset to first page on new search
         
         if (value.trim() === "") {
-          fetchDataTopicsWithPagination(1, topicRowsPerPage);
+          fetchDataTopics(1, topicRowsPerPage);
           return;
         }
         
@@ -472,12 +478,18 @@ const PersonalUser = ({
           per_page: topicRowsPerPage,
         })
           .then((res) => {
-            console.log("Search result topics:", res);
-            setPersonalTopics((prev) => ({
-              ...prev,
-              list_files: res.results,
-              total_files: res.total || res.results.length,
-            }));
+            // Transform the search response format to match the expected format
+            if (res.results) {
+              // Handle the search response format
+              setPersonalTopics({
+                ...res,
+                list_files: res.results,
+                total_files: res.total || res.results.length
+              });
+            } else {
+              // In case the response is already in the expected format
+              setPersonalTopics(res);
+            }
             setSelectedTopicIndex(null);
           })
           .catch((err) => {
@@ -583,7 +595,7 @@ const PersonalUser = ({
           ) : (
             <Typography fontSize={12} fontWeight={400} color="#404040">
               Total ukuran berkas yang dapat diproses adalah maksimal 200 MB
-              dengan ekstensi (PDF, JSON)
+              dengan ekstensi (PDF, JSON ,DOCX, PNG, JPG, JPEG, WEBP, SVG)
             </Typography>
           )}
 
@@ -650,7 +662,7 @@ const PersonalUser = ({
                 <input
                   id="upload-file"
                   type="file"
-                  accept=".pdf,.json"
+                  accept=".pdf, .json, .docx, .png, .jpg, .jpeg, .webp, .svg"
                   hidden
                   onChange={handleSelectUploadFiles}
                 />

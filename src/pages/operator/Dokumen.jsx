@@ -37,6 +37,14 @@ import {
   uploadDepartmentFile,
   uploadPersonalFile,
   uploadPersonalToDepartmentFile,
+  uploadJsonDept,
+  uploadJsonPersonal,
+  uploadImageDept,
+  uploadImagePersonal,
+  deleteJsonDept,
+  deleteImageDept,
+  deleteJsonPersonal,
+  deleteImagePersonal,
 } from "../../services";
 import CustomSnackbar from "../../components/CustomSnackbar";
 import DeleteFile from "../../components/Dialog/DeleteFile";
@@ -80,6 +88,8 @@ const Dokumen = ({ id, toggleSidebar }) => {
   const [globalFiles, setGlobalFiles] = useState([]);
   const [checkedItemsFileGlobal, setCheckedItemsFileGlobal] = useState({});
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   const selectedFiles = Object.entries(checkedItems)
     .filter(([idx, isChecked]) => isChecked)
     .map(([idx]) => personalFiles?.list_files[idx]);
@@ -97,7 +107,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
       if (selected === "file") {
         fetchDataFile(1, personalRowsPerPage);
       } else if (selected === "topik") {
-        fetchDataTopicsWithPagination(1, topicRowsPerPage);
+        fetchDataTopics(1, topicRowsPerPage);
       }
     } else if (mainSelect === "Global") {
       fetchGlobalFiles(1, globalRowsPerPage);
@@ -164,11 +174,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
     }
   };  
 
-  const fetchDataTopics = async () => {
-    fetchDataTopicsWithPagination(1, topicRowsPerPage);
-  };
-
-  const fetchDataTopicsWithPagination = async (pageNum = 1, perPage = 5) => {
+  const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
     try {
       const data = await getTopic({
         user_id: id,
@@ -176,22 +182,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
         per_page: perPage,
       });
       
-      if (data && data.list_files && Array.isArray(data.list_files)) {
-        const startIndex = (pageNum - 1) * perPage;
-        const endIndex = startIndex + perPage;
-        
-        const paginatedTopics = data.list_files.slice(startIndex, endIndex);
-        
-        const paginatedData = {
-          ...data,
-          list_files: paginatedTopics,
-          total_files: data.total_files || data.list_files.length
-        };
-        
-        setPersonalTopics(paginatedData);
-      } else {
-        setPersonalTopics(data);
-      }
+      setPersonalTopics(data);
       
       if (!pageNum || pageNum === 1) {
         setSearchQuery("");
@@ -203,14 +194,14 @@ const Dokumen = ({ id, toggleSidebar }) => {
 
   const handleTopicChangePage = (event, newPage) => {
     setTopicPage(newPage);
-    fetchDataTopicsWithPagination(newPage + 1, topicRowsPerPage);
+    fetchDataTopics(newPage + 1, topicRowsPerPage);
   };
   
   const handleTopicChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setTopicRowsPerPage(newRowsPerPage);
     setTopicPage(0);
-    fetchDataTopicsWithPagination(1, newRowsPerPage);
+    fetchDataTopics(1, newRowsPerPage);
   };
 
   const handleMainDeptChange = (event) => {
@@ -242,74 +233,98 @@ const Dokumen = ({ id, toggleSidebar }) => {
   };
 
   const handleUploadFile = () => {
-    if (selectedFile) {
-      setIsLoading(true);
-      setLoadingMessage("Sedang mengunggah file...");
-      console.log("Uploading files:", selectedFile);
-      const formData = new FormData();
+    if (!selectedFile || selectedFile.length === 0) return;
 
-      selectedFile.forEach((file) => {
+    setIsLoading(true);
+    setLoadingMessage("Sedang mengunggah file...");
+    console.log("Uploading files:", selectedFile);
+
+    const uploadPromises = selectedFile.map((file) => {
+      const extension = file.name.split(".").pop().toLowerCase();
+      const payload = {
+        id: mainSelect === "Departemen" ? String(departmen) : String(id),
+      };
+
+      if (["pdf", "docx"].includes(extension)) {
+        const formData = new FormData();
         formData.append("files_upload", file);
-      });
+        formData.append("id", payload.id);
+        return mainSelect === "Departemen"
+          ? uploadDepartmentFile(formData)
+          : uploadPersonalFile(formData);
+      } else if (extension === "json") {
+        payload.file_upload = file;
+        return mainSelect === "Departemen"
+          ? uploadJsonDept(payload)
+          : uploadJsonPersonal(payload);
+      } else if (["png", "jpg", "jpeg", "webp", "svg"].includes(extension)) {
+        payload.image = file;
+        return mainSelect === "Departemen"
+          ? uploadImageDept(payload)
+          : uploadImagePersonal(payload);
+      } else {
+        return Promise.reject(new Error(`Tipe file tidak didukung: ${extension}`));
+      }
+    });
+
+    Promise.allSettled(uploadPromises).then((results) => {
+      const allSuccess = results.every((res) => res.status === "fulfilled");
+
+      setSelectedFile([]);
+      setIsLoading(false);
 
       if (mainSelect === "Departemen") {
-        formData.append("id", String(departmen));
-
-        uploadDepartmentFile(formData)
-          .then((res) => {
-            console.log("Upload berhasil:", res);
-            setSelectedFile([]);
-            fetchDataFileDepartment(departmen);
-            setIsLoading(false);
-            openSnackbar("berhasil", "File berhasil diunggah!");
-          })
-          .catch((error) => {
-            console.error("Gagal upload:", error);
-            openSnackbar("gagal", "File gagal diunggah!");
-            setIsLoading(false);
-          });
-      } else if (mainSelect === "Personal") {
-        formData.append("id", String(id));
-
-        uploadPersonalFile(formData)
-          .then((res) => {
-            console.log("Upload berhasil:", res);
-            setSelectedFile([]);
-            fetchDataFile();
-            setIsLoading(false);
-            openSnackbar("berhasil", "File berhasil diunggah!");
-          })
-          .catch((error) => {
-            console.error("Gagal upload:", error);
-            openSnackbar("gagal", "File gagal diunggah!");
-            setIsLoading(false);
-          });
+        fetchDataFileDepartment(departmen);
+      } else {
+        fetchDataFile();
       }
-    }
-  };
 
+      if (allSuccess) {
+        openSnackbar("berhasil", "Semua file berhasil diunggah!");
+      } else {
+        openSnackbar("gagal", "Beberapa file gagal diunggah. Cek konsol.");
+        console.error("Detail kegagalan:", results);
+      }
+    });
+  };
+  
   const handleDeleteFile = () => {
     setIsLoading(true);
     setLoadingMessage("Sedang menghapus File...");
-    selectedFiles?.forEach((idx) => {
+
+    const deletePromises = selectedFiles.map((file) => {
       const payload = {
         id: String(id),
-        filename: idx.name,
+        filename: file.name,
       };
-      deletePersonalFile(payload)
-        .then((res) => {
-          console.log("Berhasil Menghapus File:", res);
-          setOpenTrash(false);
-          setCheckedItems({});
-          fetchDataFile().then(() => {
-            setIsLoading(false);
-            openSnackbar("berhasil", "File berhasil dihapus!");
-          });          
-        })
-        .catch((error) => {
-          console.error("Gagal menghapus file:", error);
-          openSnackbar("gagal", "File gagal dihapus!");
-        });
+
+      const extension = file.name.split(".").pop().toLowerCase();
+
+      if (["pdf", "docx"].includes(extension)) {
+        return deletePersonalFile(payload);
+      } else if (extension === "json") {
+        return deleteJsonPersonal(payload);
+      } else if (["png", "jpg", "jpeg", "webp", "svg"].includes(extension)) {
+        return deleteImagePersonal(payload);
+      } else {
+        return Promise.reject(new Error("Tipe file tidak didukung"));
+      }
+  });
+
+    Promise.allSettled(deletePromises).then((results) => {
+      const allSuccess = results.every((res) => res.status === "fulfilled");
+
+      setOpenTrash(false);
+      setCheckedItems({});
+      fetchDataFile();
+      setIsLoading(false);
+
+      if (allSuccess) {
+        openSnackbar("berhasil", "Semua file berhasil dihapus!");
+      } else {
+        openSnackbar("gagal", "Beberapa file gagal dihapus. Lihat konsol.");
+        console.error("Detail kegagalan:", results);
+      }
     });
   };
 
@@ -384,7 +399,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
         fetchDataFile(1, personalRowsPerPage);
         setPersonalPage(0);
       } else if (selected === "topik") {
-        fetchDataTopicsWithPagination(1, topicRowsPerPage);
+        fetchDataTopics(1, topicRowsPerPage);
         setTopicPage(0);
       }
     }
@@ -433,24 +448,40 @@ const Dokumen = ({ id, toggleSidebar }) => {
   const handleDeleteFileDepartment = () => {
     setIsLoading(true);
     setLoadingMessage("Sedang menghapus File...");
-    selectedFileDepartment?.forEach((idx) => {
+
+    const deletePromises = selectedFiles.map((file) => {
       const payload = {
-        id: String(departmen),
-        filename: idx.name,
+        id: String(id),
+        filename: file.name,
       };
-      deleteDepartmentlFile(payload)
-        .then((res) => {
-          console.log("Berhasil Menghapus File:", res);
-          setOpenTrash(false);
-          setCheckedItems({});
-          fetchDataFileDepartment(departmen);
-          setIsLoading(false);
-          openSnackbar("berhasil", "File berhasil dihapus!");
-        })
-        .catch((error) => {
-          console.error("Gagal menghapus file:", error);
-          openSnackbar("gagal", "File gagal dihapus!");
-        });
+
+      const extension = file.name.split(".").pop().toLowerCase();
+
+      if (["pdf", "docx"].includes(extension)) {
+        return deleteDepartmentlFile(payload);
+      } else if (extension === "json") {
+        return deleteJsonDept(payload);
+      } else if (["png", "jpg", "jpeg", "webp", "svg"].includes(extension)) {
+        return deleteImageDept(payload);
+      } else {
+        return Promise.reject(new Error("Tipe file tidak didukung"));
+      }
+  });
+
+    Promise.allSettled(deletePromises).then((results) => {
+      const allSuccess = results.every((res) => res.status === "fulfilled");
+
+      setOpenTrash(false);
+      setCheckedItems({});
+      fetchDataFile();
+      setIsLoading(false);
+
+      if (allSuccess) {
+        openSnackbar("berhasil", "Semua file berhasil dihapus!");
+      } else {
+        openSnackbar("gagal", "Beberapa file gagal dihapus. Lihat konsol.");
+        console.error("Detail kegagalan:", results);
+      }
     });
   };
 
@@ -524,22 +555,40 @@ const Dokumen = ({ id, toggleSidebar }) => {
   const debouncedSearchTopic = useMemo(
     () =>
       debounce((value) => {
+        setSearchQuery(value);
+        setTopicPage(0); // Reset to first page on new search
+        
+        if (value.trim() === "") {
+          fetchDataTopics(1, topicRowsPerPage);
+          return;
+        }
+        
         searchTopic({
           user_id: String(id),
           keywords: value,
+          page: 1,
+          per_page: topicRowsPerPage,
         })
-        .then((res) => {
-          console.log("Search result:", res.results);
-          setPersonalTopics((prev) => ({
-            ...prev,
-            list_files: res.results,
-          }));            
-        })
-        .catch((err) => {
-          console.error("Search error:", err);
-        });
+          .then((res) => {
+            // Transform the search response format to match the expected format
+            if (res.results) {
+              // Handle the search response format
+              setPersonalTopics({
+                ...res,
+                list_files: res.results,
+                total_files: res.total || res.results.length
+              });
+            } else {
+              // In case the response is already in the expected formats
+              setPersonalTopics(res);
+            }
+            setSelectedTopicIndex(null);
+          })
+          .catch((err) => {
+            console.error("Search error:", err);
+          });
       }, 300),
-    []
+    [id, topicRowsPerPage]
   );
 
   const handleSearchFilePersonal = (e) => {
@@ -746,7 +795,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
           )}
 
           {/* Upload Dokumen */}
-          {mainSelect === "Personal" || mainSelect === "Departemen" ?
+          {mainSelect === "Personal" || (mainSelect === "Departemen" && departmen) ?
             <Box sx={{ width: "100%", mb: 4 }}>
             <Box width="100%" textAlign="left" sx={{ mb: 2 }}>
               <Typography fontSize={18} fontWeight={700} color="#404040">
@@ -842,7 +891,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
                       <input
                         id="upload-file2"
                         type="file"
-                        accept=".pdf,.json"
+                        accept=".pdf, .json, .docx, .png, .jpg, .jpeg, .webp, .svg"
                         hidden
                         onChange={handleFileUpload}
                       />

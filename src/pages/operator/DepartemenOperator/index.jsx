@@ -18,12 +18,17 @@ import { documents } from "../../../components/Sidebar/Documents/DocumentsConfig
 import InputSearchBar from "../../../components/Inputs/InputSearchBar";
 import {
   deleteDepartmentlFile,
+  deleteImageDept,
+  deleteJsonDept,
   deletePersonalFile,
   getDepartmentFile,
   getDepartmentList,
   searchFileDepartment,
   summarizeFileDepartment,
   uploadDepartmentFile,
+  uploadDocxDept,
+  uploadImageDept,
+  uploadJsonDept,
 } from "../../../services";
 import CustomSnackbar from "../../../components/CustomSnackbar";
 import DeleteFile from "../../../components/Dialog/DeleteFile";
@@ -178,30 +183,52 @@ const DepartemenOperator = ({
     setSelectedUploadFiles([]);
   };
 
-  const handleUploadPersonalFiles = () => {
+  const handleUploadDepartmentFiles = () => {
     if (selectedUploadFiles.length > 0) {
       setIsLoading(true);
       setLoadingMessage("Sedang mengunggah file...");
       console.log("Uploading files:", selectedUploadFiles);
-      const formData = new FormData();
 
-      selectedUploadFiles.forEach((file) => {
-        formData.append("files_upload", file);
+      const uploadPromises = selectedUploadFiles.map((file) => {
+        const extension = file.name.split(".").pop().toLowerCase();
+        const formData = new FormData();
+        formData.append("id", String(id));
+
+        let uploadFunction;
+
+        if (extension === "pdf") {
+          formData.append("files_upload", file);
+          uploadFunction = uploadDepartmentFile;
+        } else if (extension === "json") {
+          formData.append("files_upload", file);
+          uploadFunction = uploadJsonDept;
+        } else if (["png", "jpg", "jpeg", "webp", "svg"].includes(extension)) {
+          formData.append("image", file);
+          uploadFunction = uploadImageDept;
+        } else if (["docx"].includes(extension)) {
+          formData.append("files_upload", file);
+          uploadFunction = uploadDocxDept;
+        } else {
+          return Promise.reject(new Error(`Format tidak didukung: .${extension}`));
+        }
+
+        return uploadFunction(formData);
       });
-      //   formData.append("user_id", String(id));
-      //   formData.append("dept_id", String(selectedDepartmentid));
-      formData.append("id", String(selectedDepartmentid));
-      uploadDepartmentFile(formData)
-        .then((res) => {
-          console.log("Upload berhasil:", res);
+
+      Promise.all(uploadPromises)
+        .then((results) => {
+          console.log("Upload berhasil:", results);
           setSelectedUploadFiles([]);
-          fetchDataFileDepartment(selectedDepartmentid);
-          setIsLoading(false);
-          openSnackbar("berhasil", "File berhasil diunggah!");
+          setCheckedItems({});
+          fetchDataFile();
+          openSnackbar("berhasil", "Semua file berhasil diunggah!");
         })
         .catch((error) => {
           console.error("Gagal upload:", error);
-          openSnackbar("gagal", "File gagal diunggah!");
+          openSnackbar("gagal", "Beberapa atau semua file gagal diunggah!");
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     }
   };
@@ -209,24 +236,40 @@ const DepartemenOperator = ({
   const handleDeleteFile = () => {
     setIsLoading(true);
     setLoadingMessage("Sedang menghapus File...");
-    selectedFiles?.forEach((idx) => {
+
+    const deletePromises = selectedFiles.map((file) => {
       const payload = {
-        id: String(selectedDepartmentid),
-        filename: idx.name,
+        id: String(id),
+        filename: file.name,
       };
-      deleteDepartmentlFile(payload)
-        .then((res) => {
-          console.log("Berhasil Menghapus File:", res);
-          setOpenTrash(false);
-          setCheckedItems({});
-          fetchDataFileDepartment(selectedDepartmentid);
-          setIsLoading(false);
-          openSnackbar("berhasil", "File berhasil dihapus!");
-        })
-        .catch((error) => {
-          console.error("Gagal menghapus file:", error);
-          openSnackbar("gagal", "File gagal dihapus!");
-        });
+
+      const extension = file.name.split(".").pop().toLowerCase();
+
+      if (["pdf", "docx"].includes(extension)) {
+        return deleteDepartmentlFile(payload);
+      } else if (extension === "json") {
+        return deleteJsonDept(payload);
+      } else if (["png", "jpg", "jpeg", "webp", "svg"].includes(extension)) {
+        return deleteImageDept(payload);
+      } else {
+        return Promise.reject(new Error("Tipe file tidak didukung"));
+      }
+  });
+
+    Promise.allSettled(deletePromises).then((results) => {
+      const allSuccess = results.every((res) => res.status === "fulfilled");
+
+      setOpenTrash(false);
+      setCheckedItems({});
+      fetchDataFile();
+      setIsLoading(false);
+
+      if (allSuccess) {
+        openSnackbar("berhasil", "Semua file berhasil dihapus!");
+      } else {
+        openSnackbar("gagal", "Beberapa file gagal dihapus. Lihat konsol.");
+        console.error("Detail kegagalan:", results);
+      }
     });
   };
 
@@ -340,8 +383,7 @@ const DepartemenOperator = ({
                 </Stack>
               ) : (
                 <Typography fontSize={12} fontWeight={400} color="#404040">
-                  Total ukuran berkas yang dapat diproses adalah maksimal 200 MB
-                  dengan ekstensi (PDF, JSON)
+                  Total ukuran berkas yang dapat diproses adalah maksimal 200 MB dengan ekstensi (PDF, JSON ,DOCX, PNG, JPG, JPEG, WEBP, SVG)
                 </Typography>
               )}
 
@@ -371,7 +413,7 @@ const DepartemenOperator = ({
                     </Box>
                     <Box
                       component="button"
-                      onClick={handleUploadPersonalFiles}
+                      onClick={handleUploadDepartmentFiles}
                       sx={{
                         backgroundColor: "#4C4DDC",
                         color: "#fff",
@@ -408,7 +450,7 @@ const DepartemenOperator = ({
                     <input
                       id="upload-file"
                       type="file"
-                      accept=".pdf,.json"
+                      accept=".pdf, .json, .docx, .png, .jpg, .jpeg, .webp, .svg"
                       hidden
                       onChange={handleSelectUploadFiles}
                     />

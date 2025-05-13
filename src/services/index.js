@@ -66,11 +66,14 @@ export const createTopic = async (payload) => {
   }
 };
 
-export const getTopic = async ({ user_id }) => {
+export const getTopic = async ({ user_id, keywords, page, per_page }) => {
   try {
     const response = await api.get("topic/personal", {
       params: {
         user_id,
+        keywords,
+        page,
+        per_page
       },
     });
     return response.data;
@@ -486,6 +489,139 @@ export const deleteHisotryById = async (historyId) => {
     return response.data;
   } catch (error) {
     console.error("Error deleting history by ID:", error);
+    throw error;
+  }
+};
+
+export const uploadJsonPersonal = async (formData) => {
+  try {
+    const response = await api.post("/file/upload_json_personal", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error uploading JSON personal:", error);
+    throw error;
+  }
+};
+
+export const uploadJsonDept = async (formData) => {
+  try {
+    const response = await api.post("/file/upload_json_dept", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error uploading JSON department:", error);
+    throw error;
+  }
+};
+
+export const uploadImagePersonal = async (formData) => {
+  try {
+    const response = await api.post("/file/upload_image_personal", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error uploading image personal:", error);
+    throw error;
+  }
+};
+
+export const uploadImageDept = async (formData) => {
+  try {
+    const response = await api.post("/file/upload_image_dept", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error uploading image department:", error);
+    throw error;
+  }
+};
+
+export const uploadDocxPersonal = async (formData) => {
+  try {
+    const response = await api.post("/file/upload_docx_personal", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error uploading DOCX personal:", error);
+    throw error;
+  }
+};
+
+
+export const uploadDocxDept = async (formData) => {
+  try {
+        const response = await api.post("/file/upload_docx_dept", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error uploading DOCX department:", error);
+    throw error;
+  }
+};
+
+export const deleteImagePersonal = async ({ id, filename }) => {
+  try {
+    const response = await api.delete("/file/remove_image_personal", {
+      data: { id, filename },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting personal image:", error);
+    throw error;
+  }
+};
+
+export const deleteImageDept = async ({ id, filename }) => {
+  try {
+    const response = await api.delete("/file/remove_image_dept", {
+      data: { id, filename },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting department image:", error);
+    throw error;
+  }
+};
+
+export const deleteJsonPersonal = async ({ id, filename }) => {
+  try {
+    const response = await api.delete("/file/remove_json_personal", {
+      data: { id, filename },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting personal JSON:", error);
+    throw error;
+  }
+};
+
+export const deleteJsonDept = async ({ id, filename }) => {
+  try {
+    const response = await api.delete("/file/remove_json_dept", {
+      data: { id, filename },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting department JSON:", error);
     throw error;
   }
 };
