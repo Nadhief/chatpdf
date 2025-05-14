@@ -179,30 +179,47 @@ const PersonalUser = ({
     }
   };
 
-  const handleCheckFile = (idx, value) => {
-    setCheckedItems((prev) => ({
-      ...prev,
-      [idx]: value,
-    }));
+const handleCheckFile = (idx, value) => {
+    const globalIdx = page * rowsPerPage + idx;
+    const file = personalFiles.list_files[idx];
+    
+    setCheckedItems(prev => {
+      if (value) {
+        return { ...prev, [globalIdx]: file };
+      } else {
+        const newCheckedItems = { ...prev };
+        delete newCheckedItems[globalIdx];
+        return newCheckedItems;
+      }
+    });
   };
 
   const handleSelectTopic = (idx) => {
-    setSelectedTopicIndex(idx);
-    // If a topic is selected, set the topic name
+    const globalIdx = topicPage * topicRowsPerPage + idx;
+    
+    setSelectedTopicIndex(globalIdx);
+    
     if (personalTopics.list_files && personalTopics.list_files[idx]) {
       setTopicName(personalTopics.list_files[idx].topic_name);
     }
   };
 
-  const selectedFiles = Object.entries(checkedItems)
-    .filter(([idx, isChecked]) => isChecked)
-    .map(([idx]) => personalFiles.list_files[idx]);
+  const selectedFiles = Object.values(checkedItems);
 
-  // Get the selected topic (only one)
-  const selectedTopic =
-    selectedTopicIndex !== null && personalTopics.list_files
-      ? [personalTopics.list_files[selectedTopicIndex]]
-      : [];
+  const selectedTopic = 
+    selectedTopicIndex !== null
+      ? (() => {
+          const pageOfSelection = Math.floor(selectedTopicIndex / topicRowsPerPage);
+          const indexInPage = selectedTopicIndex % topicRowsPerPage;
+          
+          if (pageOfSelection === topicPage &&
+              personalTopics.list_files &&
+              indexInPage < personalTopics.list_files.length) {
+            return [personalTopics.list_files[indexInPage]];
+          }
+          return [];
+        })()
+    : [];
 
   useEffect(() => {
     fetchDataFile();
@@ -831,25 +848,32 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
             <Stack direction={"column"} spacing={1}>
               {/*MAPPING FILE PDF*/}
               {selected === "file"
-                ? personalFiles?.list_files?.map((item, idx) => (
-                    <Documents
-                      key={idx}
-                      label={item.name}
-                      status={item.status}
-                      checked={checkedItems[idx] || false}
-                      onCheck={(val) => handleCheckFile(idx, val)}
-                    />
-                  ))
+                ? personalFiles?.list_files?.map((item, idx) => {
+                    const globalIdx = page * rowsPerPage + idx;
+                    return (
+                      <Documents
+                        key={idx}
+                        label={item.name}
+                        status={item.status}
+                        checked={checkedItems[globalIdx] || false}
+                        onCheck={(val) => handleCheckFile(idx, val)}
+                      />
+                    );
+                  })
                 : selected === "topik"
-                ? personalTopics?.list_files?.map((item, idx) => (
-                    <Topics
-                      key={idx}
-                      label={item.topic_name}
-                      selected={selectedTopicIndex === idx}
-                      onSelect={() => handleSelectTopic(idx)}
-                    />
-                  ))
-                : null}
+                  ? personalTopics?.list_files?.map((item, idx) => {
+                      const globalIdx = topicPage * topicRowsPerPage + idx;
+                      
+                      return (
+                        <Topics
+                          key={idx}
+                          label={item.topic_name}
+                          selected={selectedTopicIndex === globalIdx}
+                          onSelect={() => handleSelectTopic(idx)}
+                        />
+                      );
+                    })
+                  : null}
             </Stack>
           </Stack>
         </Stack>

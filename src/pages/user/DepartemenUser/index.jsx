@@ -40,15 +40,21 @@ const DepartemenUser = ({
   const [selectedDepartmentid, setSelectedDepartmentid] = useState(null);
 
   const handleCheck = (idx, value) => {
-    setCheckedItems((prev) => ({
-      ...prev,
-      [idx]: value,
-    }));
+    const globalIdx = page * rowsPerPage + idx;
+    const file = departmentFile.list_files[idx];
+    
+    setCheckedItems(prev => {
+      if (value) {
+        return { ...prev, [globalIdx]: file };
+      } else {
+        const newCheckedItems = { ...prev };
+        delete newCheckedItems[globalIdx];
+        return newCheckedItems;
+      }
+    });
   };
 
-  const selectedFiles = Object.entries(checkedItems)
-    .filter(([idx, isChecked]) => isChecked)
-    .map(([idx]) => departmentFile.list_files[idx]);
+  const selectedFiles = Object.values(checkedItems);
 
   useEffect(() => {
     fetchDepartmentList();
@@ -201,6 +207,7 @@ const DepartemenUser = ({
             if (value) {
               setDepartmenSelected(true);
               getDepartment(value);
+              setCheckedItems([]);
             }
           }}
         />
@@ -257,15 +264,18 @@ const DepartemenUser = ({
                 </Stack>
                 <Stack direction={"column"} spacing={1}>
                   {/*MAPPING FILE PDF*/}
-                  {departmentFile?.list_files?.map((item, idx) => (
-                    <React.Fragment key={idx}>
+                  {departmentFile?.list_files?.map((item, idx) => {
+                    const globalIdx = page * rowsPerPage + idx;
+                    return (
                       <Documents
+                        key={idx}
                         label={item.name}
-                        checked={checkedItems[idx] || false}
+                        status={item.status}
+                        checked={checkedItems[globalIdx] || false}
                         onCheck={(val) => handleCheck(idx, val)}
                       />
-                    </React.Fragment>
-                  ))}
+                    );
+                  })}
                 </Stack>
               </Stack>
             ) : (

@@ -124,7 +124,7 @@ const LogoSetting = ({ id, toggleSidebar }) => {
                   </Stack>
                 ) : (
                   <Typography fontSize={12} fontWeight={400} color="#404040">
-                    Total ukuran berkas yang dapat diproses adalah maksimal 200 MB dengan ekstensi (PDF, JSON)
+                    Total ukuran berkas yang dapat diproses adalah maksimal 200 MB dengan ekstensi (PNG, JPG, JPEG, WEBP, SVG)
                   </Typography>
                 )}
                 <Box display="flex" justifyContent="flex-end" width={'100%'}>

@@ -18,7 +18,6 @@ import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import FolderPlusIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import InputSearchBar from "../../components/Inputs/InputSearchBar";
-import { documents } from "../../components/Sidebar/Documents/DocumentsConfig";
 import Documents from "../../components/Sidebar/Documents";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
@@ -66,12 +65,12 @@ const Dokumen = ({ id, toggleSidebar }) => {
 
   const [personalFiles, setPersonalFiles] = useState([]);
   const [personalTopics, setPersonalTopics] = useState([]);
+  const [globalFiles, setGlobalFiles] = useState([]);
 
   const [checkedItems, setCheckedItems] = useState({});
   const [checkedItemsTopics, setCheckedItemsTopics] = useState({});
-  const [checkedItemsFileDepartment, setCheckedItemsFileDepartment] = useState(
-    {}
-  );
+  const [checkedItemsFileDepartment, setCheckedItemsFileDepartment] = useState({});
+  const [checkedItemsFileGlobal, setCheckedItemsFileGlobal] = useState({});
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -85,22 +84,17 @@ const Dokumen = ({ id, toggleSidebar }) => {
   const [selectedDepartmentid, setSelectedDepartmentid] = useState(null);
   const [departmentFile, setDepartmentFile] = useState([]);
 
-  const [globalFiles, setGlobalFiles] = useState([]);
-  const [checkedItemsFileGlobal, setCheckedItemsFileGlobal] = useState({});
+
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  const selectedFiles = Object.entries(checkedItems)
-    .filter(([idx, isChecked]) => isChecked)
-    .map(([idx]) => personalFiles?.list_files[idx]);
+  const selectedFiles = Object.values(checkedItems);
 
-  const selectedTopic = Object.entries(checkedItemsTopics)
-    .filter(([idx, isChecked]) => isChecked)
-    .map(([idx]) => personalTopics?.list_files[idx]);
+  const selectedTopic = Object.values(checkedItemsTopics);
+  
+  const selectedFileDepartment = Object.values(checkedItemsFileDepartment);
 
-  const selectedFileDepartment = Object.entries(checkedItemsFileDepartment)
-    .filter(([idx, isChecked]) => isChecked)
-    .map(([idx]) => departmentFile?.list_files[idx]);
+  const selectedFilesGlobal = Object.values(checkedItemsFileGlobal);
 
   useEffect(() => {
     if (mainSelect === "Personal") {
@@ -129,24 +123,63 @@ const Dokumen = ({ id, toggleSidebar }) => {
   };
 
   const handleCheckFile = (idx, value) => {
-    setCheckedItems((prev) => ({
-      ...prev,
-      [idx]: value,
-    }));
+    const globalIdx = personalPage * personalRowsPerPage + idx;
+    const file = personalFiles.list_files[idx];
+    
+    setCheckedItems(prev => {
+      if (value) {
+        return { ...prev, [globalIdx]: file };
+      } else {
+        const newCheckedItems = { ...prev };
+        delete newCheckedItems[globalIdx];
+        return newCheckedItems;
+      }
+    });
   };
 
   const handleCheckTopic = (idx, value) => {
-    setCheckedItemsTopics((prev) => ({
-      ...prev,
-      [idx]: value,
-    }));
+        const globalIdx = topicPage * topicRowsPerPage + idx;
+    const file = personalTopics.list_files[idx];
+    
+    setCheckedItemsTopics(prev => {
+      if (value) {
+        return { ...prev, [globalIdx]: file };
+      } else {
+        const newCheckedItems = { ...prev };
+        delete newCheckedItems[globalIdx];
+        return newCheckedItems;
+      }
+    });
   };
 
   const handleCheckFileDepartment = (idx, value) => {
-    setCheckedItemsFileDepartment((prev) => ({
-      ...prev,
-      [idx]: value,
-    }));
+    const globalIdx = page * rowsPerPage + idx;
+    const file = departmentFile.list_files[idx];
+    
+    setCheckedItemsFileDepartment(prev => {
+      if (value) {
+        return { ...prev, [globalIdx]: file };
+      } else {
+        const newCheckedItems = { ...prev };
+        delete newCheckedItems[globalIdx];
+        return newCheckedItems;
+      }
+    });
+  };
+
+  const handleCheckFileGlobal = (idx, value) => {
+    const globalIdx = globalPage * globalRowsPerPage + idx;
+    const file = globalFiles.list_files[idx];
+    
+    setCheckedItemsFileGlobal(prev => {
+      if (value) {
+        return { ...prev, [globalIdx]: file };
+      } else {
+        const newCheckedItems = { ...prev };
+        delete newCheckedItems[globalIdx];
+        return newCheckedItems;
+      }
+    });
   };
 
   const handlePersonalChangePage = (event, newPage) => {
@@ -209,13 +242,6 @@ const Dokumen = ({ id, toggleSidebar }) => {
     if (event.target.value === "Global") {
       fetchGlobalFiles();
     }
-  };
-
-  const handleCheckFileGlobal = (idx, value) => {
-    setCheckedItemsFileGlobal((prev) => ({
-      ...prev,
-      [idx]: value,
-    }));
   };
 
   const handleCancel = () => {
@@ -449,7 +475,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
     setIsLoading(true);
     setLoadingMessage("Sedang menghapus File...");
 
-    const deletePromises = selectedFiles.map((file) => {
+    const deletePromises = selectedFileDepartment.map((file) => {
       const payload = {
         id: String(id),
         filename: file.name,
@@ -644,10 +670,6 @@ const Dokumen = ({ id, toggleSidebar }) => {
     setIsLoading(true);
     setLoadingMessage("Sedang menghapus File...");
     
-    const selectedFilesGlobal = Object.entries(checkedItemsFileGlobal)
-      .filter(([idx, isChecked]) => isChecked)
-      .map(([idx]) => globalFiles?.list_files[idx]);
-    
     let completedCount = 0;
     const totalFiles = selectedFilesGlobal?.length || 0;
     
@@ -700,6 +722,8 @@ const Dokumen = ({ id, toggleSidebar }) => {
         });
     });
   };
+
+  console.log(selectedFilesGlobal, checkedItemsFileGlobal)
   
   return (
     <Grid
@@ -783,6 +807,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
                   value={departmen}
                   onChange={handledepartmen}
                   label="Departemen"
+                  onClick={()=> setCheckedItemsFileDepartment([])}
                 >
                   {departmentOptions.map((dept) => (
                     <MenuItem key={dept.id} value={dept.id}>
@@ -830,7 +855,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
                 ) : (
                   <Typography fontSize={12} fontWeight={400} color="#404040">
                     Total ukuran berkas yang dapat diproses adalah maksimal 200
-                    MB dengan ekstensi (PDF, JSON)
+                    MB dengan ekstensi (PDF, JSON ,DOCX, PNG, JPG, JPEG, WEBP, SVG)
                   </Typography>
                 )}
                 <Box display="flex" justifyContent="flex-end" width="100%">
@@ -1068,54 +1093,63 @@ const Dokumen = ({ id, toggleSidebar }) => {
                     {mainSelect === "Personal" ? (
                       <Stack direction={"column"} spacing={1}>
                         {selected === "file"
-                          ? personalFiles?.list_files?.map((item, idx) => (
-                              <Documents
-                                key={idx}
-                                label={item.name}
-                                checked={checkedItems[idx] || false}
-                                onCheck={(val) => handleCheckFile(idx, val)}
-                                filter={selected}
-                                status={item.status}
-                              />
-                            ))
+                          ? personalFiles?.list_files?.map((item, idx) => {
+                              const globalIdx = personalPage * personalRowsPerPage + idx;
+                              return (
+                                <Documents
+                                  key={idx}
+                                  label={item.name}
+                                  status={item.status}
+                                  checked={checkedItems[globalIdx] || false}
+                                  onCheck={(val) => handleCheckFile(idx, val)}
+                                />
+                              );
+                          })
                           : selected === "topik"
-                          ? personalTopics?.list_files?.map((item, idx) => (
-                              <Documents
-                                key={idx}
-                                label={item.topic_name}
-                                checked={checkedItemsTopics[idx] || false}
-                                onCheck={(val) => handleCheckTopic(idx, val)}
-                                filter={selected}
-                              />
-                            ))
+                          ? personalTopics?.list_files?.map((item, idx) => {
+                              const globalIdx = topicPage * topicRowsPerPage + idx;
+                              return (
+                                <Documents
+                                  key={idx}
+                                  label={item.topic_name}
+                                  status={item.status}
+                                  checked={checkedItemsTopics[globalIdx] || false}
+                                  onCheck={(val) => handleCheckTopic(idx, val)}
+                                />
+                              );
+                          })
                           : null}
                       </Stack>
                         ) : mainSelect === "Departemen" ? (
                           <Stack direction={"column"} spacing={1}>
-                            {departmentFile?.list_files?.map((item, idx) => (
-                              <React.Fragment key={idx}>
+                            {departmentFile?.list_files?.map((item, idx) => {
+                              const globalIdx = page * rowsPerPage + idx;
+                              return (
                                 <Documents
+                                  key={idx}
                                   label={item.name}
                                   status={item.status}
-                                  checked={checkedItemsFileDepartment[idx] || false}
+                                  checked={checkedItemsFileDepartment[globalIdx] || false}
                                   onCheck={(val) => handleCheckFileDepartment(idx, val)}
                                 />
-                              </React.Fragment>
-                            ))}
+                              );
+                            })}
                           </Stack>
                         ) : (
                           // Global Files
                           <Stack direction={"column"} spacing={1}>
-                            {globalFiles?.list_files?.map((item, idx) => (
-                              <React.Fragment key={idx}>
+                            {globalFiles?.list_files?.map((item, idx) => {
+                              const globalIdx = globalPage * globalRowsPerPage + idx;
+                              return (
                                 <Documents
+                                  key={idx}
                                   label={item.name}
                                   status={item.status}
-                                  checked={checkedItemsFileGlobal[idx] || false}
+                                  checked={checkedItemsFileGlobal[globalIdx] || false}
                                   onCheck={(val) => handleCheckFileGlobal(idx, val)}
                                 />
-                              </React.Fragment>
-                            ))}
+                              );
+                            })}
                           </Stack>
                         )}
                     {mainSelect === "Personal" && selected === "file" && (
