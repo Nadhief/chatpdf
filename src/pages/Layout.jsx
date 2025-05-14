@@ -14,7 +14,7 @@ import Database from "./admin/Database";
 import Table from "./admin/Table";
 import TableDetail from "./admin/TableDetail";
 const Layout = () => {
-  const logoUrl = "http://192.168.65:8001/logo";
+  const logoUrl = "http://192.168.1.65:8001/logo";
 
   let link =
     document.querySelector("link[rel*='icon']") ||
@@ -286,11 +286,11 @@ const Layout = () => {
               element={<Database id={user?.id} toggleSidebar={toggleSidebar} />}
             />
             <Route
-              path="/admin/coofisai/database/:id"
+              path="/admin/coofisai/database/:name"
               element={<Table id={user?.id} toggleSidebar={toggleSidebar} />}
             />
             <Route
-              path="/admin/coofisai/database/:id/:table_id"
+              path="/admin/coofisai/database/:name/:nameTable"
               element={
                 <TableDetail id={user?.id} toggleSidebar={toggleSidebar} />
               }

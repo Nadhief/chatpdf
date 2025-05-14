@@ -12,7 +12,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import UploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -29,33 +29,87 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import DataColumn from "../../components/Table/DataColumn";
+import {
+  addColumnPersonal,
+  addDataPersonal,
+  deleteDataPersonal,
+  getColumnPersonal,
+  updateDataPersonal,
+} from "../../services";
 
-const columns = ["Kolom 1", "Kolom 2", "Kolom 3"];
-const rows = [
-  { "Kolom 1": "Cell A1", "Kolom 2": "Cell A2", "Kolom 3": "Cell A3" },
-  { "Kolom 1": "Cell B1", "Kolom 2": "Cell B2", "Kolom 3": "Cell B3" },
-  { "Kolom 1": "Cell C1", "Kolom 2": "Cell C2", "Kolom 3": "Cell C3" },
-];
-
-const TableDetail = () => {
+const TableDetail = ({ id }) => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { nameTable } = useParams();
+  const { name } = useParams();
   const [openDialogAddData, setOpenDialogAddData] = useState(false);
   const [openDialogAddColumn, setOpenDialogAddColumn] = useState(false);
   const [openDialogCSV, setOpenDialogCSV] = useState(false);
   const [fileName, setFileName] = useState("");
 
-  const [selectedItem, setSelectedItem] = useState(null);
-  const dataTypes = ["String", "Number", "Boolean", "Date"];
-  const [newColumns, setNewColumns] = useState([{ name: "", type: "" }]);
+  const [selectedItem, setSelectedItem] = useState([]);
+  const dataTypes = ["NUMERIC", "INTEGER", "TEXT", "REAL", "BLOB", "DATETIME"];
+  const [editData, setEditData] = useState(false);
+  const [selectedEdit, setSelectedEdit] = useState();
+  const [newColumns, setNewColumns] = useState([
+    { field_name: "", field_type: "" },
+  ]);
+  const [newData, setNewData] = useState({});
+
+  const [data, setData] = useState(null);
+
+  const [tableData, setTableData] = useState(data);
+  const [showEntry, setShowEntry] = useState(10);
+  const [keyword, setKeyword] = useState("");
 
   const handleSubmit = (type) => {
-    console.log(type);
-    console.log(selectedItem);
+    if (type === "column") {
+      const payload = {
+        id: String(id),
+        db_name: name,
+        table_name: nameTable,
+        fields: newColumns,
+      };
+      addColumnPersonal(payload).then((res) => {
+        setOpenDialogAddColumn(false);
+        setNewColumns([]);
+        fetchKolomPersonal();
+      });
+    } else if (type === "data") {
+      if (editData === true) {
+        const payload = {
+          id: String(id),
+          db_name: name,
+          table_name: nameTable,
+          identifier: {
+            [data?.column_info[0].name]:
+              tableData[selectedEdit][data?.column_info[0].name],
+          },
+          updates: tableData[selectedEdit],
+        };
+        updateDataPersonal(payload).then((res) => {
+          setOpenDialogAddData(false);
+          setNewData({});
+          fetchKolomPersonal();
+        });
+      } else if (editData === false) {
+        const payload = {
+          id: String(id),
+          db_name: name,
+          table_name: nameTable,
+          data: newData,
+        };
+        console.log(payload);
+        addDataPersonal(payload).then((res) => {
+          setOpenDialogAddData(false);
+          setNewData({});
+          fetchKolomPersonal();
+        });
+      }
+    }
   };
 
   const handleAddRow = () => {
-    setNewColumns([...newColumns, { name: "", type: "" }]);
+    setNewColumns([...newColumns, { field_name: "", field_type: "" }]);
   };
 
   const handleFileChange = (e) => {
@@ -63,6 +117,75 @@ const TableDetail = () => {
       setFileName(e.target.files[0].name);
     }
   };
+
+  const fetchKolomPersonal = () => {
+    getColumnPersonal({
+      id: String(id),
+      db_name: name,
+      table_name: nameTable,
+      page: 1,
+      per_page: showEntry,
+      keyword: keyword,
+    })
+      .then((res) => {
+        setData(res);
+        setTableData(res.list_data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleChange = (index, key, value) => {
+    const updated = [...newColumns];
+    updated[index][key] = value;
+    setNewColumns(updated);
+  };
+
+  const handleChangeNewData = (idx, value) => {
+    setNewData((prev) => ({
+      ...prev,
+      [data?.column_info[idx + 1].name]: value,
+    }));
+  };
+
+  const handleUpdateData = (rowIdx, col, value) => {
+    console.log(rowIdx, col, value);
+    const updatedData = [...tableData];
+    updatedData[rowIdx][col] = value;
+    setTableData(updatedData);
+  };
+
+  const handleDelete = () => {
+    const payload = {
+      id: String(id),
+      db_name: name,
+      table_name: nameTable,
+      identifier: {
+        [data?.column_info[0].name]: selectedItem.id,
+      },
+    };
+    deleteDataPersonal(payload).then((res) => {
+      console.log(res);
+      fetchKolomPersonal();
+    });
+  };
+
+  const getInputType = (sqliteType) => {
+    const type = sqliteType.toUpperCase();
+    if (type.includes("INT")) return "number";
+    if (type.includes("FLOAT") || type.includes("NUMERIC") || type === "NUMBER")
+      return "number";
+    if (type === "TEXT" || type === "STRING") return "text";
+    if (type === "DATE") return "date";
+    if (type === "BOOLEAN") return "checkbox";
+    return "text";
+  };
+
+  useEffect(() => {
+    fetchKolomPersonal();
+  }, [showEntry, keyword]);
+
   return (
     <Stack
       sx={{
@@ -95,7 +218,7 @@ const TableDetail = () => {
               textTransform: "none",
               color: "#EA001E",
             }}
-            onClick={() => navigate(`/admin/coofisai/database/${id}`)}
+            onClick={() => navigate(`/admin/coofisai/database/${name}`)}
           >
             Kembali
           </Button>
@@ -142,6 +265,9 @@ const TableDetail = () => {
               backgroundColor: "#e53935",
               "&:hover": { backgroundColor: "#d32f2f" },
             }}
+            onClick={() => {
+              handleDelete();
+            }}
           >
             <DeleteIcon />
           </Button>
@@ -152,8 +278,8 @@ const TableDetail = () => {
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography fontWeight="bold">Tampilkan</Typography>
             <Select
-              value={10}
-              onChange={() => {}}
+              value={showEntry}
+              onChange={(e) => setShowEntry(e.target.value)}
               size="small"
               sx={{
                 borderRadius: 3,
@@ -164,6 +290,7 @@ const TableDetail = () => {
               <MenuItem value={5}>5</MenuItem>
               <MenuItem value={10}>10</MenuItem>
               <MenuItem value={25}>25</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
             </Select>
           </Box>
 
@@ -184,6 +311,8 @@ const TableDetail = () => {
               sx={{ flex: 1 }}
               placeholder="Search....."
               inputProps={{ "aria-label": "search" }}
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
             />
             <IconButton type="submit" sx={{ p: 0.5 }} aria-label="search">
               <SearchIcon />
@@ -191,7 +320,14 @@ const TableDetail = () => {
           </Paper>
         </Box>
         <Box sx={{ border: "1px solid #ccc", borderRadius: 2, mt: 2, p: 2 }}>
-          <DataColumn columns={columns} rows={rows} />
+          <DataColumn
+            data={data}
+            setEditData={setEditData}
+            setSelectedEdit={setSelectedEdit}
+            setOpenDialogAddData={setOpenDialogAddData}
+            setSelectedItem={setSelectedItem}
+            selectedItem={selectedItem}
+          />
           {/* Footer Pagination */}
           <Box
             sx={{
@@ -203,9 +339,13 @@ const TableDetail = () => {
             }}
           >
             <Typography variant="body2">
-              Menampilkan 1 sampai 1 entri
+              Menampilkan {data?.page} sampai {data?.per_page}
             </Typography>
-            <Pagination count={3} page={2} size="small" />
+            <Pagination
+              count={data?.total_pages}
+              page={data?.page}
+              size="small"
+            />
           </Box>
         </Box>
       </Stack>
@@ -216,6 +356,8 @@ const TableDetail = () => {
         onClose={() => {
           setNewColumns([{ name: "", type: "" }]);
           setOpenDialogAddData(false);
+          setEditData(false);
+          fetchKolomPersonal();
         }}
         fullWidth
         maxWidth="sm"
@@ -227,13 +369,15 @@ const TableDetail = () => {
             alignItems: "center",
           }}
         >
-          <Typography variant="h6" fontWeight="bold">
-            Tambah Kolom
+          <Typography fontWeight="bold">
+            {editData ? "Ubah Data" : "Tambah Data"}
           </Typography>
           <IconButton
             onClick={() => {
               setNewColumns([{ name: "", type: "" }]);
               setOpenDialogAddData(false);
+              setEditData(false);
+              fetchKolomPersonal();
             }}
           >
             <CloseIcon />
@@ -241,39 +385,81 @@ const TableDetail = () => {
         </DialogTitle>
 
         <DialogContent>
-          {columns.map((col, idx) => (
+          {editData ? (
             <>
-              <Typography>{col}</Typography>
-              <Grid
-                key={idx}
-                container
-                spacing={2}
-                alignItems="center"
-                sx={{ mb: 2 }}
-              >
-                <Grid item size={12}>
-                  <TextField
-                    fullWidth
-                    placeholder="Masukan nama kolom"
-                    size="small"
-                    value={col.name}
-                    onChange={(e) => handleChange(idx, "name", e.target.value)}
-                  />
-                </Grid>
-              </Grid>
+              {tableData
+                ?.filter((_, rowIdx) => rowIdx === selectedEdit)
+                ?.map((row, rowIdx) => (
+                  <Stack key={row.id} spacing={2} sx={{ mb: 4 }}>
+                    {data?.column_info?.slice(1).map((col, colIdx) => (
+                      <Grid
+                        key={colIdx}
+                        container
+                        spacing={2}
+                        alignItems="center"
+                        sx={{ mb: 2 }}
+                      >
+                        <Typography>{col.name}</Typography>
+                        <Grid item size={12}>
+                          <TextField
+                            fullWidth
+                            size="small"
+                            placeholder={`Masukan data untuk kolom ${col.name}`}
+                            value={row[col.name] || ""}
+                            type={getInputType(col.type)}
+                            onChange={(e) =>
+                              handleUpdateData(
+                                selectedEdit,
+                                col.name,
+                                e.target.value
+                              )
+                            }
+                          />
+                        </Grid>
+                      </Grid>
+                    ))}
+                  </Stack>
+                ))}
             </>
-          ))}
+          ) : (
+            <>
+              {data?.column_info?.slice(1).map((col, idx) => (
+                <Stack key={idx}>
+                  <Typography>{col.name}</Typography>
+                  <Grid
+                    key={idx}
+                    container
+                    spacing={2}
+                    alignItems="center"
+                    sx={{ mb: 2 }}
+                  >
+                    <Grid item size={12}>
+                      <TextField
+                        fullWidth
+                        placeholder={`Masukan data untuk kolom ${col.name}`}
+                        size="small"
+                        type={getInputType(col.type)}
+                        onChange={(e) =>
+                          handleChangeNewData(idx, e.target.value)
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                </Stack>
+              ))}
+            </>
+          )}
           <Box display={"flex"} justifyContent={"flex-end"}>
             <Button
               variant="contained"
-              onClick={() => handleSubmit("column")}
+              onClick={() => handleSubmit("data")}
               sx={{
                 backgroundColor: "#4caf50",
                 textTransform: "none",
                 "&:hover": { backgroundColor: "#43a047" },
               }}
             >
-              Tambahkan
+              Ubah
             </Button>
           </Box>
         </DialogContent>
@@ -283,7 +469,7 @@ const TableDetail = () => {
       <Dialog
         open={openDialogAddColumn}
         onClose={() => {
-          setNewColumns([{ name: "", type: "" }]);
+          setNewColumns([{ field_name: "", field_type: "" }]);
           setOpenDialogAddColumn(false);
         }}
         fullWidth
@@ -301,7 +487,7 @@ const TableDetail = () => {
           </Typography>
           <IconButton
             onClick={() => {
-              setNewColumns([{ name: "", type: "" }]);
+              setNewColumns([{ field_name: "", field_type: "" }]);
               setOpenDialogAddColumn(false);
             }}
           >
@@ -323,8 +509,10 @@ const TableDetail = () => {
                   fullWidth
                   placeholder="Masukan nama kolom"
                   size="small"
-                  value={col.name}
-                  onChange={(e) => handleChange(idx, "name", e.target.value)}
+                  value={col.field_name}
+                  onChange={(e) =>
+                    handleChange(idx, "field_name", e.target.value)
+                  }
                 />
               </Grid>
               <Grid item size={6}>
@@ -332,8 +520,10 @@ const TableDetail = () => {
                   fullWidth
                   select
                   size="small"
-                  value={col.type}
-                  onChange={(e) => handleChange(idx, "type", e.target.value)}
+                  value={col.field_type}
+                  onChange={(e) =>
+                    handleChange(idx, "field_type", e.target.value)
+                  }
                 >
                   {dataTypes.map((type) => (
                     <MenuItem key={type} value={type}>
