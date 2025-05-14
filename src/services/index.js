@@ -668,3 +668,15 @@ export const deleteDataPersonal = async (payload) => {
   }
 }
 
+export const uploadDbPersonal = async (payload) => {
+  try {
+    const response = await api.post(
+      "csv_db/upload_db/personal",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+

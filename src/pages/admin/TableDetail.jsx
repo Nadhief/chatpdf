@@ -36,6 +36,7 @@ import {
   getColumnPersonal,
   updateDataPersonal,
 } from "../../services";
+import DeleteDatabase from "../../components/Dialog/DeleteDatabase";
 
 const TableDetail = ({ id }) => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ const TableDetail = ({ id }) => {
   const [openDialogAddColumn, setOpenDialogAddColumn] = useState(false);
   const [openDialogCSV, setOpenDialogCSV] = useState(false);
   const [fileName, setFileName] = useState("");
-
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const [selectedItem, setSelectedItem] = useState([]);
   const dataTypes = ["NUMERIC", "INTEGER", "TEXT", "REAL", "BLOB", "DATETIME"];
   const [editData, setEditData] = useState(false);
@@ -266,7 +267,7 @@ const TableDetail = ({ id }) => {
               "&:hover": { backgroundColor: "#d32f2f" },
             }}
             onClick={() => {
-              handleDelete();
+              setOpenDeleteDialog(true);
             }}
           >
             <DeleteIcon />
@@ -641,6 +642,14 @@ const TableDetail = ({ id }) => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Dialog hapus data */}
+      <DeleteDatabase
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        handleDelete={()=> handleDelete()}
+        title={"Data"}
+      />
     </Stack>
   );
 };

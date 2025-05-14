@@ -11,7 +11,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import UploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -32,15 +32,9 @@ import {
   addTablePersonal,
   deleteDatabasePersonal,
   getDatabasePersonal,
+  uploadDbPersonal,
 } from "../../services";
 import DeleteDatabase from "../../components/Dialog/DeleteDatabase";
-
-const DummyData = [
-  { id: 1, name: "Nama Database", isDetail: true },
-  { id: 2, name: "Nama Database", isDetail: false },
-  { id: 3, name: "Nama Database", isDetail: false },
-  { id: 4, name: "Nama Database", isDetail: false },
-];
 
 const Database = ({ id, toggleSidebar }) => {
   const navigate = useNavigate();
@@ -54,6 +48,8 @@ const Database = ({ id, toggleSidebar }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [showEntry, setShowEntry] = useState(10);
   const [keyword, setKeyword] = useState("");
+  const [openDialogDB, setOpenDialogDB] = useState(false);
+  const [file, setFile] = useState(null);
 
   const handleCheckboxChange = (item) => {
     setSelectedDatabaseDelete((prev) => {
@@ -134,6 +130,31 @@ const Database = ({ id, toggleSidebar }) => {
       });
   };
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file && file.name.endsWith(".db")) {
+      setFile(file);
+      console.log("Selected .db file:", file);
+    } else {
+      alert("Please select a valid .db file");
+    }
+  };
+
+  const handleUploadFile = () => {
+    const formData = new FormData();
+    formData.append("id", String(id));
+    formData.append("db_name", file.name.replace(/\.db$/i, ""));
+    formData.append("file", file);
+
+    uploadDbPersonal(formData).then((res) => {
+      console.log(res)
+      fetchDatabasePersonal()
+    }
+    ).catch((err) => {
+      console.log(err)
+    })
+  };
+
   useEffect(() => {
     fetchDatabasePersonal();
   }, [showEntry, keyword]);
@@ -171,13 +192,16 @@ const Database = ({ id, toggleSidebar }) => {
           >
             Tambah Database
           </Button>
-          <Button
-            variant="contained"
-            startIcon={<UploadIcon />}
-            sx={{ backgroundColor: "#3c3f52", textTransform: "none" }}
-          >
-            Upload Database
-          </Button>
+          <>
+            <Button
+              variant="contained"
+              startIcon={<UploadIcon />}
+              onClick={() => setOpenDialogDB(true)}
+              sx={{ backgroundColor: "#3c3f52", textTransform: "none" }}
+            >
+              Upload Database
+            </Button>
+          </>
           <Button
             variant="contained"
             sx={{
@@ -312,11 +336,11 @@ const Database = ({ id, toggleSidebar }) => {
             <Typography variant="body2">
               Menampilkan {databaseList?.page} sampai {databaseList?.per_page}
             </Typography>
-            <Pagination
+            {/* <Pagination
               count={databaseList?.total_pages}
               page={databaseList?.page}
               size="small"
-            />
+            /> */}
           </Box>
         </Box>
       </Stack>
@@ -415,6 +439,83 @@ const Database = ({ id, toggleSidebar }) => {
             }}
           >
             Tambahkan
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog Upload DB */}
+      <Dialog
+        open={openDialogDB}
+        onClose={() => {
+          setOpenDialogDB(false);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }}>
+          Unggah Database
+          <IconButton
+            aria-label="close"
+            onClick={() => {
+              setOpenDialogDB(false);
+            }}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          <Button
+            variant="outlined"
+            component="label"
+            fullWidth
+            sx={{
+              justifyContent: "flex-start",
+              borderColor: "#D8DAE5",
+              color: "#3F3F3F",
+              textTransform: "none",
+            }}
+          >
+            📄 {file?.name || "pilih file"}
+            <input
+              type="file"
+              accept=".db"
+              hidden
+              onChange={handleFileChange}
+            />
+            <Typography
+              variant="body2"
+              sx={{
+                marginLeft: "auto",
+                color: "#007BFF",
+                fontWeight: 500,
+              }}
+            >
+              Pilih Database
+            </Typography>
+          </Button>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#4CAF8E",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "#4CAF8E",
+              },
+              textTransform: "none",
+            }}
+            onClick={() => {
+              handleUploadFile();
+              setOpenDialogDB(false);
+            }}
+          >
+            Unggah
           </Button>
         </DialogActions>
       </Dialog>
