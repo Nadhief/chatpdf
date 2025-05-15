@@ -726,7 +726,10 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
             )}
           </Box>
         </Stack>
-      </Box>
+          </Box>
+        </>
+      )}
+
       <Box
         sx={{
           width: "100%",
@@ -1064,6 +1067,8 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
           onClose={() => setOpenTrash(false)}
           handleDelete={handleDeleteTopic}
         />
+      )}
+        </>
       )}
 
       <Dialog
