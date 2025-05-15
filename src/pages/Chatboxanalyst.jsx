@@ -446,7 +446,7 @@ const ChatBoxanalyst = ({
         });
     }
   }, [historyId]);
-  // console.log(responses);
+  console.log(historyId)
   return (
     <Stack
       sx={{

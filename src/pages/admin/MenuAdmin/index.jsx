@@ -15,7 +15,8 @@ const MenuAdmin = ({
   setIsMenu,
   setIsSidebarOpen,
   isAnalyst,
-  setIsAnalyst
+  setIsAnalyst,
+  setHistoryId,
 }) => {
   const navigate = useNavigate();
 
@@ -143,7 +144,9 @@ const MenuAdmin = ({
           localStorage.setItem("itemSelected", "dokumen");
           navigate("/admin/coofisai");
           localStorage.setItem("isMenu", "false");
-          setIsAnalyst(false)
+          setIsAnalyst(false);
+          setHistoryId(null);
+          localStorage.removeItem("chat_responses");
         }}
       />
 
@@ -157,7 +160,9 @@ const MenuAdmin = ({
           localStorage.setItem("itemSelected", "dokumen");
           navigate("/admin/coofisanalyst");
           localStorage.setItem("isMenu", "false");
-          setIsAnalyst(true)
+          setIsAnalyst(true);
+          setHistoryId(null);
+          localStorage.removeItem("chat_responses");
         }}
       />
     </Stack>

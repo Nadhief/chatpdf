@@ -259,6 +259,7 @@ const Sidebar = ({
             setIsSidebarOpen={setIsSidebarOpen}
             isAnalyst={isAnalyst}
             setIsAnalyst={setIsAnalyst}
+            setHistoryId={setHistoryId}
           />
         ) : null
       ) : (
@@ -618,6 +619,7 @@ const Sidebar = ({
                   onClick={() => {
                     setNewChat(true);
                     setHistoryId(null);
+                    console.log('oke')
                   }}
                 >
                   <NewChatIcon className="hover-color" sx={{ fontSize: 20 }} />
