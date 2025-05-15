@@ -298,7 +298,7 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
         } else if (extension === "json") {
           formData.append("files_upload", file);
           uploadFunction = uploadJsonPersonal;
-        } else if (["png", "jpg", "jpeg", "webp", "svg"].includes(extension)) {
+        } else if (["png", "jpg", "jpeg", "webp"].includes(extension)) {
           formData.append("image", file);
           uploadFunction = uploadImagePersonal;
         } else if (["docx"].includes(extension)) {
@@ -651,7 +651,7 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
           ) : (
             <Typography fontSize={12} fontWeight={400} color="#404040">
               Total ukuran berkas yang dapat diproses adalah maksimal 200 MB
-              dengan ekstensi (PDF, JSON ,DOCX, PNG, JPG, JPEG, WEBP, SVG)
+              dengan ekstensi (PDF, JSON ,DOCX, PNG, JPG, JPEG, WEBP)
             </Typography>
           )}
 
@@ -718,7 +718,7 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
                 <input
                   id="upload-file"
                   type="file"
-                  accept=".pdf, .json, .docx, .png, .jpg, .jpeg, .webp, .svg"
+                  accept=".pdf, .json, .docx, .png, .jpg, .jpeg, .webp"
                   hidden
                   onChange={handleSelectUploadFiles}
                 />

@@ -283,7 +283,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
         return mainSelect === "Departemen"
           ? uploadJsonDept(payload)
           : uploadJsonPersonal(payload);
-      } else if (["png", "jpg", "jpeg", "webp", "svg"].includes(extension)) {
+      } else if (["png", "jpg", "jpeg", "webp"].includes(extension)) {
         payload.image = file;
         return mainSelect === "Departemen"
           ? uploadImageDept(payload)
@@ -330,7 +330,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
         return deletePersonalFile(payload);
       } else if (extension === "json") {
         return deleteJsonPersonal(payload);
-      } else if (["png", "jpg", "jpeg", "webp", "svg"].includes(extension)) {
+      } else if (["png", "jpg", "jpeg", "webp"].includes(extension)) {
         return deleteImagePersonal(payload);
       } else {
         return Promise.reject(new Error("Tipe file tidak didukung"));
@@ -487,7 +487,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
         return deleteDepartmentlFile(payload);
       } else if (extension === "json") {
         return deleteJsonDept(payload);
-      } else if (["png", "jpg", "jpeg", "webp", "svg"].includes(extension)) {
+      } else if (["png", "jpg", "jpeg", "webp"].includes(extension)) {
         return deleteImageDept(payload);
       } else {
         return Promise.reject(new Error("Tipe file tidak didukung"));
@@ -853,7 +853,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
                 ) : (
                   <Typography fontSize={12} fontWeight={400} color="#404040">
                     Total ukuran berkas yang dapat diproses adalah maksimal 200
-                    MB dengan ekstensi (PDF, JSON ,DOCX, PNG, JPG, JPEG, WEBP, SVG)
+                    MB dengan ekstensi (PDF, JSON ,DOCX, PNG, JPG, JPEG, WEBP)
                   </Typography>
                 )}
                 <Box display="flex" justifyContent="flex-end" width="100%">
@@ -914,7 +914,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
                       <input
                         id="upload-file2"
                         type="file"
-                        accept=".pdf, .json, .docx, .png, .jpg, .jpeg, .webp, .svg"
+                        accept=".pdf, .json, .docx, .png, .jpg, .jpeg, .webp"
                         hidden
                         onChange={handleFileUpload}
                       />
