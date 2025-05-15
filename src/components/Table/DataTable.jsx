@@ -174,7 +174,7 @@ export default function DataTable({
 
   const paginationModel = { page: 0, pageSize: 5 };
   return (
-    <Paper sx={{ height: 400, width: "100%" }}>
+    <Paper sx={{ width: "100%" }}>
       <DataGrid
         rows={userRow}
         columns={columns}
