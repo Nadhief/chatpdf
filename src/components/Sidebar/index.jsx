@@ -63,6 +63,8 @@ const Sidebar = ({
   historyId,
   setIsHistorys,
   setNewChat,
+  isAnalyst,
+  setIsAnalyst,
 }) => {
   const logoUrl = "http://192.168.1.65:8001/logo";
 
@@ -230,6 +232,7 @@ const Sidebar = ({
             onClick={() => {
               localStorage.removeItem("chat_responses");
               localStorage.setItem("isMenu", "false");
+              setIsAnalyst(false)
               handleLogout();
             }}
           >
@@ -254,6 +257,8 @@ const Sidebar = ({
             setSettingPage={setSettingPage}
             setIsMenu={setIsMenu}
             setIsSidebarOpen={setIsSidebarOpen}
+            isAnalyst={isAnalyst}
+            setIsAnalyst={setIsAnalyst}
           />
         ) : null
       ) : (
@@ -347,7 +352,7 @@ const Sidebar = ({
           ) : null}
           {isSurat ? (
             <>
-              <Box width={"100%"} paddingRight={3} paddingLeft={1}>
+              {/* <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                 <Stack
                   paddingBottom={0.8}
                   borderRadius={2}
@@ -385,7 +390,7 @@ const Sidebar = ({
                     Kembali
                   </Typography>
                 </Stack>
-              </Box>
+              </Box> */}
               {/* <Box
                 sx={{
                   width: "100%",
@@ -507,9 +512,11 @@ const Sidebar = ({
                         borderRadius={1}
                         sx={{
                           cursor: "pointer",
-                          backgroundColor: historyId === item.id ? "#f0f0f0" : "transparent",
+                          backgroundColor:
+                            historyId === item.id ? "#f0f0f0" : "transparent",
                           "&:hover": {
-                            backgroundColor: historyId === item.id ? "#f0f0f0" : "#f0f0f0",
+                            backgroundColor:
+                              historyId === item.id ? "#f0f0f0" : "#f0f0f0",
                           },
                         }}
                         onClick={() => {
@@ -704,76 +711,78 @@ const Sidebar = ({
                   </Typography>
                 </Stack>
               </Box> */}
-              <Box
-                width={"97%"}
-                sx={{
-                  backgroundColor: "#EEF0F7",
-                  borderRadius: 10,
-                  border: "1px solid #E0E0E0",
-                  paddingY: 0.7,
-                  paddingX: 1,
-                }}
-              >
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Box
-                    alignContent={"center"}
-                    justifyContent="center"
-                    width={"100%"}
-                    height={"100%"}
-                    display="flex"
-                    alignItems="center"
-                    sx={{
-                      backgroundColor:
-                        selected === "personal" ? "white" : "none",
-                      borderRadius: 10,
-                      cursor: "pointer",
-                      boxShadow:
-                        selected === "personal"
-                          ? "0px 2px 4px rgba(0, 0, 0, 0.1)"
-                          : "none",
-                      paddingY: 0.8,
-                    }}
-                    onClick={() => setSelected("personal")}
-                  >
-                    <Typography
-                      color={selected === "personal" ? "black" : "#9E9E9E"}
+              {!isAnalyst && (
+                <Box
+                  width={"97%"}
+                  sx={{
+                    backgroundColor: "#EEF0F7",
+                    borderRadius: 10,
+                    border: "1px solid #E0E0E0",
+                    paddingY: 0.7,
+                    paddingX: 1,
+                  }}
+                >
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Box
+                      alignContent={"center"}
+                      justifyContent="center"
+                      width={"100%"}
+                      height={"100%"}
+                      display="flex"
+                      alignItems="center"
+                      sx={{
+                        backgroundColor:
+                          selected === "personal" ? "white" : "none",
+                        borderRadius: 10,
+                        cursor: "pointer",
+                        boxShadow:
+                          selected === "personal"
+                            ? "0px 2px 4px rgba(0, 0, 0, 0.1)"
+                            : "none",
+                        paddingY: 0.8,
+                      }}
+                      onClick={() => setSelected("personal")}
                     >
-                      {" "}
-                      Personal{" "}
-                    </Typography>
-                  </Box>
-                  <Box
-                    alignContent={"center"}
-                    justifyContent="center"
-                    width={"100%"}
-                    height={"100%"}
-                    display="flex"
-                    alignItems="center"
-                    sx={{
-                      backgroundColor:
-                        selected === "departemen" ? "white" : "none",
-                      borderRadius: 10,
-                      cursor: "pointer",
-                      boxShadow:
-                        selected === "departemen"
-                          ? "0px 2px 4px rgba(0, 0, 0, 0.1)"
-                          : "none",
-                      paddingY: 0.8,
-                    }}
-                    onClick={() => {
-                      setSelected("departemen");
-                      setSelectedTopic(false);
-                    }}
-                  >
-                    <Typography
-                      color={selected === "departemen" ? "black" : "#9E9E9E"}
+                      <Typography
+                        color={selected === "personal" ? "black" : "#9E9E9E"}
+                      >
+                        {" "}
+                        Personal{" "}
+                      </Typography>
+                    </Box>
+                    <Box
+                      alignContent={"center"}
+                      justifyContent="center"
+                      width={"100%"}
+                      height={"100%"}
+                      display="flex"
+                      alignItems="center"
+                      sx={{
+                        backgroundColor:
+                          selected === "departemen" ? "white" : "none",
+                        borderRadius: 10,
+                        cursor: "pointer",
+                        boxShadow:
+                          selected === "departemen"
+                            ? "0px 2px 4px rgba(0, 0, 0, 0.1)"
+                            : "none",
+                        paddingY: 0.8,
+                      }}
+                      onClick={() => {
+                        setSelected("departemen");
+                        setSelectedTopic(false);
+                      }}
                     >
-                      {" "}
-                      Departemen{" "}
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Box>
+                      <Typography
+                        color={selected === "departemen" ? "black" : "#9E9E9E"}
+                      >
+                        {" "}
+                        Departemen{" "}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </Box>
+              )}
               <Box width={isSidebarOpen ? 400 : "100%"} paddingTop={1}>
                 {selected === "personal" ? (
                   <PersonalUser
@@ -787,6 +796,8 @@ const Sidebar = ({
                     setHistoryId={setHistoryId}
                     model={model}
                     vectorizer={vectorizer}
+                    isAnalyst={isAnalyst}
+                    setIsAnalyst={setIsAnalyst}
                   />
                 ) : selected === "departemen" ? (
                   role === "user" ? (

@@ -13,6 +13,7 @@ import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
 import Database from "./admin/Database";
 import Table from "./admin/Table";
 import TableDetail from "./admin/TableDetail";
+import ChatBoxanalyst from "./Chatboxanalyst";
 const Layout = () => {
   const logoUrl = "http://192.168.1.65:8001/logo";
 
@@ -49,11 +50,13 @@ const Layout = () => {
 
   const [newChat, setNewChat] = useState(false);
 
+  const sidebarRef = useRef(null);
+
+  const [isAnalyst, setIsAnalyst] = useState(false)
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
-  const sidebarRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -159,6 +162,8 @@ const Layout = () => {
             historyId={historyId}
             setIsHistorys={setIsHistory}
             setNewChat={setNewChat}
+            isAnalyst={isAnalyst}
+            setIsAnalyst={setIsAnalyst}
           />
         </Grid>
 
@@ -260,6 +265,37 @@ const Layout = () => {
                   newChat={newChat}
                   historyId={historyId}
                   setHistoryId={setHistoryId}
+                />
+              }
+            />
+            <Route path="/admin/coofisanalyst"
+              element={
+                <ChatBoxanalyst
+                  role={"Admin"}
+                  id={user?.id}
+                  selected={selected}
+                  responseSummarize={responseSummarize}
+                  setResponseSummarize={setResponseSummarize}
+                  isSummarize={isSummarize}
+                  setIsSummarize={setIsSummarize}
+                  selectedTopic={selectedTopic}
+                  topicName={topicName}
+                  deptID={deptID}
+                  setIsViewPdf={setIsViewPdf}
+                  setPdfSource={setPdfSource}
+                  setType={setType}
+                  model={model}
+                  setModel={setModel}
+                  vectorizer={vectorizer}
+                  setVectorizer={setVectorizer}
+                  toggleSidebar={toggleSidebar}
+                  isViewPdf={isViewPdf}
+                  isHistory={isHistory}
+                  newChat={newChat}
+                  historyId={historyId}
+                  setHistoryId={setHistoryId}
+                  isAnalyst={isAnalyst}
+                  setIsAnalyst={setIsAnalyst}
                 />
               }
             />

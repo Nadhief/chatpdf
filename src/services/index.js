@@ -10,6 +10,16 @@ export const chatPersonal = async (payload) => {
   }
 };
 
+export const chatPersonalAnalyst = async (payload) => {
+  try {
+    const response = await api.post("chat/personal/chat_to_csv_v2", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding department:", error);
+    throw error;
+  }
+};
+
 export const chatDepartemen = async (payload) => {
   try {
     const response = await api.post("chat/department_v2/", payload);
@@ -492,6 +502,17 @@ export const getChatByHistoryId = async (payload) => {
     throw error;
   }
 };
+
+export const getChatDataByHistoryId = async (payload) => {
+  try {
+    const response = await api.post("/chat/load_chat/chatdata", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting chat by history ID:", error);
+    throw error;
+  }
+};
+
 
 export const deleteHisotryById = async (historyId) => {
   try {
