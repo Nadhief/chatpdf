@@ -17,6 +17,7 @@ const MenuAdmin = ({
   isAnalyst,
   setIsAnalyst,
   setHistoryId,
+  setSelected
 }) => {
   const navigate = useNavigate();
 
@@ -163,6 +164,7 @@ const MenuAdmin = ({
           setIsAnalyst(true);
           setHistoryId(null);
           localStorage.removeItem("chat_responses");
+          setSelected('personal')
         }}
       />
     </Stack>

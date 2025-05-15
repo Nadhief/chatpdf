@@ -271,6 +271,7 @@ const Sidebar = ({
             isAnalyst={isAnalyst}
             setIsAnalyst={setIsAnalyst}
             setHistoryId={setHistoryId}
+            setSelected={setSelected}
           />
         ) : role === "admin" ? (
           <MenuAdmin
@@ -282,6 +283,8 @@ const Sidebar = ({
             isAnalyst={isAnalyst}
             setIsAnalyst={setIsAnalyst}
             setHistoryId={setHistoryId}
+            setSelected={setSelected}
+
           />
         ) : null
       ) : (
