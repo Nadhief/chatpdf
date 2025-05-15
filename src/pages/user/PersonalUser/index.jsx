@@ -11,6 +11,7 @@ import {
 import FolderPlusIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import Documents from "../../../components/Sidebar/Documents";
+import Database from "../../../components/Sidebar/Database";
 import GlobalIcon from "@mui/icons-material/Language";
 import AddIcon from "@mui/icons-material/ControlPoint";
 import InputSearchBar from "../../../components/Inputs/InputSearchBar";
@@ -32,6 +33,7 @@ import {
   searchTopic,
   searchFilePersonal,
   personalToGlobal,
+  getDatabasePersonal,
 } from "../../../services";
 import CustomSnackbar from "../../../components/CustomSnackbar";
 import { debounce } from "lodash";
@@ -48,7 +50,9 @@ const PersonalUser = ({
   historyId,
   setHistoryId,
   model,
-  vectorizer
+  vectorizer,
+  isAnalyst,
+  setIsAnalyst,
 }) => {
   const [selected, setSelected] = useState("file");
   const [openPaper, setOpenPaper] = useState(false);
@@ -135,7 +139,7 @@ const PersonalUser = ({
     const newRowsPerPage = parseInt(event.target.value, 10);
     setTopicRowsPerPage(newRowsPerPage);
     setTopicPage(0); // Reset to first page when changing rows per page
-    
+
     if (searchQuery && selected === "topik") {
       searchTopic({
         user_id: String(id),
@@ -158,7 +162,7 @@ const PersonalUser = ({
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0);
-    
+
     if (searchQuery && selected === "file") {
       // If there's an active search, fetch search results with new rows per page
       searchFilePersonal({
@@ -204,7 +208,17 @@ const handleCheckFile = (idx, value) => {
     }
   };
 
-  const selectedFiles = Object.values(checkedItems);
+    const handleSelectDatabase = (idx) => {
+    setSelectedTopicIndex(idx);
+    // If a topic is selected, set the topic name
+    if (databaseList.list_files && databaseList.list_files[idx]) {
+      setTopicName(databaseList.list_files[idx].name);
+    }
+  };
+
+  const selectedFiles = Object.entries(checkedItems)
+    .filter(([idx, isChecked]) => isChecked)
+    .map(([idx]) => personalFiles.list_files[idx]);
 
   const selectedTopic = 
     selectedTopicIndex !== null
@@ -220,11 +234,6 @@ const handleCheckFile = (idx, value) => {
           return [];
         })()
     : [];
-
-  useEffect(() => {
-    fetchDataFile();
-    fetchDataTopics();
-  }, []);
 
   const fetchDataFile = async (pageNum = 1, perPage = 5) => {
     try {
@@ -388,7 +397,7 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
 
   const handleDeleteTopic = () => {
     if (selectedTopic.length === 0) return;
-    
+
     setIsLoading(true);
     setLoadingMessage("Sedang menghapus Topik...");
 
@@ -412,29 +421,29 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
   };
 
   const handleSummarize = async () => {
-    if(historyId) {
-    const payload = {
-      id: String(id),
-      embedding_model: vectorizer,
-      llm_model: model,
-      filename: selectedFiles?.map((file) => file?.name),
-      history_id: String(historyId),
-    };
-    summarizeFilePersonal(payload)
-      .then((res) => {
-        setResponseSummarize(res);
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (historyId) {
+      const payload = {
+        id: String(id),
+        embedding_model: vectorizer,
+        llm_model: model,
+        filename: selectedFiles?.map((file) => file?.name),
+        history_id: String(historyId),
+      };
+      summarizeFilePersonal(payload)
+        .then((res) => {
+          setResponseSummarize(res);
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } else {
       const payload = {
         id: String(id),
         embedding_model: vectorizer,
         llm_model: model,
         filename: selectedFiles?.map((file) => file?.name),
-        history_id: '',
+        history_id: "",
       };
       summarizeFilePersonal(payload)
         .then((res) => {
@@ -453,13 +462,13 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
       debounce((value) => {
         setSearchQuery(value); // Store current search query
         setPage(0); // Reset to first page on new search
-        
+
         if (value.trim() === "") {
           // If search is cleared, reset to regular data fetching
           fetchDataFile(1, rowsPerPage);
           return;
         }
-        
+
         searchFilePersonal({
           user_id: String(id),
           keywords: value,
@@ -482,12 +491,12 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
       debounce((value) => {
         setSearchQuery(value);
         setTopicPage(0); // Reset to first page on new search
-        
+
         if (value.trim() === "") {
           fetchDataTopics(1, topicRowsPerPage);
           return;
         }
-        
+
         searchTopic({
           user_id: String(id),
           keywords: value,
@@ -533,12 +542,12 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
   const handleConvertToGlobal = () => {
     setIsLoading(true);
     setLoadingMessage("Sedang mengubah file menjadi global...");
-    
+
     const payload = {
-      filename: selectedFiles.map(file => file.name),
+      filename: selectedFiles.map((file) => file.name),
       user_id: String(id),
     };
-    
+
     personalToGlobal(payload)
       .then((res) => {
         setOpenConvert(false);
@@ -555,6 +564,29 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
       });
   };
 
+  const [databaseList, setDatabaseList] = useState(null);
+
+  const fetchDatabasePersonal = () => {
+    getDatabasePersonal({
+      user_id: String(id),
+      keyword: "",
+      page: 1,
+      per_page: 10,
+    })
+      .then((res) => {
+        setDatabaseList(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+   useEffect(() => {
+    fetchDataFile();
+    fetchDataTopics();
+    fetchDatabasePersonal();
+  }, [isAnalyst]);
+
   return (
     <Stack
       direction="column"
@@ -562,34 +594,41 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
       height={"100%"}
       width={"100%"}
       alignItems="center"
-      sx={{ 
+      sx={{
         width: {
           xs: 260,
           sm: 260,
           md: 280,
-          lg: 'auto'
+          lg: "auto",
         },
-        margin: '0 auto'
+        margin: "0 auto",
       }}
     >
-      <Box width="100%" textAlign="left">
-        <Typography paddingBottom={3} fontSize={18} fontWeight={700} color="#404040">
-          Unggah Dokumen Personal
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          width: "100%",
-          border: "2px solid #E5E6EF",
-          borderRadius: "4px",
-          backgroundColor: "#FAFBFD",
-          mb: 3
-        }}
-      >
-        <Stack direction="column" padding={1.5} spacing={1}>
-          <Typography fontSize={14} fontWeight={600} color="#404040">
-            Unggah File
-          </Typography>
+      {!isAnalyst && (
+        <>
+          <Box width="100%" textAlign="left">
+            <Typography
+              paddingBottom={3}
+              fontSize={18}
+              fontWeight={700}
+              color="#404040"
+            >
+              Unggah Dokumen Personal
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              width: "100%",
+              border: "2px solid #E5E6EF",
+              borderRadius: "4px",
+              backgroundColor: "#FAFBFD",
+              mb: 3,
+            }}
+          >
+            <Stack direction="column" padding={1.5} spacing={1}>
+              <Typography fontSize={14} fontWeight={600} color="#404040">
+                Unggah File
+              </Typography>
 
           {selectedUploadFiles.length > 0 ? (
             <Stack spacing={0.5}>
@@ -706,147 +745,171 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
             }}
           >
             <Typography fontSize={16} fontWeight={600} color="#404040">
-              File Saya
+              {isAnalyst ? "Database Saya" : "File Saya"}
             </Typography>
           </Box>
           <Stack direction={"column"} padding={1.5} spacing={1}>
-            <InputSearchBar handleSearch={getSearchHandler()} />
-            <Stack direction={"row"} spacing={1} alignItems="center">
-              <Box
-                width={"30%"}
-                display="flex"
-                justifyContent="center"
-                paddingY={0.3}
-                paddingX={0.7}
-                borderRadius={100}
-                border={
-                  selected === "file"
-                    ? "1px solid #EA001E"
-                    : "1px solid #9E9E9E"
-                }
-                onClick={() => {
-                  setSelectedTopic(false);
-                  setSelected("file");
-                  setSelectedTopicIndex(null);
-                  setSearchQuery(""); // Clear search when switching tabs
-                  fetchDataFile();
-                }}
-                sx={{
-                  cursor: selected === "file" ? "default" : "pointer",
-                  backgroundColor: selected === "file" ? "#FAFBFD" : "white",
-                  boxShadow:
-                    selected === "file"
-                      ? "none"
-                      : "0px 4px 8px rgba(0, 0, 0, 0.14)",
-                }}
-              >
-                <Typography
-                  fontSize={12}
-                  fontWeight={400}
-                  color={selected === "file" ? "#EA001E" : "black"}
-                >
-                  File
-                </Typography>
-              </Box>
-              <Box
-                width={"30%"}
-                display="flex"
-                justifyContent="center"
-                paddingY={0.3}
-                paddingX={0.7}
-                borderRadius={100}
-                border={
-                  selected === "topik"
-                    ? "1px solid #EA001E"
-                    : "1px solid #9E9E9E"
-                }
-                onClick={() => {
-                  setSelectedUploadFiles([]);
-                  setCheckedItems({});
-                  setSelectedTopic(true);
-                  setSelected("topik");
-                  setSearchQuery(""); // Clear search when switching tabs
-                  fetchDataTopics();
-                }}
-                sx={{
-                  cursor: selected === "topik" ? "default" : "pointer",
-                  backgroundColor: selected === "topik" ? "#FAFBFD" : "white",
-                  boxShadow:
-                    selected === "topik"
-                      ? "none"
-                      : "0px 4px 8px rgba(0, 0, 0, 0.14)",
-                }}
-              >
-                <Typography
-                  fontSize={12}
-                  fontWeight={400}
-                  color={selected === "topik" ? "#EA001E" : "black"}
-                >
-                  Topik
-                </Typography>
-              </Box>
-              <Box
-                display="flex"
-                justifyContent="flex-end"
-                width="100%"
-                color="white"
-                gap={1}
-              > 
-                {selected === "file" ?
+            {!isAnalyst && (
+              <>
+                <InputSearchBar handleSearch={getSearchHandler()} />
+                <Stack direction={"row"} spacing={1} alignItems="center">
                   <Box
+                    width={"30%"}
                     display="flex"
                     justifyContent="center"
-                    alignItems="center"
-                    color="white"
-                    paddingY={0.7}
-                    paddingX={2}
-                    borderRadius={2}
-                    gap={0.7}
-                    sx={{
-                      cursor: "pointer",
-                      backgroundColor: "#474D66",
-                    }}
+                    paddingY={0.3}
+                    paddingX={0.7}
+                    borderRadius={100}
+                    border={
+                      selected === "file"
+                        ? "1px solid #EA001E"
+                        : "1px solid #9E9E9E"
+                    }
                     onClick={() => {
-                      if (selectedFiles.length > 0) {
-                        setOpenConvert(true);
-                      } else {
-                        alert("Pilih file terlebih dahulu!");
-                      }
+                      setSelectedTopic(false);
+                      setSelected("file");
+                      setSelectedTopicIndex(null);
+                      setSearchQuery(""); // Clear search when switching tabs
+                      fetchDataFile();
+                    }}
+                    sx={{
+                      cursor: selected === "file" ? "default" : "pointer",
+                      backgroundColor:
+                        selected === "file" ? "#FAFBFD" : "white",
+                      boxShadow:
+                        selected === "file"
+                          ? "none"
+                          : "0px 4px 8px rgba(0, 0, 0, 0.14)",
                     }}
                   >
-                    <GlobalIcon sx={{ color: "white", fontSize: 16 }} />
-                    <Typography fontSize={12}> Global </Typography>
+                    <Typography
+                      fontSize={12}
+                      fontWeight={400}
+                      color={selected === "file" ? "#EA001E" : "black"}
+                    >
+                      File
+                    </Typography>
                   </Box>
-                : null}
-                
-                <Box
-                  display="flex"
-                  justifyContent="flex-end"
-                  color="white"
-                  paddingY={0.7}
-                  paddingX={0.7}
-                  borderRadius={2}
-                  sx={{
-                    cursor: "pointer",
-                    backgroundColor: "#CB3A31",
-                  }}
-                  onClick={() => {
-                    if ((selected === "file" && selectedFiles.length > 0) || 
-                        (selected === "topik" && selectedTopicIndex !== null)) {
-                      setOpenTrash(true);
-                    } else {
-                      alert(selected === "file" ? 
-                        "Pilih file terlebih dahulu!" : 
-                        "Pilih topik terlebih dahulu!");
+                  <Box
+                    width={"30%"}
+                    display="flex"
+                    justifyContent="center"
+                    paddingY={0.3}
+                    paddingX={0.7}
+                    borderRadius={100}
+                    border={
+                      selected === "topik"
+                        ? "1px solid #EA001E"
+                        : "1px solid #9E9E9E"
                     }
-                  }}
-                >
-                  <TrashIcon sx={{ color: "white", fontSize: 20 }} />
-                </Box>
-              </Box>
-            </Stack>
+                    onClick={() => {
+                      setSelectedUploadFiles([]);
+                      setCheckedItems({});
+                      setSelectedTopic(true);
+                      setSelected("topik");
+                      setSearchQuery(""); // Clear search when switching tabs
+                      fetchDataTopics();
+                    }}
+                    sx={{
+                      cursor: selected === "topik" ? "default" : "pointer",
+                      backgroundColor:
+                        selected === "topik" ? "#FAFBFD" : "white",
+                      boxShadow:
+                        selected === "topik"
+                          ? "none"
+                          : "0px 4px 8px rgba(0, 0, 0, 0.14)",
+                    }}
+                  >
+                    <Typography
+                      fontSize={12}
+                      fontWeight={400}
+                      color={selected === "topik" ? "#EA001E" : "black"}
+                    >
+                      Topik
+                    </Typography>
+                  </Box>
+                  <Box
+                    display="flex"
+                    justifyContent="flex-end"
+                    width="100%"
+                    color="white"
+                    gap={1}
+                  >
+                    {selected === "file" ? (
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        color="white"
+                        paddingY={0.7}
+                        paddingX={2}
+                        borderRadius={2}
+                        gap={0.7}
+                        sx={{
+                          cursor: "pointer",
+                          backgroundColor: "#474D66",
+                        }}
+                        onClick={() => {
+                          if (selectedFiles.length > 0) {
+                            setOpenConvert(true);
+                          } else {
+                            alert("Pilih file terlebih dahulu!");
+                          }
+                        }}
+                      >
+                        <GlobalIcon sx={{ color: "white", fontSize: 16 }} />
+                        <Typography fontSize={12}> Global </Typography>
+                      </Box>
+                    ) : null}
+
+                    <Box
+                      display="flex"
+                      justifyContent="flex-end"
+                      color="white"
+                      paddingY={0.7}
+                      paddingX={0.7}
+                      borderRadius={2}
+                      sx={{
+                        cursor: "pointer",
+                        backgroundColor: "#CB3A31",
+                      }}
+                      onClick={() => {
+                        if (
+                          (selected === "file" && selectedFiles.length > 0) ||
+                          (selected === "topik" && selectedTopicIndex !== null)
+                        ) {
+                          setOpenTrash(true);
+                        } else {
+                          alert(
+                            selected === "file"
+                              ? "Pilih file terlebih dahulu!"
+                              : "Pilih topik terlebih dahulu!"
+                          );
+                        }
+                      }}
+                    >
+                      <TrashIcon sx={{ color: "white", fontSize: 20 }} />
+                    </Box>
+                  </Box>
+                </Stack>
+              </>
+            )}
             <Stack direction={"column"} spacing={1}>
-              {/*MAPPING FILE PDF*/}
+              {isAnalyst ? (
+                <>
+                  {databaseList?.list_files?.map((item, idx) => (
+                    <Database
+                      key={idx}
+                      label={item.name}
+                      status={item.status_table}
+                      selected={selectedTopicIndex === idx}
+                      onSelect={() => handleSelectDatabase(idx)}
+                    />
+                  ))}
+                </>
+              ) : (
+                <>
+                  {/*MAPPING FILE PDF*/}
               {selected === "file"
                 ? personalFiles?.list_files?.map((item, idx) => {
                     const globalIdx = page * rowsPerPage + idx;
@@ -874,82 +937,90 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
                       );
                     })
                   : null}
+                </>
+              )}
             </Stack>
           </Stack>
         </Stack>
       </Box>
-      
-      {selected === "file" && (
-        <TablePagination
-          component="div"
-          count={personalFiles?.total_files || 0}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10]}
-          labelRowsPerPage="Rows:"
-          sx={{ 
-            '.MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon': {
-              fontSize: '12px',
-            },
-            '.MuiTablePagination-displayedRows': {
-              fontSize: '12px',
-            }
-          }}
-        />
-      )}
 
-      {selected === "topik" && (
-        <TablePagination
-          component="div"
-          count={personalTopics?.total_files || 0} // Use total_files for pagination count
-          page={topicPage}
-          onPageChange={handleTopicChangePage}
-          rowsPerPage={topicRowsPerPage}
-          onRowsPerPageChange={handleTopicChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10]}
-          labelRowsPerPage="Rows:"
-          sx={{ 
-            '.MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon': {
-              fontSize: '12px',
-            },
-            '.MuiTablePagination-displayedRows': {
-              fontSize: '12px',
-            }
-          }}
-        />
-      )}
-            
-      <Stack
-        width={"100%"}
-        direction={"row"}
-        spacing={1}
-        justifyContent={"flex-end"}
-        alignItems={"flex-end"}
-      >
-        {selected === "file" && selectedFiles.length > 0 && (
-          <Box
-            display="flex"
-            justifyContent="flex-end"
-            color="black"
-            paddingY={0.5}
-            paddingX={1}
-            borderRadius={1}
-            alignItems={"center"}
-            border={"1px solid #E0E0E0"}
-            sx={{
-              cursor: "pointer",
-              backgroundColor: "white",
-            }}
-            onClick={() => setOpenPaper(true)}
+      {!isAnalyst && (
+        <>
+          {selected === "file" && (
+            <TablePagination
+              component="div"
+              count={personalFiles?.total_files || 0}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPageOptions={[5, 10]}
+              labelRowsPerPage="Rows:"
+              sx={{
+                ".MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon":
+                  {
+                    fontSize: "12px",
+                  },
+                ".MuiTablePagination-displayedRows": {
+                  fontSize: "12px",
+                },
+              }}
+            />
+          )}
+
+          {selected === "topik" && (
+            <TablePagination
+              component="div"
+              count={personalTopics?.total_files || 0} // Use total_files for pagination count
+              page={topicPage}
+              onPageChange={handleTopicChangePage}
+              rowsPerPage={topicRowsPerPage}
+              onRowsPerPageChange={handleTopicChangeRowsPerPage}
+              rowsPerPageOptions={[5, 10]}
+              labelRowsPerPage="Rows:"
+              sx={{
+                ".MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon":
+                  {
+                    fontSize: "12px",
+                  },
+                ".MuiTablePagination-displayedRows": {
+                  fontSize: "12px",
+                },
+              }}
+            />
+          )}
+
+          <Stack
+            width={"100%"}
+            direction={"row"}
+            spacing={1}
+            justifyContent={"flex-end"}
+            alignItems={"flex-end"}
           >
-            <AddIcon sx={{ color: "black", marginRight: 1, fontSize: 18 }} />
-            <Typography fontSize={12} fontWeight={400}>
-              Topik
-            </Typography>
-          </Box>
-        )}
+            {selected === "file" && selectedFiles.length > 0 && (
+              <Box
+                display="flex"
+                justifyContent="flex-end"
+                color="black"
+                paddingY={0.5}
+                paddingX={1}
+                borderRadius={1}
+                alignItems={"center"}
+                border={"1px solid #E0E0E0"}
+                sx={{
+                  cursor: "pointer",
+                  backgroundColor: "white",
+                }}
+                onClick={() => setOpenPaper(true)}
+              >
+                <AddIcon
+                  sx={{ color: "black", marginRight: 1, fontSize: 18 }}
+                />
+                <Typography fontSize={12} fontWeight={400}>
+                  Topik
+                </Typography>
+              </Box>
+            )}
 
         {selectedTopicc === false && selected === "file" && selectedFiles.length > 0 && selectedFiles.every(file => {
             const extension = file.name.split('.').pop().toLowerCase();

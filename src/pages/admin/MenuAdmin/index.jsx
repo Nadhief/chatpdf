@@ -14,6 +14,8 @@ const MenuAdmin = ({
   setSettingPage,
   setIsMenu,
   setIsSidebarOpen,
+  isAnalyst,
+  setIsAnalyst
 }) => {
   const navigate = useNavigate();
 
@@ -107,7 +109,7 @@ const MenuAdmin = ({
         }}
       />
 
-      <MenuItem
+      {/* <MenuItem
         label="Database"
         icon={StorageIcon}
         selected={itemSelected === "database"}
@@ -117,7 +119,7 @@ const MenuAdmin = ({
           setIsSidebarOpen(false);
           navigate("/admin/coofisai/database");
         }}
-      />
+      /> */}
 
       <MenuItem
         label="Pengaturan"
@@ -132,7 +134,7 @@ const MenuAdmin = ({
       />
 
       <MenuItem
-        label="Ask Chatalize AI"
+        label="Ask Chatalize AI Doc Assistant"
         icon={ChatIcon}
         selected={false}
         onClick={() => {
@@ -141,21 +143,23 @@ const MenuAdmin = ({
           localStorage.setItem("itemSelected", "dokumen");
           navigate("/admin/coofisai");
           localStorage.setItem("isMenu", "false");
+          setIsAnalyst(false)
         }}
       />
 
-      {/* <MenuItem
-        label="Ask Chatalize AI CSV"
+      <MenuItem
+        label="Ask Chatalize AI Data Analyst"
         icon={ChatIcon}
         selected={false}
         onClick={() => {
           setSettingPage(false);
           setItemSelected("dokumen");
           localStorage.setItem("itemSelected", "dokumen");
-          navigate("/admin/coofisai");
+          navigate("/admin/coofisanalyst");
           localStorage.setItem("isMenu", "false");
+          setIsAnalyst(true)
         }}
-      /> */}
+      />
     </Stack>
   );
 };
