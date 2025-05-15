@@ -30,9 +30,11 @@ import DepartemenAdmin from "../../pages/admin/DepartemenAdmin";
 import { useNavigate } from "react-router-dom";
 import {
   deleteHisotryById,
+  deleteHistoryAnalystById,
   getChatByHistoryId,
   getDepartmentName,
   getHistory,
+  getHistoryAnalyst,
 } from "../../services";
 import { set } from "lodash";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -80,6 +82,7 @@ const Sidebar = ({
   const [checkedItems, setCheckedItems] = useState({});
 
   const [history, setHistory] = useState([]);
+  const [historyAnalysts, setHistoryAnalyst] = useState([]);
 
   const navigate = useNavigate();
 
@@ -125,6 +128,14 @@ const Sidebar = ({
         setHistory([]);
         console.error("Gagal memuat history:", error);
       });
+    getHistoryAnalyst({ user_id: id })
+      .then((res) => {
+        setHistoryAnalyst(res);
+      })
+      .catch((error) => {
+        setHistoryAnalyst([]);
+        console.error("Gagal memuat history:", error);
+      });
   }, [dept_id]);
 
   const handleCheckFile = (idx, value) => {
@@ -153,6 +164,8 @@ const Sidebar = ({
     setAnchorEl(null);
     setMenuItem(null);
   };
+
+  console.log(historyId, isAnalyst)
 
   return (
     <Stack
@@ -500,8 +513,8 @@ const Sidebar = ({
                 justifyContent={"flex-start"}
                 sx={{ pl: 2 }}
               >
-                {history && history.length > 0 ? (
-                  history.map((item) => (
+                {(isAnalyst ? historyAnalysts : history) && (isAnalyst ? historyAnalysts : history).length > 0 ? (
+                  (isAnalyst ? historyAnalysts : history).map((item) => (
                     <Fragment key={item.id}>
                       <Box
                         display="flex"
@@ -561,13 +574,15 @@ const Sidebar = ({
                         <MenuItem
                           onClick={() => {
                             handleMenuClose();
-                            deleteHisotryById(historyId)
-                              .then(() => getHistory({ user_id: id }))
+                            (isAnalyst ? deleteHistoryAnalystById(historyId) : deleteHisotryById(historyId))
+                              .then(() => (isAnalyst ? getHistoryAnalyst({ user_id: id }) : getHistory({ user_id: id })))
                               .then((res) => {
                                 setHistory(res);
+                                setHistoryAnalyst(res);
                               })
                               .catch((error) => {
                                 setHistory([]);
+                                setHistoryAnalyst([]);
                                 console.error(
                                   "Gagal memuat atau menghapus history:",
                                   error

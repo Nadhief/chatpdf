@@ -581,7 +581,7 @@ const ChatBox = ({
                     )}
 
                     {/* response source */}
-                    {res.source.length > 0 && (
+                    {res?.source?.length > 0 && (
                       <>
                         <Box
                           sx={{

@@ -496,6 +496,20 @@ export const getHistory = async ({ user_id }) => {
   }
 };
 
+export const getHistoryAnalyst = async ({ user_id }) => {
+  try {
+    const response = await api.get("/chat/history_user/chatdata", {
+      params: {
+        user_id,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting history:", error);
+    throw error;
+  }
+};
+
 export const getChatByHistoryId = async (payload) => {
   try {
     const response = await api.post("/chat/load_chat/chatdocs", payload);
@@ -520,6 +534,18 @@ export const getChatDataByHistoryId = async (payload) => {
 export const deleteHisotryById = async (historyId) => {
   try {
     const response = await api.delete("/chat/history/remove/chatdocs", {
+      params: { history_id: historyId },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting history by ID:", error);
+    throw error;
+  }
+};
+
+export const deleteHistoryAnalystById = async (historyId) => {
+  try {
+    const response = await api.delete("/chat/history/remove/chatdata", {
       params: { history_id: historyId },
     });
     return response.data;
