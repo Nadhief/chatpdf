@@ -145,15 +145,14 @@ const PdfViewer = ({ id, source, type, setIsViewPdf, selected, dept_id }) => {
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d");
 
-        // Clear previous rendering
-        context.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Create viewport with current scale
-        const viewport = currentPage.getViewport({ scale });
-
-        // Update canvas dimensions to match the viewport
+        const viewport = currentPage.getViewport({ scale, rotation: 0 });
         canvas.height = viewport.height;
         canvas.width = viewport.width;
+
+        // Flip canvas vertically
+        // Balikin ke posisi normal
+        context.setTransform(1, 0, 0, 1, 0, 0);  
+
 
         const renderContext = {
           canvasContext: context,

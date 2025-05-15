@@ -27,6 +27,7 @@ import MenuOperator from "../../pages/operator/MenuOperator";
 import MenuAdmin from "../../pages/admin/MenuAdmin";
 import PersonalAdmin from "../../pages/admin/PersonalAdmin";
 import DepartemenAdmin from "../../pages/admin/DepartemenAdmin";
+import ChatIcon from "@mui/icons-material/ChatOutlined";
 import { useNavigate } from "react-router-dom";
 import {
   deleteHisotryById,
@@ -243,7 +244,14 @@ const Sidebar = ({
             onClick={() => {
               localStorage.removeItem("chat_responses");
               localStorage.setItem("isMenu", "false");
-              setIsAnalyst(false)
+              localStorage.setItem("isHistory", "false");
+              localStorage.setItem("isHistorys", "false");
+              localStorage.setItem("isMenu", "false");
+              localStorage.setItem("isMenu", "false");
+              localStorage.setItem("isAnalyst", "false");
+              setIsAnalyst(false);
+              setHistoryId(null);
+              setNewChat(false)
               handleLogout();
             }}
           >
@@ -260,6 +268,9 @@ const Sidebar = ({
             setSettingPage={setSettingPage}
             setIsMenu={setIsMenu}
             setIsSidebarOpen={setIsSidebarOpen}
+            isAnalyst={isAnalyst}
+            setIsAnalyst={setIsAnalyst}
+            setHistoryId={setHistoryId}
           />
         ) : role === "admin" ? (
           <MenuAdmin
@@ -512,7 +523,8 @@ const Sidebar = ({
                 justifyContent={"flex-start"}
                 sx={{ pl: 2 }}
               >
-                {(isAnalyst ? historyAnalysts : history) && (isAnalyst ? historyAnalysts : history).length > 0 ? (
+                {(isAnalyst ? historyAnalysts : history) &&
+                (isAnalyst ? historyAnalysts : history).length > 0 ? (
                   (isAnalyst ? historyAnalysts : history).map((item) => (
                     <Fragment key={item.id}>
                       <Box
@@ -573,8 +585,15 @@ const Sidebar = ({
                         <MenuItem
                           onClick={() => {
                             handleMenuClose();
-                            (isAnalyst ? deleteHistoryAnalystById(historyId) : deleteHisotryById(historyId))
-                              .then(() => (isAnalyst ? getHistoryAnalyst({ user_id: id }) : getHistory({ user_id: id })))
+                            (isAnalyst
+                              ? deleteHistoryAnalystById(historyId)
+                              : deleteHisotryById(historyId)
+                            )
+                              .then(() =>
+                                isAnalyst
+                                  ? getHistoryAnalyst({ user_id: id })
+                                  : getHistory({ user_id: id })
+                              )
                               .then((res) => {
                                 setHistory(res);
                                 setHistoryAnalyst(res);
@@ -632,7 +651,7 @@ const Sidebar = ({
                   onClick={() => {
                     setNewChat(true);
                     setHistoryId(null);
-                    console.log('oke')
+                    localStorage.setItem("chat_responses",null);
                   }}
                 >
                   <NewChatIcon className="hover-color" sx={{ fontSize: 20 }} />
@@ -669,8 +688,11 @@ const Sidebar = ({
                   onClick={() => {
                     setIsHistory(true);
                     localStorage.setItem("isHistory", "true");
-                    
-                    (isAnalyst ? getHistoryAnalyst({user_id : id }) : getHistory({ user_id: id }))
+
+                    (isAnalyst
+                      ? getHistoryAnalyst({ user_id: id })
+                      : getHistory({ user_id: id })
+                    )
                       .then((res) => {
                         setHistory(res);
                         setHistoryAnalyst(res);
@@ -680,7 +702,6 @@ const Sidebar = ({
                         setHistoryAnalyst([]);
                         console.error("Gagal memuat history:", error);
                       });
-                      
                   }}
                 >
                   <HistoryIcon className="hover-color" sx={{ fontSize: 20 }} />
@@ -694,6 +715,94 @@ const Sidebar = ({
                   </Typography>
                 </Stack>
               </Box>
+              {role === "user" && (
+                <>
+                  <Box width={"100%"} paddingRight={3} paddingLeft={1}>
+                    <Stack
+                      paddingY={0.8}
+                      borderRadius={2}
+                      direction={"row"}
+                      spacing={1}
+                      alignItems={"center"}
+                      justifyContent={"flex-start"}
+                      width={"100%"}
+                      paddingLeft={2}
+                      sx={{
+                        cursor: "pointer",
+                        transition: "background-color 0.3s",
+                        "&:hover": {
+                          backgroundColor: "#f5f5f5",
+                        },
+                        "&:hover .hover-color": {
+                          color: "#EA001E",
+                        },
+                      }}
+                      onClick={() => {
+                        setSettingPage(false);
+                        setItemSelected("dokumen");
+                        localStorage.setItem("itemSelected", "dokumen");
+                        navigate("/coofisai");
+                        localStorage.setItem("isMenu", "false");
+                        setIsAnalyst(false);
+                        setHistoryId(null);
+                        localStorage.removeItem("chat_responses");
+                      }}
+                    >
+                      <ChatIcon className="hover-color" sx={{ fontSize: 20 }} />
+                      <Typography
+                        className="hover-color"
+                        fontSize={20}
+                        fontWeight={400}
+                        color="#404040"
+                      >
+                        Ask Chatalize AI Doc Assistant
+                      </Typography>
+                    </Stack>
+                  </Box>
+                  <Box width={"100%"} paddingRight={3} paddingLeft={1}>
+                    <Stack
+                      paddingY={0.8}
+                      borderRadius={2}
+                      direction={"row"}
+                      spacing={1}
+                      alignItems={"center"}
+                      justifyContent={"flex-start"}
+                      width={"100%"}
+                      paddingLeft={2}
+                      sx={{
+                        cursor: "pointer",
+                        transition: "background-color 0.3s",
+                        "&:hover": {
+                          backgroundColor: "#f5f5f5",
+                        },
+                        "&:hover .hover-color": {
+                          color: "#EA001E",
+                        },
+                      }}
+                      onClick={() => {
+                        setSettingPage(false);
+                        setItemSelected("dokumen");
+                        localStorage.setItem("itemSelected", "dokumen");
+                        navigate("/coofisanalyst");
+                        localStorage.setItem("isMenu", "false");
+                        setIsAnalyst(true);
+                        setHistoryId(null);
+                        localStorage.removeItem("chat_responses");
+                      }}
+                    >
+                      <ChatIcon className="hover-color" sx={{ fontSize: 20 }} />
+                      <Typography
+                        className="hover-color"
+                        fontSize={20}
+                        fontWeight={400}
+                        color="#404040"
+                      >
+                        Ask Chatalize AI Data Analyst
+                      </Typography>
+                    </Stack>
+                  </Box>
+                </>
+              )}
               {/* <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                 <Stack
                   paddingY={0.8}

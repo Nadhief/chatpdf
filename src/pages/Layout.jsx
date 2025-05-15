@@ -58,6 +58,8 @@ const Layout = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  console.log(newChat)
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (isSidebarOpen && window.innerWidth < 1200) {
@@ -204,6 +206,37 @@ const Layout = () => {
                 />
               }
             />
+            <Route path="/coofisanalyst"
+              element={
+                <ChatBoxanalyst
+                  role={"User"}
+                  id={user?.id}
+                  selected={selected}
+                  responseSummarize={responseSummarize}
+                  setResponseSummarize={setResponseSummarize}
+                  isSummarize={isSummarize}
+                  setIsSummarize={setIsSummarize}
+                  selectedTopic={selectedTopic}
+                  topicName={topicName}
+                  deptID={deptID}
+                  setIsViewPdf={setIsViewPdf}
+                  setPdfSource={setPdfSource}
+                  setType={setType}
+                  model={model}
+                  setModel={setModel}
+                  vectorizer={vectorizer}
+                  setVectorizer={setVectorizer}
+                  toggleSidebar={toggleSidebar}
+                  isViewPdf={isViewPdf}
+                  isHistory={isHistory}
+                  newChat={newChat}
+                  historyId={historyId}
+                  setHistoryId={setHistoryId}
+                  isAnalyst={isAnalyst}
+                  setIsAnalyst={setIsAnalyst}
+                />
+              }
+            />
           </Routes>
 
           {/* route operator */}
@@ -235,6 +268,38 @@ const Layout = () => {
                   newChat={newChat}
                   historyId={historyId}
                   setHistoryId={setHistoryId}
+                />
+              }
+            />
+            <Route 
+              path="/operator/coofisanalyst"
+              element={
+                <ChatBoxanalyst
+                  role={"Operator"}
+                  id={user?.id}
+                  selected={selected}
+                  responseSummarize={responseSummarize}
+                  setResponseSummarize={setResponseSummarize}
+                  isSummarize={isSummarize}
+                  setIsSummarize={setIsSummarize}
+                  selectedTopic={selectedTopic}
+                  topicName={topicName}
+                  deptID={deptID}
+                  setIsViewPdf={setIsViewPdf}
+                  setPdfSource={setPdfSource}
+                  setType={setType}
+                  model={model}
+                  setModel={setModel}
+                  vectorizer={vectorizer}
+                  setVectorizer={setVectorizer}
+                  toggleSidebar={toggleSidebar}
+                  isViewPdf={isViewPdf}
+                  isHistory={isHistory}
+                  newChat={newChat}
+                  historyId={historyId}
+                  setHistoryId={setHistoryId}
+                  isAnalyst={isAnalyst}
+                  setIsAnalyst={setIsAnalyst}
                 />
               }
             />

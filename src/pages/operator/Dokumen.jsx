@@ -1153,7 +1153,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
                     {mainSelect === "Personal" && selected === "file" && (
                       <TablePagination
                         component="div"
-                        count={personalFiles.total_files || 0}
+                        count={personalFiles?.total_files || 0}
                         page={personalPage}
                         onPageChange={handlePersonalChangePage}
                         rowsPerPage={personalRowsPerPage}
@@ -1173,7 +1173,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
                     {mainSelect === "Personal" && selected === "topik" && (
                       <TablePagination
                         component="div"
-                        count={personalTopics.total_files || 0}
+                        count={personalTopics?.total_files || 0}
                         page={topicPage}
                         onPageChange={handleTopicChangePage}
                         rowsPerPage={topicRowsPerPage}
@@ -1193,7 +1193,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
                     {mainSelect === "Departemen" && (
                       <TablePagination
                         component="div"
-                        count={departmentFile.total_files || 0}
+                        count={departmentFile?.total_files || 0}
                         page={page}
                         onPageChange={handleDeptChangePage}
                         rowsPerPage={rowsPerPage}
@@ -1213,7 +1213,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
                     {mainSelect === "Global" && (
                       <TablePagination
                         component="div"
-                        count={globalFiles.total_files || 0}
+                        count={globalFiles?.total_files || 0}
                         page={globalPage}
                         onPageChange={handleGlobalChangePage}
                         rowsPerPage={globalRowsPerPage}

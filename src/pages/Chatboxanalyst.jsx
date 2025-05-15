@@ -486,7 +486,7 @@ const ChatBoxanalyst = ({
             Halo, {role}!
           </Typography>
           <Typography variant="h2" sx={{ my: 2 }}>
-            How may I help you? analyst
+            How may I help you?
           </Typography>
           <Grid sx={{ color: "#757575" }}>
             <Typography variant="subtitle1">
