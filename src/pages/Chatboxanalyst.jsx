@@ -410,6 +410,7 @@ const ChatBoxanalyst = ({
 
   useEffect(() => {
     if (newChat) {
+      console.log("awikawok")
       setResponses([]);
       setIsSummarize(false);
       setResponseSummarize(null);
@@ -446,7 +447,6 @@ const ChatBoxanalyst = ({
         });
     }
   }, [historyId]);
-  console.log(historyId)
   return (
     <Stack
       sx={{

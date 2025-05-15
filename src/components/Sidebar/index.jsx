@@ -165,8 +165,6 @@ const Sidebar = ({
     setMenuItem(null);
   };
 
-  console.log(historyId, isAnalyst)
-
   return (
     <Stack
       direction="column"
@@ -671,14 +669,18 @@ const Sidebar = ({
                   onClick={() => {
                     setIsHistory(true);
                     localStorage.setItem("isHistory", "true");
-                    getHistory({ user_id: id })
+                    
+                    (isAnalyst ? getHistoryAnalyst({user_id : id }) : getHistory({ user_id: id }))
                       .then((res) => {
                         setHistory(res);
+                        setHistoryAnalyst(res);
                       })
                       .catch((error) => {
                         setHistory([]);
+                        setHistoryAnalyst([]);
                         console.error("Gagal memuat history:", error);
                       });
+                      
                   }}
                 >
                   <HistoryIcon className="hover-color" sx={{ fontSize: 20 }} />

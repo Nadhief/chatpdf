@@ -382,8 +382,6 @@ const ChatBox = ({
         });
     }
   }, [historyId]);
-  // console.log("responses", responses);
-
   return (
     <Stack
       sx={{
