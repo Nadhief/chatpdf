@@ -229,6 +229,7 @@ const Sidebar = ({
             sx={{ backgroundColor: "#BF2600" }}
             onClick={() => {
               localStorage.removeItem("chat_responses");
+              localStorage.setItem("isMenu", "false");
               handleLogout();
             }}
           >

@@ -882,7 +882,7 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
       {selected === "file" && (
         <TablePagination
           component="div"
-          count={personalFiles.total_files || 0}
+          count={personalFiles?.total_files || 0}
           page={page}
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
@@ -903,7 +903,7 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
       {selected === "topik" && (
         <TablePagination
           component="div"
-          count={personalTopics.total_files || 0} // Use total_files for pagination count
+          count={personalTopics?.total_files || 0} // Use total_files for pagination count
           page={topicPage}
           onPageChange={handleTopicChangePage}
           rowsPerPage={topicRowsPerPage}

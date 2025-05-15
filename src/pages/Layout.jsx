@@ -286,11 +286,11 @@ const Layout = () => {
               element={<Database id={user?.id} toggleSidebar={toggleSidebar} />}
             />
             <Route
-              path="/admin/coofisai/database/:id"
+              path="/admin/coofisai/database/:name"
               element={<Table id={user?.id} toggleSidebar={toggleSidebar} />}
             />
             <Route
-              path="/admin/coofisai/database/:id/:table_id"
+              path="/admin/coofisai/database/:name/:nameTable"
               element={
                 <TableDetail id={user?.id} toggleSidebar={toggleSidebar} />
               }

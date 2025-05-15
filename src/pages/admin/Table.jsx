@@ -12,7 +12,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import UploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -27,6 +27,13 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+  addColumnPersonal,
+  addTablePersonal,
+  deleteTablePersonal,
+  getTablePersonal,
+} from "../../services";
+import DeleteDatabase from "../../components/Dialog/DeleteDatabase";
 
 const DummyData = [
   { id: 1, name: "Nama Table", isDetail: true },
@@ -35,19 +42,23 @@ const DummyData = [
   { id: 4, name: "Nama Table", isDetail: false },
 ];
 
-const Table = () => {
+const Table = ({ id, toggleSidebar }) => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { name } = useParams();
   const [openDialogAddTable, setOpenDialogAddTable] = useState(false);
   const [openDialogAddColumn, setOpenDialogAddColumn] = useState(false);
   const [tableName, setTableName] = useState("");
-  const [columnName, setColumnName] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const dataTypes = ["String", "Number", "Boolean", "Date"];
-  const [columns, setColumns] = useState([{ name: "", type: "" }]);
+  const [columns, setColumns] = useState([{ field_name: "", field_type: "" }]);
+  const [tableList, setTableList] = useState(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedTableDelete, setSelectedTableDelete] = useState([]);
+  const [showEntry, setShowEntry] = useState(10);
+  const [keyword, setKeyword] = useState("");
 
   const handleAddRow = () => {
-    setColumns([...columns, { name: "", type: "" }]);
+    setColumns([...columns, { field_name: "", field_type: "" }]);
   };
 
   const handleChange = (index, key, value) => {
@@ -57,9 +68,91 @@ const Table = () => {
   };
 
   const handleSubmit = (type) => {
-    console.log(type);
-    console.log(columns);
+    if (type === "table") {
+      const payload = {
+        id: String(id),
+        db_name: String(name),
+        table_name: tableName,
+      };
+      addTablePersonal(payload)
+        .then((res) => {
+          console.log(res);
+          setOpenDialogAddTable(false);
+          setTableName("");
+          fetchTablePersonal();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      console.log(payload);
+    } else if (type === "column") {
+      const payload = {
+        id: String(id),
+        db_name: name,
+        table_name: selectedItem?.name,
+        fields: columns,
+      };
+      addColumnPersonal(payload).then((res) => {
+        console.log(res);
+        setOpenDialogAddColumn(false);
+        setColumns([]);
+        fetchTablePersonal();
+      });
+    }
   };
+
+  const fetchTablePersonal = () => {
+    getTablePersonal({
+      id: String(id),
+      db_name: name,
+      keyword: keyword,
+      page: 1,
+      per_page: showEntry,
+    })
+      .then((res) => {
+        console.log(res);
+        setTableList(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleCheckboxChange = (item) => {
+    setSelectedTableDelete((prev) => {
+      const exists = prev.find((i) => i.name === item.name);
+      if (exists) {
+        return prev.filter((i) => i.name !== item.name);
+      } else {
+        return [...prev, item];
+      }
+    });
+  };
+
+  const handleDeleteConfirmed = () => {
+    const payload = {
+      id: String(id),
+      db_name: name,
+      table_name: selectedTableDelete.map((item) => item.name),
+    };
+    console.log(payload);
+
+    deleteTablePersonal(payload)
+      .then((res) => {
+        console.log(res);
+        setOpenDeleteDialog(false);
+        setSelectedTableDelete([]);
+        fetchTablePersonal();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  useEffect(() => {
+    fetchTablePersonal();
+  }, [showEntry, keyword]);
+
   return (
     <Stack
       sx={{
@@ -112,6 +205,9 @@ const Table = () => {
               backgroundColor: "#e53935",
               "&:hover": { backgroundColor: "#d32f2f" },
             }}
+            onClick={() => {
+              setOpenDeleteDialog(true);
+            }}
           >
             <DeleteIcon />
           </Button>
@@ -122,8 +218,8 @@ const Table = () => {
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography fontWeight="bold">Tampilkan</Typography>
             <Select
-              value={10}
-              onChange={() => {}}
+              value={showEntry}
+              onChange={(e) => setShowEntry(e.target.value)}
               size="small"
               sx={{
                 borderRadius: 3,
@@ -134,6 +230,7 @@ const Table = () => {
               <MenuItem value={5}>5</MenuItem>
               <MenuItem value={10}>10</MenuItem>
               <MenuItem value={25}>25</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
             </Select>
           </Box>
 
@@ -154,6 +251,8 @@ const Table = () => {
               sx={{ flex: 1 }}
               placeholder="Search....."
               inputProps={{ "aria-label": "search" }}
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
             />
             <IconButton type="submit" sx={{ p: 0.5 }} aria-label="search">
               <SearchIcon />
@@ -163,9 +262,9 @@ const Table = () => {
         <Box sx={{ border: "1px solid #ccc", borderRadius: 2, mt: 2, p: 2 }}>
           {/* List */}
           <Stack spacing={1}>
-            {DummyData.map((item) => (
+            {tableList?.list_table?.map((item, idx) => (
               <Box
-                key={item.id}
+                key={idx}
                 sx={{
                   display: "flex",
                   alignItems: "center",
@@ -177,10 +276,15 @@ const Table = () => {
                 }}
               >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Checkbox />
+                  <Checkbox
+                    checked={
+                      !!selectedTableDelete.find((i) => i.name === item.name)
+                    }
+                    onChange={() => handleCheckboxChange(item)}
+                  />
                   <Typography fontWeight={500}>{item.name}</Typography>
                 </Box>
-                {item.isDetail === true ? (
+                {item.status_column === "exist" ? (
                   <IconButton
                     size="small"
                     sx={{
@@ -190,7 +294,7 @@ const Table = () => {
                     }}
                     onClick={() => {
                       setSelectedItem(item);
-                      navigate(`/admin/coofisai/database/${id}/${item.id}`);
+                      navigate(`/admin/coofisai/database/${name}/${item.name}`);
                     }}
                   >
                     <VisibilityIcon fontSize="small" />
@@ -226,9 +330,13 @@ const Table = () => {
             }}
           >
             <Typography variant="body2">
-              Menampilkan 1 sampai 1 entri
+              Menampilkan {tableList?.page} sampai {tableList?.per_page}
             </Typography>
-            <Pagination count={3} page={2} size="small" />
+            <Pagination
+              count={tableList?.total_pages}
+              page={tableList?.page}
+              size="small"
+            />
           </Box>
         </Box>
       </Stack>
@@ -318,8 +426,10 @@ const Table = () => {
                   fullWidth
                   placeholder="Masukan nama kolom"
                   size="small"
-                  value={col.name}
-                  onChange={(e) => handleChange(idx, "name", e.target.value)}
+                  value={col.field_name}
+                  onChange={(e) =>
+                    handleChange(idx, "field_name", e.target.value)
+                  }
                 />
               </Grid>
               <Grid item size={6}>
@@ -327,8 +437,10 @@ const Table = () => {
                   fullWidth
                   select
                   size="small"
-                  value={col.type}
-                  onChange={(e) => handleChange(idx, "type", e.target.value)}
+                  value={col.field_type}
+                  onChange={(e) =>
+                    handleChange(idx, "field_type", e.target.value)
+                  }
                 >
                   {dataTypes.map((type) => (
                     <MenuItem key={type} value={type}>
@@ -369,6 +481,14 @@ const Table = () => {
           </Box>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog Delete Table */}
+      <DeleteDatabase
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        handleDelete={handleDeleteConfirmed}
+        title={"Table"}
+      />
     </Stack>
   );
 };
