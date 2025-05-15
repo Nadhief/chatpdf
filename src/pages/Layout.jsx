@@ -52,7 +52,7 @@ const Layout = () => {
 
   const sidebarRef = useRef(null);
 
-  const [isAnalyst, setIsAnalyst] = useState(false)
+  const [isAnalyst, setIsAnalyst] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -168,10 +168,14 @@ const Layout = () => {
         </Grid>
 
         {/* content */}
-        <Grid size={{ xs: 12, sm: 12, md: 12, lg: isViewPdf ? 5.2 : 9 }} sx={{ padding: "1rem" }}>
+        <Grid
+          size={{ xs: 12, sm: 12, md: 12, lg: isViewPdf ? 5.2 : 9 }}
+          sx={{ padding: "1rem" }}
+        >
           {/* route user */}
           <Routes>
-            <Route path="/coofisai" 
+            <Route
+              path="/coofisai"
               element={
                 <ChatBox
                   role={user?.username}
@@ -204,7 +208,8 @@ const Layout = () => {
 
           {/* route operator */}
           <Routes>
-            <Route path="/operator/coofisai" 
+            <Route
+              path="/operator/coofisai"
               element={
                 <ChatBox
                   role={user?.username}
@@ -233,13 +238,22 @@ const Layout = () => {
                 />
               }
             />
-            <Route path="/operator/coofisai/dokumen" element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar} />} />
-            <Route path="/operator/coofisai/pengaturan" element={<LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />} />
+            <Route
+              path="/operator/coofisai/dokumen"
+              element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/operator/coofisai/pengaturan"
+              element={
+                <LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />
+              }
+            />
           </Routes>
 
           {/* route admin */}
           <Routes>
-            <Route path="/admin/coofisai"
+            <Route
+              path="/admin/coofisai"
               element={
                 <ChatBox
                   role={"Admin"}
@@ -268,7 +282,8 @@ const Layout = () => {
                 />
               }
             />
-            <Route path="/admin/coofisanalyst"
+            <Route
+              path="/admin/coofisanalyst"
               element={
                 <ChatBoxanalyst
                   role={"Admin"}
