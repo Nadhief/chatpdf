@@ -951,7 +951,10 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
           </Box>
         )}
 
-        {selectedTopicc === false && selected === "file" && selectedFiles.length > 0 && (
+        {selectedTopicc === false && selected === "file" && selectedFiles.length > 0 && selectedFiles.every(file => {
+            const extension = file.name.split('.').pop().toLowerCase();
+            return ['pdf', 'docx'].includes(extension);
+          }) && (
           <Box
             onClick={() => {
               handleSummarize();
