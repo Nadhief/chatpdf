@@ -722,8 +722,6 @@ const Dokumen = ({ id, toggleSidebar }) => {
         });
     });
   };
-
-  console.log(selectedFilesGlobal, checkedItemsFileGlobal)
   
   return (
     <Grid

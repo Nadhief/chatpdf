@@ -30,9 +30,11 @@ import DepartemenAdmin from "../../pages/admin/DepartemenAdmin";
 import { useNavigate } from "react-router-dom";
 import {
   deleteHisotryById,
+  deleteHistoryAnalystById,
   getChatByHistoryId,
   getDepartmentName,
   getHistory,
+  getHistoryAnalyst,
 } from "../../services";
 import { set } from "lodash";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -63,6 +65,8 @@ const Sidebar = ({
   historyId,
   setIsHistorys,
   setNewChat,
+  isAnalyst,
+  setIsAnalyst,
 }) => {
   const logoUrl = "http://192.168.1.65:8001/logo";
 
@@ -78,6 +82,7 @@ const Sidebar = ({
   const [checkedItems, setCheckedItems] = useState({});
 
   const [history, setHistory] = useState([]);
+  const [historyAnalysts, setHistoryAnalyst] = useState([]);
 
   const navigate = useNavigate();
 
@@ -121,6 +126,14 @@ const Sidebar = ({
       })
       .catch((error) => {
         setHistory([]);
+        console.error("Gagal memuat history:", error);
+      });
+    getHistoryAnalyst({ user_id: id })
+      .then((res) => {
+        setHistoryAnalyst(res);
+      })
+      .catch((error) => {
+        setHistoryAnalyst([]);
         console.error("Gagal memuat history:", error);
       });
   }, [dept_id]);
@@ -229,6 +242,8 @@ const Sidebar = ({
             sx={{ backgroundColor: "#BF2600" }}
             onClick={() => {
               localStorage.removeItem("chat_responses");
+              localStorage.setItem("isMenu", "false");
+              setIsAnalyst(false)
               handleLogout();
             }}
           >
@@ -253,6 +268,9 @@ const Sidebar = ({
             setSettingPage={setSettingPage}
             setIsMenu={setIsMenu}
             setIsSidebarOpen={setIsSidebarOpen}
+            isAnalyst={isAnalyst}
+            setIsAnalyst={setIsAnalyst}
+            setHistoryId={setHistoryId}
           />
         ) : null
       ) : (
@@ -346,7 +364,7 @@ const Sidebar = ({
           ) : null}
           {isSurat ? (
             <>
-              <Box width={"100%"} paddingRight={3} paddingLeft={1}>
+              {/* <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                 <Stack
                   paddingBottom={0.8}
                   borderRadius={2}
@@ -384,7 +402,7 @@ const Sidebar = ({
                     Kembali
                   </Typography>
                 </Stack>
-              </Box>
+              </Box> */}
               {/* <Box
                 sx={{
                   width: "100%",
@@ -494,8 +512,8 @@ const Sidebar = ({
                 justifyContent={"flex-start"}
                 sx={{ pl: 2 }}
               >
-                {history && history.length > 0 ? (
-                  history.map((item) => (
+                {(isAnalyst ? historyAnalysts : history) && (isAnalyst ? historyAnalysts : history).length > 0 ? (
+                  (isAnalyst ? historyAnalysts : history).map((item) => (
                     <Fragment key={item.id}>
                       <Box
                         display="flex"
@@ -506,9 +524,11 @@ const Sidebar = ({
                         borderRadius={1}
                         sx={{
                           cursor: "pointer",
-                          backgroundColor: historyId === item.id ? "#f0f0f0" : "transparent",
+                          backgroundColor:
+                            historyId === item.id ? "#f0f0f0" : "transparent",
                           "&:hover": {
-                            backgroundColor: historyId === item.id ? "#f0f0f0" : "#f0f0f0",
+                            backgroundColor:
+                              historyId === item.id ? "#f0f0f0" : "#f0f0f0",
                           },
                         }}
                         onClick={() => {
@@ -553,13 +573,15 @@ const Sidebar = ({
                         <MenuItem
                           onClick={() => {
                             handleMenuClose();
-                            deleteHisotryById(historyId)
-                              .then(() => getHistory({ user_id: id }))
+                            (isAnalyst ? deleteHistoryAnalystById(historyId) : deleteHisotryById(historyId))
+                              .then(() => (isAnalyst ? getHistoryAnalyst({ user_id: id }) : getHistory({ user_id: id })))
                               .then((res) => {
                                 setHistory(res);
+                                setHistoryAnalyst(res);
                               })
                               .catch((error) => {
                                 setHistory([]);
+                                setHistoryAnalyst([]);
                                 console.error(
                                   "Gagal memuat atau menghapus history:",
                                   error
@@ -610,6 +632,7 @@ const Sidebar = ({
                   onClick={() => {
                     setNewChat(true);
                     setHistoryId(null);
+                    console.log('oke')
                   }}
                 >
                   <NewChatIcon className="hover-color" sx={{ fontSize: 20 }} />
@@ -646,14 +669,18 @@ const Sidebar = ({
                   onClick={() => {
                     setIsHistory(true);
                     localStorage.setItem("isHistory", "true");
-                    getHistory({ user_id: id })
+                    
+                    (isAnalyst ? getHistoryAnalyst({user_id : id }) : getHistory({ user_id: id }))
                       .then((res) => {
                         setHistory(res);
+                        setHistoryAnalyst(res);
                       })
                       .catch((error) => {
                         setHistory([]);
+                        setHistoryAnalyst([]);
                         console.error("Gagal memuat history:", error);
                       });
+                      
                   }}
                 >
                   <HistoryIcon className="hover-color" sx={{ fontSize: 20 }} />
@@ -703,76 +730,78 @@ const Sidebar = ({
                   </Typography>
                 </Stack>
               </Box> */}
-              <Box
-                width={"97%"}
-                sx={{
-                  backgroundColor: "#EEF0F7",
-                  borderRadius: 10,
-                  border: "1px solid #E0E0E0",
-                  paddingY: 0.7,
-                  paddingX: 1,
-                }}
-              >
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Box
-                    alignContent={"center"}
-                    justifyContent="center"
-                    width={"100%"}
-                    height={"100%"}
-                    display="flex"
-                    alignItems="center"
-                    sx={{
-                      backgroundColor:
-                        selected === "personal" ? "white" : "none",
-                      borderRadius: 10,
-                      cursor: "pointer",
-                      boxShadow:
-                        selected === "personal"
-                          ? "0px 2px 4px rgba(0, 0, 0, 0.1)"
-                          : "none",
-                      paddingY: 0.8,
-                    }}
-                    onClick={() => setSelected("personal")}
-                  >
-                    <Typography
-                      color={selected === "personal" ? "black" : "#9E9E9E"}
+              {!isAnalyst && (
+                <Box
+                  width={"97%"}
+                  sx={{
+                    backgroundColor: "#EEF0F7",
+                    borderRadius: 10,
+                    border: "1px solid #E0E0E0",
+                    paddingY: 0.7,
+                    paddingX: 1,
+                  }}
+                >
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Box
+                      alignContent={"center"}
+                      justifyContent="center"
+                      width={"100%"}
+                      height={"100%"}
+                      display="flex"
+                      alignItems="center"
+                      sx={{
+                        backgroundColor:
+                          selected === "personal" ? "white" : "none",
+                        borderRadius: 10,
+                        cursor: "pointer",
+                        boxShadow:
+                          selected === "personal"
+                            ? "0px 2px 4px rgba(0, 0, 0, 0.1)"
+                            : "none",
+                        paddingY: 0.8,
+                      }}
+                      onClick={() => setSelected("personal")}
                     >
-                      {" "}
-                      Personal{" "}
-                    </Typography>
-                  </Box>
-                  <Box
-                    alignContent={"center"}
-                    justifyContent="center"
-                    width={"100%"}
-                    height={"100%"}
-                    display="flex"
-                    alignItems="center"
-                    sx={{
-                      backgroundColor:
-                        selected === "departemen" ? "white" : "none",
-                      borderRadius: 10,
-                      cursor: "pointer",
-                      boxShadow:
-                        selected === "departemen"
-                          ? "0px 2px 4px rgba(0, 0, 0, 0.1)"
-                          : "none",
-                      paddingY: 0.8,
-                    }}
-                    onClick={() => {
-                      setSelected("departemen");
-                      setSelectedTopic(false);
-                    }}
-                  >
-                    <Typography
-                      color={selected === "departemen" ? "black" : "#9E9E9E"}
+                      <Typography
+                        color={selected === "personal" ? "black" : "#9E9E9E"}
+                      >
+                        {" "}
+                        Personal{" "}
+                      </Typography>
+                    </Box>
+                    <Box
+                      alignContent={"center"}
+                      justifyContent="center"
+                      width={"100%"}
+                      height={"100%"}
+                      display="flex"
+                      alignItems="center"
+                      sx={{
+                        backgroundColor:
+                          selected === "departemen" ? "white" : "none",
+                        borderRadius: 10,
+                        cursor: "pointer",
+                        boxShadow:
+                          selected === "departemen"
+                            ? "0px 2px 4px rgba(0, 0, 0, 0.1)"
+                            : "none",
+                        paddingY: 0.8,
+                      }}
+                      onClick={() => {
+                        setSelected("departemen");
+                        setSelectedTopic(false);
+                      }}
                     >
-                      {" "}
-                      Departemen{" "}
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Box>
+                      <Typography
+                        color={selected === "departemen" ? "black" : "#9E9E9E"}
+                      >
+                        {" "}
+                        Departemen{" "}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </Box>
+              )}
               <Box width={isSidebarOpen ? 400 : "100%"} paddingTop={1}>
                 {selected === "personal" ? (
                   <PersonalUser
@@ -786,6 +815,8 @@ const Sidebar = ({
                     setHistoryId={setHistoryId}
                     model={model}
                     vectorizer={vectorizer}
+                    isAnalyst={isAnalyst}
+                    setIsAnalyst={setIsAnalyst}
                   />
                 ) : selected === "departemen" ? (
                   role === "user" ? (

@@ -11,7 +11,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import UploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -26,26 +26,139 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Navigate, useNavigate } from "react-router-dom";
+import { add } from "lodash";
+import {
+  addDatabasePersonal,
+  addTablePersonal,
+  deleteDatabasePersonal,
+  getDatabasePersonal,
+  uploadDbPersonal,
+} from "../../services";
+import DeleteDatabase from "../../components/Dialog/DeleteDatabase";
 
-const DummyData = [
-  { id: 1, name: "Nama Database", isDetail: true },
-  { id: 2, name: "Nama Database", isDetail: false },
-  { id: 3, name: "Nama Database", isDetail: false },
-  { id: 4, name: "Nama Database", isDetail: false },
-];
-
-const Database = () => {
+const Database = ({ id, toggleSidebar }) => {
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialogAddTable, setOpenDialogAddTable] = useState(false);
   const [databaseName, setDatabaseName] = useState("");
   const [tableName, setTableName] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
+  const [databaseList, setDatabaseList] = useState(null);
+  const [selectedDatabaseDelete, setSelectedDatabaseDelete] = useState([]);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [showEntry, setShowEntry] = useState(10);
+  const [keyword, setKeyword] = useState("");
+  const [openDialogDB, setOpenDialogDB] = useState(false);
+  const [file, setFile] = useState(null);
+
+  const handleCheckboxChange = (item) => {
+    setSelectedDatabaseDelete((prev) => {
+      const exists = prev.find((i) => i.name === item.name);
+      if (exists) {
+        // Jika sudah ada, hapus dari list
+        return prev.filter((i) => i.name !== item.name);
+      } else {
+        // Jika belum ada, tambahkan ke list
+        return [...prev, item];
+      }
+    });
+  };
 
   const handleSubmit = (type) => {
-    console.log(type);
-    console.log(selectedItem);
+    if (type === "database") {
+      const payload = {
+        id: String(id),
+        db_name: databaseName,
+        overwrite: false,
+      };
+      addDatabasePersonal(payload)
+        .then((res) => {
+          setOpenDialog(false);
+          setDatabaseName("");
+          fetchDatabasePersonal();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else if (type === "table") {
+      const payload = {
+        id: String(id),
+        db_name: selectedItem?.name,
+        table_name: tableName,
+      };
+      addTablePersonal(payload)
+        .then((res) => {
+          setOpenDialogAddTable(false);
+          setTableName("");
+          fetchDatabasePersonal();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
+
+  const fetchDatabasePersonal = () => {
+    getDatabasePersonal({
+      user_id: String(id),
+      keyword: keyword,
+      page: 1,
+      per_page: showEntry,
+    })
+      .then((res) => {
+        setDatabaseList(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleDeleteConfirmed = () => {
+    const payload = {
+      id: String(id),
+      db_name: selectedDatabaseDelete.map((item) => item.name),
+    };
+
+    deleteDatabasePersonal(payload)
+      .then((res) => {
+        setOpenDeleteDialog(false);
+        setSelectedDatabaseDelete([]);
+        fetchDatabasePersonal();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file && file.name.endsWith(".db")) {
+      setFile(file);
+      console.log("Selected .db file:", file);
+    } else {
+      alert("Please select a valid .db file");
+    }
+  };
+
+  const handleUploadFile = () => {
+    const formData = new FormData();
+    formData.append("id", String(id));
+    formData.append("db_name", file.name.replace(/\.db$/i, ""));
+    formData.append("file", file);
+
+    uploadDbPersonal(formData).then((res) => {
+      console.log(res)
+      fetchDatabasePersonal()
+    }
+    ).catch((err) => {
+      console.log(err)
+    })
+  };
+
+  useEffect(() => {
+    fetchDatabasePersonal();
+  }, [showEntry, keyword]);
+
   return (
     <Stack
       sx={{
@@ -71,7 +184,6 @@ const Database = () => {
             gap: 2,
           }}
         >
-          
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -80,13 +192,16 @@ const Database = () => {
           >
             Tambah Database
           </Button>
-          <Button
-            variant="contained"
-            startIcon={<UploadIcon />}
-            sx={{ backgroundColor: "#3c3f52", textTransform: "none" }}
-          >
-            Upload Database
-          </Button>
+          <>
+            <Button
+              variant="contained"
+              startIcon={<UploadIcon />}
+              onClick={() => setOpenDialogDB(true)}
+              sx={{ backgroundColor: "#3c3f52", textTransform: "none" }}
+            >
+              Upload Database
+            </Button>
+          </>
           <Button
             variant="contained"
             sx={{
@@ -94,6 +209,9 @@ const Database = () => {
               px: 0,
               backgroundColor: "#e53935",
               "&:hover": { backgroundColor: "#d32f2f" },
+            }}
+            onClick={() => {
+              setOpenDeleteDialog(true);
             }}
           >
             <DeleteIcon />
@@ -105,8 +223,8 @@ const Database = () => {
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography fontWeight="bold">Tampilkan</Typography>
             <Select
-              value={10}
-              onChange={() => {}}
+              value={showEntry}
+              onChange={(e) => setShowEntry(e.target.value)}
               size="small"
               sx={{
                 borderRadius: 3,
@@ -117,6 +235,7 @@ const Database = () => {
               <MenuItem value={5}>5</MenuItem>
               <MenuItem value={10}>10</MenuItem>
               <MenuItem value={25}>25</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
             </Select>
           </Box>
 
@@ -137,6 +256,8 @@ const Database = () => {
               sx={{ flex: 1 }}
               placeholder="Search....."
               inputProps={{ "aria-label": "search" }}
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
             />
             <IconButton type="submit" sx={{ p: 0.5 }} aria-label="search">
               <SearchIcon />
@@ -146,9 +267,9 @@ const Database = () => {
         <Box sx={{ border: "1px solid #ccc", borderRadius: 2, mt: 2, p: 2 }}>
           {/* List */}
           <Stack spacing={1}>
-            {DummyData.map((item) => (
+            {databaseList?.list_files?.map((item, idx) => (
               <Box
-                key={item.id}
+                key={idx}
                 sx={{
                   display: "flex",
                   alignItems: "center",
@@ -160,10 +281,15 @@ const Database = () => {
                 }}
               >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Checkbox />
+                  <Checkbox
+                    checked={
+                      !!selectedDatabaseDelete.find((i) => i.name === item.name)
+                    }
+                    onChange={() => handleCheckboxChange(item)}
+                  />
                   <Typography fontWeight={500}>{item.name}</Typography>
                 </Box>
-                {item.isDetail === true ? (
+                {item.status_table === "exist" ? (
                   <IconButton
                     size="small"
                     sx={{
@@ -172,7 +298,7 @@ const Database = () => {
                       "&:hover": { backgroundColor: "#1565c0" },
                     }}
                     onClick={() => {
-                      navigate(`/admin/coofisai/database/${item.id}`);
+                      navigate(`/admin/coofisai/database/${item.name}`);
                     }}
                   >
                     <VisibilityIcon fontSize="small" />
@@ -186,8 +312,8 @@ const Database = () => {
                       "&:hover": { backgroundColor: "#43a047" },
                     }}
                     onClick={() => {
-                      setOpenDialogAddTable(true);
                       setSelectedItem(item);
+                      setOpenDialogAddTable(true);
                     }}
                   >
                     <AddIcon fontSize="small" />
@@ -208,9 +334,13 @@ const Database = () => {
             }}
           >
             <Typography variant="body2">
-              Menampilkan 1 sampai 1 entri
+              Menampilkan {databaseList?.page} sampai {databaseList?.per_page}
             </Typography>
-            <Pagination count={3} page={2} size="small" />
+            {/* <Pagination
+              count={databaseList?.total_pages}
+              page={databaseList?.page}
+              size="small"
+            /> */}
           </Box>
         </Box>
       </Stack>
@@ -312,6 +442,91 @@ const Database = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Dialog Upload DB */}
+      <Dialog
+        open={openDialogDB}
+        onClose={() => {
+          setOpenDialogDB(false);
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }}>
+          Unggah Database
+          <IconButton
+            aria-label="close"
+            onClick={() => {
+              setOpenDialogDB(false);
+            }}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          <Button
+            variant="outlined"
+            component="label"
+            fullWidth
+            sx={{
+              justifyContent: "flex-start",
+              borderColor: "#D8DAE5",
+              color: "#3F3F3F",
+              textTransform: "none",
+            }}
+          >
+            📄 {file?.name || "pilih file"}
+            <input
+              type="file"
+              accept=".db"
+              hidden
+              onChange={handleFileChange}
+            />
+            <Typography
+              variant="body2"
+              sx={{
+                marginLeft: "auto",
+                color: "#007BFF",
+                fontWeight: 500,
+              }}
+            >
+              Pilih Database
+            </Typography>
+          </Button>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#4CAF8E",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "#4CAF8E",
+              },
+              textTransform: "none",
+            }}
+            onClick={() => {
+              handleUploadFile();
+              setOpenDialogDB(false);
+            }}
+          >
+            Unggah
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog Hapus Database */}
+      <DeleteDatabase
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        handleDelete={handleDeleteConfirmed}
+        title={"Database"}
+      />
     </Stack>
   );
 };

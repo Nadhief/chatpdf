@@ -13,6 +13,7 @@ import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
 import Database from "./admin/Database";
 import Table from "./admin/Table";
 import TableDetail from "./admin/TableDetail";
+import ChatBoxanalyst from "./Chatboxanalyst";
 const Layout = () => {
   const logoUrl = "http://192.168.1.65:8001/logo";
 
@@ -49,11 +50,13 @@ const Layout = () => {
 
   const [newChat, setNewChat] = useState(false);
 
+  const sidebarRef = useRef(null);
+
+  const [isAnalyst, setIsAnalyst] = useState(false);
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
-  const sidebarRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -159,14 +162,20 @@ const Layout = () => {
             historyId={historyId}
             setIsHistorys={setIsHistory}
             setNewChat={setNewChat}
+            isAnalyst={isAnalyst}
+            setIsAnalyst={setIsAnalyst}
           />
         </Grid>
 
         {/* content */}
-        <Grid size={{ xs: 12, sm: 12, md: 12, lg: isViewPdf ? 5.2 : 9 }} sx={{ padding: "1rem" }}>
+        <Grid
+          size={{ xs: 12, sm: 12, md: 12, lg: isViewPdf ? 5.2 : 9 }}
+          sx={{ padding: "1rem" }}
+        >
           {/* route user */}
           <Routes>
-            <Route path="/coofisai" 
+            <Route
+              path="/coofisai"
               element={
                 <ChatBox
                   role={user?.username}
@@ -199,7 +208,8 @@ const Layout = () => {
 
           {/* route operator */}
           <Routes>
-            <Route path="/operator/coofisai" 
+            <Route
+              path="/operator/coofisai"
               element={
                 <ChatBox
                   role={user?.username}
@@ -228,13 +238,22 @@ const Layout = () => {
                 />
               }
             />
-            <Route path="/operator/coofisai/dokumen" element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar} />} />
-            <Route path="/operator/coofisai/pengaturan" element={<LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />} />
+            <Route
+              path="/operator/coofisai/dokumen"
+              element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/operator/coofisai/pengaturan"
+              element={
+                <LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />
+              }
+            />
           </Routes>
 
           {/* route admin */}
           <Routes>
-            <Route path="/admin/coofisai"
+            <Route
+              path="/admin/coofisai"
               element={
                 <ChatBox
                   role={"Admin"}
@@ -264,6 +283,38 @@ const Layout = () => {
               }
             />
             <Route
+              path="/admin/coofisanalyst"
+              element={
+                <ChatBoxanalyst
+                  role={"Admin"}
+                  id={user?.id}
+                  selected={selected}
+                  responseSummarize={responseSummarize}
+                  setResponseSummarize={setResponseSummarize}
+                  isSummarize={isSummarize}
+                  setIsSummarize={setIsSummarize}
+                  selectedTopic={selectedTopic}
+                  topicName={topicName}
+                  deptID={deptID}
+                  setIsViewPdf={setIsViewPdf}
+                  setPdfSource={setPdfSource}
+                  setType={setType}
+                  model={model}
+                  setModel={setModel}
+                  vectorizer={vectorizer}
+                  setVectorizer={setVectorizer}
+                  toggleSidebar={toggleSidebar}
+                  isViewPdf={isViewPdf}
+                  isHistory={isHistory}
+                  newChat={newChat}
+                  historyId={historyId}
+                  setHistoryId={setHistoryId}
+                  isAnalyst={isAnalyst}
+                  setIsAnalyst={setIsAnalyst}
+                />
+              }
+            />
+            <Route
               path="/admin/coofisai/dokumen"
               element={<Dokumen id={user?.id} toggleSidebar={toggleSidebar} />}
             />
@@ -286,11 +337,11 @@ const Layout = () => {
               element={<Database id={user?.id} toggleSidebar={toggleSidebar} />}
             />
             <Route
-              path="/admin/coofisai/database/:id"
+              path="/admin/coofisai/database/:name"
               element={<Table id={user?.id} toggleSidebar={toggleSidebar} />}
             />
             <Route
-              path="/admin/coofisai/database/:id/:table_id"
+              path="/admin/coofisai/database/:name/:nameTable"
               element={
                 <TableDetail id={user?.id} toggleSidebar={toggleSidebar} />
               }

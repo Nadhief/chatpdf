@@ -19,14 +19,16 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import {
   chatDepartemen,
   chatPersonal,
+  chatPersonalAnalyst,
   chatTopic,
   getChatByHistoryId,
+  getChatDataByHistoryId,
 } from "../services";
 import ReactMarkdown from "react-markdown";
 import LogoSetting from "../components/LogoSetting";
 import { set } from "lodash";
 
-const ChatBox = ({
+const ChatBoxanalyst = ({
   role,
   id,
   selected,
@@ -50,6 +52,8 @@ const ChatBox = ({
   newChat,
   historyId,
   setHistoryId,
+  isAnalyst,
+  setIsAnalyst,
 }) => {
   // const [model, setModel] = useState("Llama 3.1");
   // const [vectorizer, setVectorizer] = useState("nomic-embed-text");
@@ -86,67 +90,46 @@ const ChatBox = ({
         history_id: String(historyId),
         question: currentQuestion,
       };
-      if (selectedTopic === true) {
-        const payloadTopic = {
+      if (isAnalyst === true) {
+        const payloadAnalyst = {
           id: String(id),
-          embedding_model: vectorizer,
-          llm_model: model,
+          database_name: topicName,
           question: currentQuestion,
-          topic: topicName,
           history_id: String(historyId),
         };
-        chatTopic(payloadTopic).then((res) => {
-          const filenames = res?.sources?.map((item) => {
-            return item;
-          });
-
-          const updatedEntry = {
-            user: currentQuestion,
-            bot: res.response,
-            source: filenames,
-            type: res.type,
-            bot_chart: res.response_chart,
-          };
-
-          console.log("updatedEntry", updatedEntry);
-
-          setResponses((prev) => {
-            const updated = [...prev];
-            updated[updated.length - 1] = updatedEntry;
-            return updated;
-          });
-        });
-      } else {
-        if (selected === "personal") {
-          chatPersonal(payload).then((res) => {
-            const filenames = res?.sources?.map((item) => {
-              return item;
-            });
-
+        console.log("masuk pak eko", payloadAnalyst);
+        chatPersonalAnalyst(payloadAnalyst)
+          .then((res) => {
+            setHistoryId(res.current_history_id);
+            console.log(res);
             const updatedEntry = {
               user: currentQuestion,
-              bot: res.response,
-              source: filenames,
-              type: res.type,
-              bot_chart: res.response_chart,
+              bot: res.response.output,
+              // source: filenames,
+              // type: res.type,
+              // bot_chart: res.response_chart,
             };
             console.log("updatedEntry", updatedEntry);
-
             setResponses((prev) => {
               const updated = [...prev];
               updated[updated.length - 1] = updatedEntry;
               return updated;
             });
+          })
+          .catch((err) => {
+            console.log(err);
           });
-        } else if (selected === "departemen") {
-          const payloadDepartment = {
-            id: String(deptID),
+      } else {
+        if (selectedTopic === true) {
+          const payloadTopic = {
+            id: String(id),
             embedding_model: vectorizer,
             llm_model: model,
             question: currentQuestion,
+            topic: topicName,
             history_id: String(historyId),
           };
-          chatDepartemen(payloadDepartment).then((res) => {
+          chatTopic(payloadTopic).then((res) => {
             const filenames = res?.sources?.map((item) => {
               return item;
             });
@@ -158,6 +141,7 @@ const ChatBox = ({
               type: res.type,
               bot_chart: res.response_chart,
             };
+
             console.log("updatedEntry", updatedEntry);
 
             setResponses((prev) => {
@@ -166,6 +150,57 @@ const ChatBox = ({
               return updated;
             });
           });
+        } else {
+          if (selected === "personal") {
+            chatPersonal(payload).then((res) => {
+              const filenames = res?.sources?.map((item) => {
+                return item;
+              });
+
+              const updatedEntry = {
+                user: currentQuestion,
+                bot: res.response,
+                source: filenames,
+                type: res.type,
+                bot_chart: res.response_chart,
+              };
+              console.log("updatedEntry", updatedEntry);
+
+              setResponses((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = updatedEntry;
+                return updated;
+              });
+            });
+          } else if (selected === "departemen") {
+            const payloadDepartment = {
+              id: String(deptID),
+              embedding_model: vectorizer,
+              llm_model: model,
+              question: currentQuestion,
+              history_id: String(historyId),
+            };
+            chatDepartemen(payloadDepartment).then((res) => {
+              const filenames = res?.sources?.map((item) => {
+                return item;
+              });
+
+              const updatedEntry = {
+                user: currentQuestion,
+                bot: res.response,
+                source: filenames,
+                type: res.type,
+                bot_chart: res.response_chart,
+              };
+              console.log("updatedEntry", updatedEntry);
+
+              setResponses((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = updatedEntry;
+                return updated;
+              });
+            });
+          }
         }
       }
     } else {
@@ -176,41 +211,46 @@ const ChatBox = ({
         history_id: "",
         question: currentQuestion,
       };
-      if (selectedTopic === true) {
-        const payloadTopic = {
+      if (isAnalyst === true) {
+        const payloadAnalyst = {
           id: String(id),
-          embedding_model: vectorizer,
-          llm_model: model,
+          database_name: topicName,
           question: currentQuestion,
-          topic: topicName,
           history_id: "",
         };
-        chatTopic(payloadTopic).then((res) => {
-          setHistoryId(res?.current_history_id);
-          const filenames = res?.sources?.map((item) => {
-            const cleanedItem = item.replace(/^PDF:\s*/, "");
-            return cleanedItem.split("/").pop();
+        console.log("masuk pak eko", payloadAnalyst);
+        chatPersonalAnalyst(payloadAnalyst)
+          .then((res) => {
+            setHistoryId(res.current_history_id);
+            console.log(res);
+            const updatedEntry = {
+              user: currentQuestion,
+              bot: res.response.output,
+              // source: filenames,
+              // type: res.type,
+              // bot_chart: res.response_chart,
+            };
+            console.log("updatedEntry", updatedEntry);
+            setResponses((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1] = updatedEntry;
+              return updated;
+            });
+          })
+          .catch((err) => {
+            console.log(err);
           });
-
-          const updatedEntry = {
-            user: currentQuestion,
-            bot: res.response,
-            source: filenames,
-            type: res.type,
-            bot_chart: res.response_chart,
-          };
-
-          console.log("updatedEntry", updatedEntry);
-
-          setResponses((prev) => {
-            const updated = [...prev];
-            updated[updated.length - 1] = updatedEntry;
-            return updated;
-          });
-        });
       } else {
-        if (selected === "personal") {
-          chatPersonal(payload).then((res) => {
+        if (selectedTopic === true) {
+          const payloadTopic = {
+            id: String(id),
+            embedding_model: vectorizer,
+            llm_model: model,
+            question: currentQuestion,
+            topic: topicName,
+            history_id: "",
+          };
+          chatTopic(payloadTopic).then((res) => {
             setHistoryId(res?.current_history_id);
             const filenames = res?.sources?.map((item) => {
               const cleanedItem = item.replace(/^PDF:\s*/, "");
@@ -233,35 +273,61 @@ const ChatBox = ({
               return updated;
             });
           });
-        } else if (selected === "departemen") {
-          const payloadDepartment = {
-            id: String(deptID),
-            embedding_model: vectorizer,
-            llm_model: model,
-            question: currentQuestion,
-            history_id: "",
-          };
-          chatDepartemen(payloadDepartment).then((res) => {
-            setHistoryId(res?.current_history_id);
-            const filenames = res?.sources?.map((item) => {
-              return item;
-            });
+        } else {
+          if (selected === "personal") {
+            chatPersonal(payload).then((res) => {
+              setHistoryId(res?.current_history_id);
+              const filenames = res?.sources?.map((item) => {
+                const cleanedItem = item.replace(/^PDF:\s*/, "");
+                return cleanedItem.split("/").pop();
+              });
 
-            const updatedEntry = {
-              user: currentQuestion,
-              bot: res.response,
-              source: filenames,
-              type: res.type,
-              bot_chart: res.response_chart,
+              const updatedEntry = {
+                user: currentQuestion,
+                bot: res.response,
+                source: filenames,
+                type: res.type,
+                bot_chart: res.response_chart,
+              };
+
+              console.log("updatedEntry", updatedEntry);
+
+              setResponses((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = updatedEntry;
+                return updated;
+              });
+            });
+          } else if (selected === "departemen") {
+            const payloadDepartment = {
+              id: String(deptID),
+              embedding_model: vectorizer,
+              llm_model: model,
+              question: currentQuestion,
+              history_id: "",
             };
-            console.log("updatedEntry", updatedEntry);
+            chatDepartemen(payloadDepartment).then((res) => {
+              setHistoryId(res?.current_history_id);
+              const filenames = res?.sources?.map((item) => {
+                return item;
+              });
 
-            setResponses((prev) => {
-              const updated = [...prev];
-              updated[updated.length - 1] = updatedEntry;
-              return updated;
+              const updatedEntry = {
+                user: currentQuestion,
+                bot: res.response,
+                source: filenames,
+                type: res.type,
+                bot_chart: res.response_chart,
+              };
+              console.log("updatedEntry", updatedEntry);
+
+              setResponses((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = updatedEntry;
+                return updated;
+              });
             });
-          });
+          }
         }
       }
     }
@@ -344,6 +410,7 @@ const ChatBox = ({
 
   useEffect(() => {
     if (newChat) {
+      console.log("awikawok")
       setResponses([]);
       setIsSummarize(false);
       setResponseSummarize(null);
@@ -358,8 +425,9 @@ const ChatBox = ({
         history_id: String(historyId),
       };
 
-      getChatByHistoryId(payload)
+      getChatDataByHistoryId(payload)
         .then((res) => {
+          console.log(res)
           const pairedChats = [];
           for (let i = 0; i < res.length; i += 2) {
             const humanItem = res[i];
@@ -368,9 +436,6 @@ const ChatBox = ({
             pairedChats.push({
               user: humanItem?.content || "",
               bot: aiItem?.content || "",
-              source: aiItem?.metadata?.source || [],
-              type: "Personal",
-              bot_chart: aiItem?.metadata?.url_chart || [],
             });
           }
           console.log("pairedChats", pairedChats);
@@ -421,7 +486,7 @@ const ChatBox = ({
             Halo, {role}!
           </Typography>
           <Typography variant="h2" sx={{ my: 2 }}>
-            How may I help you?
+            How may I help you? analyst
           </Typography>
           <Grid sx={{ color: "#757575" }}>
             <Typography variant="subtitle1">
@@ -545,7 +610,9 @@ const ChatBox = ({
                                 />
                               </Box>
                               <Typography>
-                              {res.bot_chart.split("https://")[0].replace(/"/g, "")}
+                                {res.bot_chart
+                                  .split("https://")[0]
+                                  .replace(/"/g, "")}
                               </Typography>
                             </Box>
                           )}
@@ -579,7 +646,7 @@ const ChatBox = ({
                     )}
 
                     {/* response source */}
-                    {res?.source?.length > 0 && (
+                    {/* {res.source.length > 0 && (
                       <>
                         <Box
                           sx={{
@@ -633,7 +700,7 @@ const ChatBox = ({
                           ))}
                         </Box>
                       </>
-                    )}
+                    )} */}
                   </Box>
                 </Box>
               </Stack>
@@ -768,4 +835,4 @@ const ChatBox = ({
   );
 };
 
-export default ChatBox;
+export default ChatBoxanalyst;

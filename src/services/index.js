@@ -10,6 +10,16 @@ export const chatPersonal = async (payload) => {
   }
 };
 
+export const chatPersonalAnalyst = async (payload) => {
+  try {
+    const response = await api.post("chat/personal/chat_to_csv_v2", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding department:", error);
+    throw error;
+  }
+};
+
 export const chatDepartemen = async (payload) => {
   try {
     const response = await api.post("chat/department_v2/", payload);
@@ -115,7 +125,6 @@ export const getDepartmentName = async (id) => {
     throw error;
   }
 };
-
 
 export const getDepartmentFile = async ({ dept_id, page, per_page }) => {
   try {
@@ -269,7 +278,12 @@ export const editUser = async (payload) => {
   }
 };
 
-export const searchFilePersonal = async ({user_id, keywords, page, per_page}) => {
+export const searchFilePersonal = async ({
+  user_id,
+  keywords,
+  page,
+  per_page,
+}) => {
   try {
     const response = await api.get("file/search_personal", {
       params: {
@@ -286,7 +300,12 @@ export const searchFilePersonal = async ({user_id, keywords, page, per_page}) =>
   }
 };
 
-export const searchFileDepartment = async ({dept_id, keywords, page, per_page}) => {
+export const searchFileDepartment = async ({
+  dept_id,
+  keywords,
+  page,
+  per_page,
+}) => {
   try {
     const response = await api.get("file/search_department", {
       params: {
@@ -303,7 +322,7 @@ export const searchFileDepartment = async ({dept_id, keywords, page, per_page}) 
   }
 };
 
-export const searchUser = async ({ keywords}) => {
+export const searchUser = async ({ keywords }) => {
   try {
     const response = await api.get("users/search_user", {
       params: {
@@ -316,7 +335,7 @@ export const searchUser = async ({ keywords}) => {
     throw error;
   }
 };
-export const searchDepartment = async ({ keywords}) => {
+export const searchDepartment = async ({ keywords }) => {
   try {
     const response = await api.get("department/search_department", {
       params: {
@@ -330,7 +349,7 @@ export const searchDepartment = async ({ keywords}) => {
   }
 };
 
-export const searchTopic = async ({ keywords, user_id}) => {
+export const searchTopic = async ({ keywords, user_id }) => {
   try {
     const response = await api.get("topic/search_personal_topic", {
       params: {
@@ -343,8 +362,7 @@ export const searchTopic = async ({ keywords, user_id}) => {
     console.error("Error getting user:", error);
     throw error;
   }
-}
-
+};
 
 export const uploadLogo = async (file) => {
   try {
@@ -364,8 +382,11 @@ export const uploadLogo = async (file) => {
   }
 };
 
-export const getArrayBufferPDFPersonal = async({user_id, filename, page}) =>{
-  
+export const getArrayBufferPDFPersonal = async ({
+  user_id,
+  filename,
+  page,
+}) => {
   try {
     const response = await api.get("file/buffer_doc_personal", {
       params: {
@@ -373,16 +394,16 @@ export const getArrayBufferPDFPersonal = async({user_id, filename, page}) =>{
         filename: filename,
         page: page,
       },
-      responseType: 'arraybuffer',
+      responseType: "arraybuffer",
     });
     return response.data;
   } catch (error) {
     console.error("Error getting pdf:", error);
     throw error;
   }
-} 
+};
 
-export const getArrayBufferPDFGlobal = async({user_id, filename, page}) =>{
+export const getArrayBufferPDFGlobal = async ({ user_id, filename, page }) => {
   try {
     const response = await api.get("file/buffer_doc_global", {
       params: {
@@ -390,16 +411,20 @@ export const getArrayBufferPDFGlobal = async({user_id, filename, page}) =>{
         filename: filename,
         page: page,
       },
-      responseType: 'arraybuffer',
+      responseType: "arraybuffer",
     });
     return response.data;
   } catch (error) {
     console.error("Error getting pdf:", error);
     throw error;
   }
-} 
+};
 
-export const getArrayBufferPDFDepartment = async({dept_id, filename, page}) =>{
+export const getArrayBufferPDFDepartment = async ({
+  dept_id,
+  filename,
+  page,
+}) => {
   try {
     const response = await api.get("file/buffer_doc_department", {
       params: {
@@ -407,20 +432,20 @@ export const getArrayBufferPDFDepartment = async({dept_id, filename, page}) =>{
         filename: filename,
         page: page,
       },
-      responseType: 'arraybuffer',
+      responseType: "arraybuffer",
     });
     return response.data;
   } catch (error) {
     console.error("Error getting pdf:", error);
     throw error;
   }
-} 
+};
 
 export const personalToGlobal = async ({ filename, user_id }) => {
   try {
     const response = await api.post("/file/personal_to_global", {
       filename: filename,
-      user_id: user_id
+      user_id: user_id,
     });
     return response.data;
   } catch (error) {
@@ -435,7 +460,7 @@ export const getGlobalFile = async ({ page, per_page, keyword }) => {
       params: {
         page,
         per_page,
-        keyword
+        keyword,
       },
     });
     return response.data;
@@ -448,14 +473,14 @@ export const getGlobalFile = async ({ page, per_page, keyword }) => {
 export const deleteGlobalFile = async ({ filename }) => {
   try {
     const response = await api.delete("file/remove_pdf_global_doc", {
-      data: { filename }
+      data: { filename },
     });
     return response.data;
   } catch (error) {
     console.error("Error deleting global file:", error);
     throw error;
   }
-}
+};
 
 export const getHistory = async ({ user_id }) => {
   try {
@@ -469,9 +494,23 @@ export const getHistory = async ({ user_id }) => {
     console.error("Error getting history:", error);
     throw error;
   }
-}
+};
 
-export const getChatByHistoryId = async (payload) => {  
+export const getHistoryAnalyst = async ({ user_id }) => {
+  try {
+    const response = await api.get("/chat/history_user/chatdata", {
+      params: {
+        user_id,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting history:", error);
+    throw error;
+  }
+};
+
+export const getChatByHistoryId = async (payload) => {
   try {
     const response = await api.post("/chat/load_chat/chatdocs", payload);
     return response.data;
@@ -479,7 +518,18 @@ export const getChatByHistoryId = async (payload) => {
     console.error("Error getting chat by history ID:", error);
     throw error;
   }
-}
+};
+
+export const getChatDataByHistoryId = async (payload) => {
+  try {
+    const response = await api.post("/chat/load_chat/chatdata", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting chat by history ID:", error);
+    throw error;
+  }
+};
+
 
 export const deleteHisotryById = async (historyId) => {
   try {
@@ -492,6 +542,194 @@ export const deleteHisotryById = async (historyId) => {
     throw error;
   }
 };
+
+export const deleteHistoryAnalystById = async (historyId) => {
+  try {
+    const response = await api.delete("/chat/history/remove/chatdata", {
+      params: { history_id: historyId },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting history by ID:", error);
+    throw error;
+  }
+};
+
+export const addDatabasePersonal = async (payload) => {
+  try {
+    const response = await api.post("csv_db/create_db/personal", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding personal database:", error);
+    throw error;
+  }
+};
+
+export const getDatabasePersonal = async ({
+  user_id,
+  keyword,
+  page,
+  per_page,
+}) => {
+  try {
+    const response = await api.get("csv_db/list_database/personal", {
+      params: {
+        user_id,
+        keyword,
+        page,
+        per_page,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting personal database:", error);
+    throw error;
+  }
+};
+
+export const deleteDatabasePersonal = async (payload) => {
+  try {
+    const response = await api.delete("csv_db/delete_db/personal", {
+      data: payload,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting personal database:", error);
+    throw error;
+  }
+};
+
+export const getTablePersonal = async ({
+  id,
+  db_name,
+  keyword,
+  page,
+  per_page,
+}) => {
+  try {
+    const response = await api.get("csv_db/list_table/personal", {
+      params: {
+        id,
+        db_name,
+        keyword,
+        page,
+        per_page,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting personal database:", error);
+    throw error;
+  }
+};
+
+export const addTablePersonal = async (payload) => {
+  try {
+    const response = await api.post("csv_db/create_table/personal", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding personal table:", error);
+    throw error;
+  }
+};
+
+export const deleteTablePersonal = async (payload) => {
+  try {
+    const response = await api.delete("csv_db/delete_table/personal", {
+      data: payload,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting personal database:", error);
+    throw error;
+  }
+};
+
+export const addColumnPersonal = async (payload) => {
+  try {
+    const response = await api.post(
+      "csv_db/create_multiple_field/personal",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getColumnPersonal = async ({
+  id,
+  db_name,
+  table_name,
+  page,
+  per_page,
+  keyword,
+}) => {
+  try {
+    const response = await api.get("csv_db/get_data/personal", {
+      params: {
+        id,
+        db_name,
+        table_name,
+        page,
+        per_page,
+        keyword,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const addDataPersonal = async (payload) => {
+  try {
+    const response = await api.post(
+      "csv_db/create_data/personal",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const updateDataPersonal = async (payload) => {
+  try {
+    const response = await api.post(
+      "csv_db/update_data/personal",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const deleteDataPersonal = async (payload) => {
+  try {
+    const response = await api.post(
+      "csv_db/delete_data/personal",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const uploadDbPersonal = async (payload) => {
+  try {
+    const response = await api.post(
+      "csv_db/upload_db/personal",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 
 export const uploadJsonPersonal = async (formData) => {
   try {
