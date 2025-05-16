@@ -76,15 +76,12 @@ const Table = ({ id, toggleSidebar }) => {
       };
       addTablePersonal(payload)
         .then((res) => {
-          console.log(res);
           setOpenDialogAddTable(false);
           setTableName("");
           fetchTablePersonal();
         })
         .catch((err) => {
-          console.log(err);
         });
-      console.log(payload);
     } else if (type === "column") {
       const payload = {
         id: String(id),
@@ -93,7 +90,6 @@ const Table = ({ id, toggleSidebar }) => {
         fields: columns,
       };
       addColumnPersonal(payload).then((res) => {
-        console.log(res);
         setOpenDialogAddColumn(false);
         setColumns([]);
         fetchTablePersonal();
@@ -110,11 +106,9 @@ const Table = ({ id, toggleSidebar }) => {
       per_page: showEntry,
     })
       .then((res) => {
-        console.log(res);
         setTableList(res);
       })
       .catch((err) => {
-        console.log(err);
       });
   };
 
@@ -135,17 +129,14 @@ const Table = ({ id, toggleSidebar }) => {
       db_name: name,
       table_name: selectedTableDelete.map((item) => item.name),
     };
-    console.log(payload);
 
     deleteTablePersonal(payload)
       .then((res) => {
-        console.log(res);
         setOpenDeleteDialog(false);
         setSelectedTableDelete([]);
         fetchTablePersonal();
       })
       .catch((err) => {
-        console.error(err);
       });
   };
 
@@ -320,7 +311,7 @@ const Table = ({ id, toggleSidebar }) => {
           </Stack>
 
           {/* Footer Pagination */}
-          <Box
+          {/* <Box
             sx={{
               display: "flex",
               justifyContent: "space-between",
@@ -337,7 +328,7 @@ const Table = ({ id, toggleSidebar }) => {
               page={tableList?.page}
               size="small"
             />
-          </Box>
+          </Box> */}
         </Box>
       </Stack>
 

@@ -730,6 +730,18 @@ export const uploadDbPersonal = async (payload) => {
   }
 }
 
+export const uploadCSVtoDbPersonal = async (payload) => {
+  try {
+    const response = await api.post(
+      "file/csv_to_db/personal",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 
 export const uploadJsonPersonal = async (formData) => {
   try {

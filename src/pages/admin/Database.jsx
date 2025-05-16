@@ -192,7 +192,7 @@ const Database = ({ id, toggleSidebar }) => {
           >
             Tambah Database
           </Button>
-          <>
+          {/* <>
             <Button
               variant="contained"
               startIcon={<UploadIcon />}
@@ -201,7 +201,7 @@ const Database = ({ id, toggleSidebar }) => {
             >
               Upload Database
             </Button>
-          </>
+          </> */}
           <Button
             variant="contained"
             sx={{

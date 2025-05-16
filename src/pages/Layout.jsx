@@ -58,8 +58,6 @@ const Layout = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  console.log(newChat)
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (isSidebarOpen && window.innerWidth < 1200) {
