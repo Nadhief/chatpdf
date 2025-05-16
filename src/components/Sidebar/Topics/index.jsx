@@ -1,7 +1,7 @@
 import React from "react";
 import { Stack, Radio, Typography } from "@mui/material";
 
-const Topics = ({ label, selected, onSelect }) => {
+const Topics = ({ label, selected, onSelect, accord = false }) => {
   const handleStackClick = () => {
     onSelect();
   };
@@ -14,7 +14,7 @@ const Topics = ({ label, selected, onSelect }) => {
       borderRadius={4}
       alignItems="center"
       sx={{
-        backgroundColor: "#F5F5F5",
+        backgroundColor: accord ? "E6E6E6" : "#F5F5F5",
         cursor: "pointer",
       }}
       onClick={handleStackClick}

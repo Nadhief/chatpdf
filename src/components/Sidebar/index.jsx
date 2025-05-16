@@ -56,6 +56,7 @@ const Sidebar = ({
   selectedTopic,
   setSelectedTopic,
   setTopicName,
+  setTableName,
   setDeptID,
   setIsMenu,
   model,
@@ -923,6 +924,7 @@ const Sidebar = ({
                     selectedTopicc={selectedTopic}
                     setSelectedTopic={setSelectedTopic}
                     setTopicName={setTopicName}
+                    setTableName={setTableName}
                     historyId={historyId}
                     setHistoryId={setHistoryId}
                     model={model}

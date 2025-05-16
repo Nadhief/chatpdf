@@ -32,6 +32,7 @@ const Layout = () => {
   const [isSummarize, setIsSummarize] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(false);
   const [topicName, setTopicName] = useState("");
+  const [tableName, setTableName] = useState("");
   const [deptID, setDeptID] = useState("");
   const [isViewPdf, setIsViewPdf] = useState(false);
   const [pdfSource, setPdfSource] = useState(null);
@@ -57,8 +58,6 @@ const Layout = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
-  console.log(newChat)
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -93,6 +92,8 @@ const Layout = () => {
 
   if (isCheckingUser) return <LoadingScreen />;
   if (!user) return null;
+
+  console.log(tableName)
 
   return (
     <>
@@ -154,6 +155,7 @@ const Layout = () => {
             selectedTopic={selectedTopic}
             setSelectedTopic={setSelectedTopic}
             setTopicName={setTopicName}
+            setTableName={setTableName}
             setDeptID={setDeptID}
             setIsMenu={setIsMenu}
             model={model}

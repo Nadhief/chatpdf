@@ -47,6 +47,7 @@ const PersonalUser = ({
   selectedTopicc,
   setSelectedTopic,
   setTopicName,
+  setTableName,
   historyId,
   setHistoryId,
   model,
@@ -208,9 +209,8 @@ const handleCheckFile = (idx, value) => {
     }
   };
 
-    const handleSelectDatabase = (idx) => {
+  const handleSelectDatabase = (idx) => {
     setSelectedTopicIndex(idx);
-    // If a topic is selected, set the topic name
     if (databaseList.list_files && databaseList.list_files[idx]) {
       setTopicName(databaseList.list_files[idx].name);
     }
@@ -903,10 +903,12 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
                   {databaseList?.list_files?.map((item, idx) => (
                     <Database
                       key={idx}
+                      id = {id}
                       label={item.name}
                       status={item.status_table}
                       selected={selectedTopicIndex === idx}
                       onSelect={() => handleSelectDatabase(idx)}
+                      setTableName={setTableName}
                     />
                   ))}
                 </>
