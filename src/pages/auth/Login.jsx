@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 // import { loginUser } from "../../services/authServices";
 import { useNavigate } from "react-router-dom";
-import CoofisImage from "../../assets/images/Coofis.png"; // Adjust the path as necessary
+import CoofisImage from "../../assets/images/coofis.png"; // Adjust the path as necessary
 import { login } from "../../services/authservices";
 import { Alert, Snackbar } from "@mui/material";
 
