@@ -9,7 +9,7 @@ node {
 
     stage('Build image') {
         imageTag = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
-        app = docker.build("coofis/chatalizer", "--build-arg VITE_API_BASE_URL=https://red.247go.biz/chat/personal_v2 --build-arg BUILD_DATE=\$(date -u +'%Y%m%d%H%M%S') -f Dockerfile .")
+        app = docker.build("coofis/chatalizer", "--build-arg VITE_API_BASE_URL=https://red.247go.biz/ --build-arg BUILD_DATE=\$(date -u +'%Y%m%d%H%M%S') -f Dockerfile .")
     }
 
     stage('Test image') {
