@@ -93,7 +93,7 @@ const Layout = () => {
   if (isCheckingUser) return <LoadingScreen />;
   if (!user) return null;
 
-  console.log(tableName)
+  console.log(tableName, topicName)
 
   return (
     <>

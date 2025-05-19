@@ -62,6 +62,7 @@ const PersonalUser = ({
 
   const [personalFiles, setPersonalFiles] = useState([]);
   const [personalTopics, setPersonalTopics] = useState([]);
+  const [databaseList, setDatabaseList] = useState(null);
 
   const [checkedItems, setCheckedItems] = useState({});
   const [selectedTopicIndex, setSelectedTopicIndex] = useState(null);
@@ -77,6 +78,9 @@ const PersonalUser = ({
 
   const [topicPage, setTopicPage] = useState(0);
   const [topicRowsPerPage, setTopicRowsPerPage] = useState(5);
+
+  const [databasePage, setDatabasePage] = useState(0);
+  const [databaseRowsPerPage, setDatabaseRowsPerPage] = useState(5);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -134,6 +138,18 @@ const PersonalUser = ({
     } else {
       fetchDataTopics(newPage + 1, topicRowsPerPage);
     }
+  };
+
+  const handleDatabaseChangePage = (event, newPage) => {
+    setDatabasePage(newPage);
+    fetchDatabasePersonal(newPage + 1, databaseRowsPerPage);
+  };
+
+  const handleDatabaseChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setDatabaseRowsPerPage(newRowsPerPage);
+    setDatabasePage(0);
+    fetchDatabasePersonal(1, newRowsPerPage);
   };
 
   const handleTopicChangeRowsPerPage = (event) => {
@@ -210,11 +226,13 @@ const handleCheckFile = (idx, value) => {
   };
 
   const handleSelectDatabase = (idx) => {
-    setSelectedTopicIndex(idx);
-    if (databaseList.list_files && databaseList.list_files[idx]) {
-      setTopicName(databaseList.list_files[idx].name);
-    }
-  };
+  const globalIdx = databasePage * databaseRowsPerPage + idx;
+  setSelectedTopicIndex(globalIdx);
+  
+  if (databaseList?.list_files && databaseList.list_files[idx]) {
+    setTopicName(databaseList.list_files[idx].name);
+  }
+};
 
   const selectedFiles = Object.entries(checkedItems)
     .filter(([idx, isChecked]) => isChecked)
@@ -268,6 +286,21 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
   } catch (error) {
     console.error("Gagal mengambil topik:", error);
   }
+};
+
+const fetchDatabasePersonal = (pageNum = 1, perPage = 5) => {
+  getDatabasePersonal({
+    user_id: String(id),
+    keyword: "",
+    page: pageNum,
+    per_page: perPage,
+  })
+    .then((res) => {
+      setDatabaseList(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
   const handleSelectUploadFiles = (event) => {
@@ -564,27 +597,10 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
       });
   };
 
-  const [databaseList, setDatabaseList] = useState(null);
-
-  const fetchDatabasePersonal = () => {
-    getDatabasePersonal({
-      user_id: String(id),
-      keyword: "",
-      page: 1,
-      per_page: 10,
-    })
-      .then((res) => {
-        setDatabaseList(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
    useEffect(() => {
     fetchDataFile();
     fetchDataTopics();
-    fetchDatabasePersonal();
+    fetchDatabasePersonal(1, databaseRowsPerPage);
   }, [isAnalyst]);
 
   return (
@@ -900,21 +916,24 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
             <Stack direction={"column"} spacing={1}>
               {isAnalyst ? (
                 <>
-                  {databaseList?.list_files?.map((item, idx) => (
-                    <Database
-                      key={idx}
-                      id = {id}
-                      label={item.name}
-                      status={item.status_table}
-                      selected={selectedTopicIndex === idx}
-                      onSelect={() => handleSelectDatabase(idx)}
-                      setTableName={setTableName}
-                    />
-                  ))}
+                  {databaseList?.list_files?.map((item, idx) => {
+                    const globalIdx = databasePage * databaseRowsPerPage + idx;
+                    return (
+                      <Database
+                        key={idx}
+                        id={id}
+                        label={item.name}
+                        status={item.status_table}
+                        selected={selectedTopicIndex === globalIdx}
+                        onSelect={() => handleSelectDatabase(idx)}
+                        setTableName={setTableName}
+                      />
+                    );
+                  })}
                 </>
               ) : (
                 <>
-                  {/*MAPPING FILE PDF*/}
+              {/*MAPPING FILE PDF*/}
               {selected === "file"
                 ? personalFiles?.list_files?.map((item, idx) => {
                     const globalIdx = page * rowsPerPage + idx;
@@ -949,23 +968,22 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
         </Stack>
       </Box>
 
-      {!isAnalyst && (
+      {!isAnalyst ? (
         <>
           {selected === "file" && (
             <TablePagination
               component="div"
-              count={personalFiles?.total_files || 0}
-              page={page}
-              onPageChange={handleChangePage}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
+              count={databaseList?.total_files || 0}
+              page={databasePage}
+              onPageChange={handleDatabaseChangePage}
+              rowsPerPage={databaseRowsPerPage}
+              onRowsPerPageChange={handleDatabaseChangeRowsPerPage}
               rowsPerPageOptions={[5, 10]}
               labelRowsPerPage="Rows:"
               sx={{
-                ".MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon":
-                  {
-                    fontSize: "12px",
-                  },
+                ".MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon": {
+                  fontSize: "12px",
+                },
                 ".MuiTablePagination-displayedRows": {
                   fontSize: "12px",
                 },
@@ -995,6 +1013,7 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
             />
           )}
 
+          {/*Tombol +Topik dan Summarize*/}
           <Stack
             width={"100%"}
             direction={"row"}
@@ -1027,50 +1046,71 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
               </Box>
             )}
 
-        {selectedTopicc === false && selected === "file" && selectedFiles.length > 0 && selectedFiles.every(file => {
-            const extension = file?.name?.split('.').pop().toLowerCase();
-            return ['pdf', 'docx'].includes(extension);
-          }) && (
-          <Box
-            onClick={() => {
-              handleSummarize();
-              setIsSummarize(true);
-            }}
-            color="white"
-            paddingY={0.5}
-            paddingX={1}
-            borderRadius={1}
-            alignItems={"center"}
-            sx={{
-              cursor: "pointer",
-              backgroundColor: "#CB3A31",
-            }}
-          >
-            <Typography fontSize={12} fontWeight={400}>
-              Summarize
-            </Typography>
-          </Box>
-        )}
-      </Stack>
-      <AddTopic
-        open={openPaper}
-        onClose={() => setOpenPaper(false)}
-        handleSubmit={handleSubmitTopic}
-      />
-      {selected === "file" ? (
-        <DeleteFile
-          open={openTrash}
-          onClose={() => setOpenTrash(false)}
-          handleDelete={handleDeleteFile}
-        />
-      ) : (
-        <DeleteFile
-          open={openTrash}
-          onClose={() => setOpenTrash(false)}
-          handleDelete={handleDeleteTopic}
-        />
-      )}
+            {selectedTopicc === false && selected === "file" && selectedFiles.length > 0 && selectedFiles.every(file => {
+                const extension = file?.name?.split('.').pop().toLowerCase();
+                return ['pdf', 'docx'].includes(extension);
+              }) && (
+              <Box
+                onClick={() => {
+                  handleSummarize();
+                  setIsSummarize(true);
+                }}
+                color="white"
+                paddingY={0.5}
+                paddingX={1}
+                borderRadius={1}
+                alignItems={"center"}
+                sx={{
+                  cursor: "pointer",
+                  backgroundColor: "#CB3A31",
+                }}
+              >
+                <Typography fontSize={12} fontWeight={400}>
+                  Summarize
+                </Typography>
+              </Box>
+            )}
+          </Stack>
+
+          <AddTopic
+            open={openPaper}
+            onClose={() => setOpenPaper(false)}
+            handleSubmit={handleSubmitTopic}
+          />
+          {selected === "file" ? (
+            <DeleteFile
+              open={openTrash}
+              onClose={() => setOpenTrash(false)}
+              handleDelete={handleDeleteFile}
+            />
+          ) : (
+            <DeleteFile
+              open={openTrash}
+              onClose={() => setOpenTrash(false)}
+              handleDelete={handleDeleteTopic}
+            />
+          )}
         </>
+      ) : (
+        <TablePagination
+          component="div"
+          count={databaseList?.total_files || 0}
+          page={databasePage}
+          onPageChange={handleDatabaseChangePage}
+          rowsPerPage={databaseRowsPerPage}
+          onRowsPerPageChange={handleDatabaseChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10]}
+          labelRowsPerPage="Rows:"
+          sx={{
+            ".MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon":
+              {
+                fontSize: "12px",
+              },
+            ".MuiTablePagination-displayedRows": {
+              fontSize: "12px",
+            },
+          }}
+        />
       )}
 
       <Dialog
