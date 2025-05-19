@@ -530,7 +530,6 @@ export const getChatDataByHistoryId = async (payload) => {
   }
 };
 
-
 export const deleteHisotryById = async (historyId) => {
   try {
     const response = await api.delete("/chat/history/remove/chatdocs", {
@@ -722,6 +721,18 @@ export const uploadDbPersonal = async (payload) => {
   try {
     const response = await api.post(
       "csv_db/upload_db/personal",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const uploadCSVtoDbPersonal = async (payload) => {
+  try {
+    const response = await api.post(
+      "file/csv_to_db/personal",
       payload
     );
     return response.data;

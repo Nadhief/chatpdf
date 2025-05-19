@@ -17,6 +17,7 @@ const DataColumn = ({
   setSelectedItem,
   selectedItem
 }) => {
+  console.log(data)
   const handleCheckboxClick = (row) => {
     setSelectedItem((prev) => {
       const isSelected = prev.some((item) => item.id === row.id);
