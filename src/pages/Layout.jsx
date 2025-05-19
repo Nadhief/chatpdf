@@ -15,7 +15,7 @@ import Table from "./admin/Table";
 import TableDetail from "./admin/TableDetail";
 import ChatBoxanalyst from "./Chatboxanalyst";
 const Layout = () => {
-  const logoUrl = "http://192.168.1.65:8001/logo";
+  const logoUrl = import.meta.env.VITE_API_BASE_URL + "logo";
 
   let link =
     document.querySelector("link[rel*='icon']") ||
