@@ -15,7 +15,7 @@ import AdminIcon from "@mui/icons-material/ManageAccountsOutlined";
 import MailIcon from "@mui/icons-material/EmailOutlined";
 import HistoryIcon from "@mui/icons-material/History";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import LogoutIcon from "@mui/icons-material/logout";
+import LogoutIcon from "@mui/icons-material/Logout";
 import NewChatIcon from "@mui/icons-material/AddCommentOutlined";
 import Logo from "../../assets/ChatalizeLogo.svg";
 import ProfilPict from "../../assets/malePict.svg";

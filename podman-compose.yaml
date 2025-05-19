@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  chatalizer-frontend:
+    image: img.armsolusi.com/coofis/chatalizer:latest
+    ports:
+      - "6666:6666"
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:6666"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
