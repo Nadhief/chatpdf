@@ -56,6 +56,7 @@ const Table = ({ id, toggleSidebar }) => {
   const [selectedTableDelete, setSelectedTableDelete] = useState([]);
   const [showEntry, setShowEntry] = useState(10);
   const [keyword, setKeyword] = useState("");
+  const [page, setPage] = useState(1);
 
   const handleAddRow = () => {
     setColumns([...columns, { field_name: "", field_type: "" }]);
@@ -80,8 +81,7 @@ const Table = ({ id, toggleSidebar }) => {
           setTableName("");
           fetchTablePersonal();
         })
-        .catch((err) => {
-        });
+        .catch((err) => {});
     } else if (type === "column") {
       const payload = {
         id: String(id),
@@ -102,14 +102,13 @@ const Table = ({ id, toggleSidebar }) => {
       id: String(id),
       db_name: name,
       keyword: keyword,
-      page: 1,
+      page: page,
       per_page: showEntry,
     })
       .then((res) => {
         setTableList(res);
       })
-      .catch((err) => {
-      });
+      .catch((err) => {});
   };
 
   const handleCheckboxChange = (item) => {
@@ -136,13 +135,16 @@ const Table = ({ id, toggleSidebar }) => {
         setSelectedTableDelete([]);
         fetchTablePersonal();
       })
-      .catch((err) => {
-      });
+      .catch((err) => {});
+  };
+
+  const handleChangePage = (event, value) => {
+    setPage(value);
   };
 
   useEffect(() => {
     fetchTablePersonal();
-  }, [showEntry, keyword]);
+  }, [showEntry, keyword, page]);
 
   return (
     <Stack
@@ -311,7 +313,7 @@ const Table = ({ id, toggleSidebar }) => {
           </Stack>
 
           {/* Footer Pagination */}
-          {/* <Box
+          <Box
             sx={{
               display: "flex",
               justifyContent: "space-between",
@@ -321,14 +323,15 @@ const Table = ({ id, toggleSidebar }) => {
             }}
           >
             <Typography variant="body2">
-              Menampilkan {tableList?.page} sampai {tableList?.per_page}
+              Menampilkan {tableList?.per_page * (page - 1) + 1} sampai {tableList?.per_page * page}
             </Typography>
             <Pagination
               count={tableList?.total_pages}
-              page={tableList?.page}
+              page={page}
+              onChange={handleChangePage}
               size="small"
             />
-          </Box> */}
+          </Box>
         </Box>
       </Stack>
 

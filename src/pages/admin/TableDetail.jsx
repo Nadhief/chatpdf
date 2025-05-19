@@ -64,6 +64,7 @@ const TableDetail = ({ id }) => {
   const [keyword, setKeyword] = useState("");
 
   const [file, setFile] = useState(null);
+  const [page, setPage] = useState(1);
 
   const handleSubmit = (type) => {
     if (type === "column") {
@@ -131,7 +132,7 @@ const TableDetail = ({ id }) => {
       id: String(id),
       db_name: name,
       table_name: nameTable,
-      page: 1,
+      page: page,
       per_page: showEntry,
       keyword: keyword,
     })
@@ -207,9 +208,13 @@ const TableDetail = ({ id }) => {
     });
   };
 
+  const handleChangePage = (event, value) => {
+    setPage(value);
+  };
+
   useEffect(() => {
     fetchKolomPersonal();
-  }, [showEntry, keyword]);
+  }, [showEntry, keyword, page]);
 
   return (
     <Stack
@@ -345,14 +350,14 @@ const TableDetail = ({ id }) => {
           </Paper>
         </Box>
         <Box sx={{ border: "1px solid #ccc", borderRadius: 2, mt: 2, p: 2 }}>
-          {/* <DataColumn
+          <DataColumn
             data={data}
             setEditData={setEditData}
             setSelectedEdit={setSelectedEdit}
             setOpenDialogAddData={setOpenDialogAddData}
             setSelectedItem={setSelectedItem}
             selectedItem={selectedItem}
-          /> */}
+          />
           <Box
             sx={{
               display: "flex",
@@ -363,11 +368,12 @@ const TableDetail = ({ id }) => {
             }}
           >
             <Typography variant="body2">
-              Menampilkan {data?.page} sampai {data?.per_page}
+              Menampilkan {data?.per_page * (page - 1) + 1} sampai {data?.per_page * page}
             </Typography>
             <Pagination
               count={data?.total_pages}
-              page={data?.page}
+              page={page}
+              onChange={handleChangePage}
               size="small"
             />
           </Box>
@@ -542,7 +548,7 @@ const TableDetail = ({ id }) => {
                   fullWidth
                   select
                   size="small"
-                  value={col?.field_type  ?? ""}
+                  value={col?.field_type ?? ""}
                   onChange={(e) =>
                     handleChange(idx, "field_type", e.target.value)
                   }

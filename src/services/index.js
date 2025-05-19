@@ -530,7 +530,6 @@ export const getChatDataByHistoryId = async (payload) => {
   }
 };
 
-
 export const deleteHisotryById = async (historyId) => {
   try {
     const response = await api.delete("/chat/history/remove/chatdocs", {
