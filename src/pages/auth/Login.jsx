@@ -16,7 +16,7 @@ import { login } from "../../services/authservices";
 import { Alert, Snackbar } from "@mui/material";
 
 const Login = () => {
-  const logoUrl = "http://192.168.1.65:8001/logo";
+  const logoUrl = import.meta.env.VITE_API_BASE_URL + "logo";
 
   const [openError, setOpenError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");

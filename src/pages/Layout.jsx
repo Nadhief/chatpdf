@@ -15,7 +15,7 @@ import Table from "./admin/Table";
 import TableDetail from "./admin/TableDetail";
 import ChatBoxanalyst from "./Chatboxanalyst";
 const Layout = () => {
-  const logoUrl = "http://192.168.1.65:8001/logo";
+  const logoUrl = import.meta.env.VITE_API_BASE_URL + "logo";
 
   let link =
     document.querySelector("link[rel*='icon']") ||
@@ -32,6 +32,7 @@ const Layout = () => {
   const [isSummarize, setIsSummarize] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(false);
   const [topicName, setTopicName] = useState("");
+  const [tableName, setTableName] = useState("");
   const [deptID, setDeptID] = useState("");
   const [isViewPdf, setIsViewPdf] = useState(false);
   const [pdfSource, setPdfSource] = useState(null);
@@ -91,6 +92,8 @@ const Layout = () => {
 
   if (isCheckingUser) return <LoadingScreen />;
   if (!user) return null;
+
+  console.log(tableName)
 
   return (
     <>
@@ -152,6 +155,7 @@ const Layout = () => {
             selectedTopic={selectedTopic}
             setSelectedTopic={setSelectedTopic}
             setTopicName={setTopicName}
+            setTableName={setTableName}
             setDeptID={setDeptID}
             setIsMenu={setIsMenu}
             model={model}
