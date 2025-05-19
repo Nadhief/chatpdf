@@ -7,6 +7,9 @@ WORKDIR /app
 ARG VITE_API_BASE_URL
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
+ARG BUILD_DATE
+LABEL build-time=${BUILD_DATE}
+
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 COPY . .
