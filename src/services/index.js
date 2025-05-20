@@ -20,6 +20,36 @@ export const chatPersonalAnalyst = async (payload) => {
   }
 };
 
+export const chatPersonalAnalystSpesific = async (payload) => {
+  try {
+    const response = await api.post("chat/personal/chat_to_specific_csv", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding department:", error);
+    throw error;
+  }
+};
+
+export const chatDepartmentAnalyst = async (payload) => {
+  try {
+    const response = await api.post("chat/department/chat_to_csv_v2", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding department:", error);
+    throw error;
+  }
+};
+
+export const chatDepartmentAnalystSpesific = async (payload) => {
+  try {
+    const response = await api.post("chat/department/chat_to_specific_csv", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding department:", error);
+    throw error;
+  }
+};
+
 export const chatDepartemen = async (payload) => {
   try {
     const response = await api.post("chat/department_v2/", payload);

@@ -96,8 +96,6 @@ const Layout = () => {
   if (isCheckingUser) return <LoadingScreen />;
   if (!user) return null;
 
-  console.log(tableName, topicName)
-
   return (
     <>
       <Grid
@@ -239,6 +237,7 @@ const Layout = () => {
                   setHistoryId={setHistoryId}
                   isAnalyst={isAnalyst}
                   setIsAnalyst={setIsAnalyst}
+                  tableName={tableName}
                 />
               }
             />
@@ -305,6 +304,7 @@ const Layout = () => {
                   setHistoryId={setHistoryId}
                   isAnalyst={isAnalyst}
                   setIsAnalyst={setIsAnalyst}
+                  tableName={tableName}
                 />
               }
             />
@@ -381,6 +381,7 @@ const Layout = () => {
                   setHistoryId={setHistoryId}
                   isAnalyst={isAnalyst}
                   setIsAnalyst={setIsAnalyst}
+                  tableName={tableName}
                 />
               }
             />

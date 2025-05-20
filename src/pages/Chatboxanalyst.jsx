@@ -18,8 +18,11 @@ import ChatbotImage from "../assets/images/Chatbot.png";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import {
   chatDepartemen,
+  chatDepartmentAnalyst,
+  chatDepartmentAnalystSpesific,
   chatPersonal,
   chatPersonalAnalyst,
+  chatPersonalAnalystSpesific,
   chatTopic,
   getChatByHistoryId,
   getChatDataByHistoryId,
@@ -54,6 +57,7 @@ const ChatBoxanalyst = ({
   setHistoryId,
   isAnalyst,
   setIsAnalyst,
+  tableName,
 }) => {
   // const [model, setModel] = useState("Llama 3.1");
   // const [vectorizer, setVectorizer] = useState("nomic-embed-text");
@@ -83,251 +87,245 @@ const ChatBoxanalyst = ({
     };
     setResponses((prev) => [...prev, placeholder]);
     if (historyId) {
-      const payload = {
-        id: String(id),
-        embedding_model: vectorizer,
-        llm_model: model,
-        history_id: String(historyId),
-        question: currentQuestion,
-      };
-      if (isAnalyst === true) {
-        const payloadAnalyst = {
-          id: String(id),
-          database_name: topicName,
-          question: currentQuestion,
-          history_id: String(historyId),
-        };
-        console.log("masuk pak eko", payloadAnalyst);
-        chatPersonalAnalyst(payloadAnalyst)
-          .then((res) => {
-            setHistoryId(res.current_history_id);
-            console.log(res);
-            const updatedEntry = {
-              user: currentQuestion,
-              bot: res.response.output,
-              // source: filenames,
-              // type: res.type,
-              // bot_chart: res.response_chart,
-            };
-            console.log("updatedEntry", updatedEntry);
-            setResponses((prev) => {
-              const updated = [...prev];
-              updated[updated.length - 1] = updatedEntry;
-              return updated;
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } else {
-        if (selectedTopic === true) {
-          const payloadTopic = {
+      if (selected === "personal") {
+        if (isAnalyst === true && topicName && !tableName) {
+          const payloadAnalyst = {
             id: String(id),
-            embedding_model: vectorizer,
-            llm_model: model,
+            database_name: topicName,
             question: currentQuestion,
-            topic: topicName,
             history_id: String(historyId),
           };
-          chatTopic(payloadTopic).then((res) => {
-            const filenames = res?.sources?.map((item) => {
-              return item;
-            });
-
-            const updatedEntry = {
-              user: currentQuestion,
-              bot: res.response,
-              source: filenames,
-              type: res.type,
-              bot_chart: res.response_chart,
-            };
-
-            console.log("updatedEntry", updatedEntry);
-
-            setResponses((prev) => {
-              const updated = [...prev];
-              updated[updated.length - 1] = updatedEntry;
-              return updated;
-            });
-          });
-        } else {
-          if (selected === "personal") {
-            chatPersonal(payload).then((res) => {
-              const filenames = res?.sources?.map((item) => {
-                return item;
-              });
-
+          chatPersonalAnalyst(payloadAnalyst)
+            .then((res) => {
+              setHistoryId(res.current_history_id);
+              console.log(res);
               const updatedEntry = {
                 user: currentQuestion,
-                bot: res.response,
-                source: filenames,
-                type: res.type,
-                bot_chart: res.response_chart,
+                bot: res.response.output,
+                // source: filenames,
+                // type: res.type,
+                // bot_chart: res.response_chart,
               };
               console.log("updatedEntry", updatedEntry);
-
               setResponses((prev) => {
                 const updated = [...prev];
                 updated[updated.length - 1] = updatedEntry;
                 return updated;
               });
+            })
+            .catch((err) => {
+              console.log(err);
             });
-          } else if (selected === "departemen") {
-            const payloadDepartment = {
-              id: String(deptID),
-              embedding_model: vectorizer,
-              llm_model: model,
-              question: currentQuestion,
-              history_id: String(historyId),
-            };
-            chatDepartemen(payloadDepartment).then((res) => {
-              const filenames = res?.sources?.map((item) => {
-                return item;
-              });
-
+        } else if (isAnalyst === true && topicName && tableName) {
+          const payloadAnalyst = {
+            id: String(id),
+            database_name: topicName,
+            table_name: tableName,
+            question: currentQuestion,
+            history_id: String(historyId),
+          };
+          chatPersonalAnalystSpesific(payloadAnalyst)
+            .then((res) => {
+              setHistoryId(res.current_history_id);
+              console.log(res);
               const updatedEntry = {
                 user: currentQuestion,
                 bot: res.response,
-                source: filenames,
-                type: res.type,
-                bot_chart: res.response_chart,
+                // source: filenames,
+                // type: res.type,
+                // bot_chart: res.response_chart,
               };
               console.log("updatedEntry", updatedEntry);
-
               setResponses((prev) => {
                 const updated = [...prev];
                 updated[updated.length - 1] = updatedEntry;
                 return updated;
               });
+            })
+            .catch((err) => {
+              console.log(err);
             });
-          }
+        }
+      } else {
+        if (isAnalyst === true && topicName && !tableName) {
+          const payloadAnalyst = {
+            id: String(deptID),
+            database_name: topicName,
+            question: currentQuestion,
+            history_id: String(historyId),
+          };
+          chatDepartmentAnalyst(payloadAnalyst)
+            .then((res) => {
+              setHistoryId(res.current_history_id);
+              console.log(res);
+              const updatedEntry = {
+                user: currentQuestion,
+                bot: res.response.output,
+                // source: filenames,
+                // type: res.type,
+                // bot_chart: res.response_chart,
+              };
+              console.log("updatedEntry", updatedEntry);
+              setResponses((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = updatedEntry;
+                return updated;
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else if (isAnalyst === true && topicName && tableName) {
+          const payloadAnalyst = {
+            id: String(deptID),
+            database_name: topicName,
+            table_name: tableName,
+            question: currentQuestion,
+            history_id: String(historyId),
+          };
+          chatDepartmentAnalystSpesific(payloadAnalyst)
+            .then((res) => {
+              setHistoryId(res.current_history_id);
+              console.log(res);
+              const updatedEntry = {
+                user: currentQuestion,
+                bot: res.response,
+                // source: filenames,
+                // type: res.type,
+                // bot_chart: res.response_chart,
+              };
+              console.log("updatedEntry", updatedEntry);
+              setResponses((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = updatedEntry;
+                return updated;
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         }
       }
     } else {
-      const payload = {
-        id: String(id),
-        embedding_model: vectorizer,
-        llm_model: model,
-        history_id: "",
-        question: currentQuestion,
-      };
-      if (isAnalyst === true) {
-        const payloadAnalyst = {
-          id: String(id),
-          database_name: topicName,
-          question: currentQuestion,
-          history_id: "",
-        };
-        console.log("masuk pak eko", payloadAnalyst);
-        chatPersonalAnalyst(payloadAnalyst)
-          .then((res) => {
-            setHistoryId(res.current_history_id);
-            console.log(res);
-            const updatedEntry = {
-              user: currentQuestion,
-              bot: res.response.output,
-              // source: filenames,
-              // type: res.type,
-              // bot_chart: res.response_chart,
-            };
-            console.log("updatedEntry", updatedEntry);
-            setResponses((prev) => {
-              const updated = [...prev];
-              updated[updated.length - 1] = updatedEntry;
-              return updated;
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } else {
-        if (selectedTopic === true) {
-          const payloadTopic = {
+      if (selected === "personal") {
+        if (isAnalyst === true && topicName && !tableName) {
+          const payloadAnalyst = {
             id: String(id),
-            embedding_model: vectorizer,
-            llm_model: model,
+            database_name: topicName,
             question: currentQuestion,
-            topic: topicName,
             history_id: "",
           };
-          chatTopic(payloadTopic).then((res) => {
-            setHistoryId(res?.current_history_id);
-            const filenames = res?.sources?.map((item) => {
-              const cleanedItem = item.replace(/^PDF:\s*/, "");
-              return cleanedItem.split("/").pop();
-            });
-
-            const updatedEntry = {
-              user: currentQuestion,
-              bot: res.response,
-              source: filenames,
-              type: res.type,
-              bot_chart: res.response_chart,
-            };
-
-            console.log("updatedEntry", updatedEntry);
-
-            setResponses((prev) => {
-              const updated = [...prev];
-              updated[updated.length - 1] = updatedEntry;
-              return updated;
-            });
-          });
-        } else {
-          if (selected === "personal") {
-            chatPersonal(payload).then((res) => {
-              setHistoryId(res?.current_history_id);
-              const filenames = res?.sources?.map((item) => {
-                const cleanedItem = item.replace(/^PDF:\s*/, "");
-                return cleanedItem.split("/").pop();
-              });
-
+          console.log("masuk pak eko", payloadAnalyst);
+          chatPersonalAnalyst(payloadAnalyst)
+            .then((res) => {
+              setHistoryId(res.current_history_id);
+              console.log(res);
               const updatedEntry = {
                 user: currentQuestion,
                 bot: res.response,
-                source: filenames,
-                type: res.type,
-                bot_chart: res.response_chart,
+                // source: filenames,
+                // type: res.type,
+                // bot_chart: res.response_chart,
               };
-
               console.log("updatedEntry", updatedEntry);
-
               setResponses((prev) => {
                 const updated = [...prev];
                 updated[updated.length - 1] = updatedEntry;
                 return updated;
               });
+            })
+            .catch((err) => {
+              console.log(err);
             });
-          } else if (selected === "departemen") {
-            const payloadDepartment = {
-              id: String(deptID),
-              embedding_model: vectorizer,
-              llm_model: model,
-              question: currentQuestion,
-              history_id: "",
-            };
-            chatDepartemen(payloadDepartment).then((res) => {
-              setHistoryId(res?.current_history_id);
-              const filenames = res?.sources?.map((item) => {
-                return item;
-              });
-
+        } else if (isAnalyst === true && topicName && tableName) {
+          const payloadAnalyst = {
+            id: String(id),
+            database_name: topicName,
+            table_name: tableName,
+            question: currentQuestion,
+            history_id: "",
+          };
+          chatPersonalAnalystSpesific(payloadAnalyst)
+            .then((res) => {
+              setHistoryId(res.current_history_id);
+              console.log(res);
               const updatedEntry = {
                 user: currentQuestion,
-                bot: res.response,
-                source: filenames,
-                type: res.type,
-                bot_chart: res.response_chart,
+                bot: res.response.output,
+                // source: filenames,
+                // type: res.type,
+                // bot_chart: res.response_chart,
               };
               console.log("updatedEntry", updatedEntry);
-
               setResponses((prev) => {
                 const updated = [...prev];
                 updated[updated.length - 1] = updatedEntry;
                 return updated;
               });
+            })
+            .catch((err) => {
+              console.log(err);
             });
-          }
+        }
+      } else {
+        if (isAnalyst === true && topicName && !tableName) {
+          const payloadAnalyst = {
+            id: String(deptID),
+            database_name: topicName,
+            question: currentQuestion,
+            history_id: "",
+          };
+          console.log("masuk pak eko", payloadAnalyst);
+          chatDepartmentAnalyst(payloadAnalyst)
+            .then((res) => {
+              setHistoryId(res.current_history_id);
+              console.log(res);
+              const updatedEntry = {
+                user: currentQuestion,
+                bot: res.response,
+                // source: filenames,
+                // type: res.type,
+                // bot_chart: res.response_chart,
+              };
+              console.log("updatedEntry", updatedEntry);
+              setResponses((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = updatedEntry;
+                return updated;
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else if (isAnalyst === true && topicName && tableName) {
+          const payloadAnalyst = {
+            id: String(deptID),
+            database_name: topicName,
+            table_name: tableName,
+            question: currentQuestion,
+            history_id: "",
+          };
+          chatDepartmentAnalystSpesific(payloadAnalyst)
+            .then((res) => {
+              setHistoryId(res.current_history_id);
+              console.log(res);
+              const updatedEntry = {
+                user: currentQuestion,
+                bot: res.response.output,
+                // source: filenames,
+                // type: res.type,
+                // bot_chart: res.response_chart,
+              };
+              console.log("updatedEntry", updatedEntry);
+              setResponses((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = updatedEntry;
+                return updated;
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         }
       }
     }
@@ -347,16 +345,16 @@ const ChatBoxanalyst = ({
   useEffect(() => {
     if (responses.length > 0) {
       const lastResponse = responses[responses.length - 1];
-      const fullText = lastResponse.bot;
+      const fullText = lastResponse?.bot;
 
       let index = 0;
       setDisplayedText("");
 
       const typingInterval = setInterval(() => {
-        setDisplayedText((prev) => prev + fullText.charAt(index));
+        setDisplayedText((prev) => prev + fullText?.charAt(index));
         index++;
 
-        if (index === fullText.length) {
+        if (index === fullText?.length) {
           clearInterval(typingInterval);
         }
       }, 10);
@@ -410,7 +408,7 @@ const ChatBoxanalyst = ({
 
   useEffect(() => {
     if (newChat) {
-      console.log("awikawok")
+      console.log("awikawok");
       setResponses([]);
       setIsSummarize(false);
       setResponseSummarize(null);
@@ -427,7 +425,7 @@ const ChatBoxanalyst = ({
 
       getChatDataByHistoryId(payload)
         .then((res) => {
-          console.log(res)
+          console.log(res);
           const pairedChats = [];
           for (let i = 0; i < res.length; i += 2) {
             const humanItem = res[i];
@@ -447,6 +445,7 @@ const ChatBoxanalyst = ({
         });
     }
   }, [historyId]);
+  console.log(selected)
   return (
     <Stack
       sx={{
