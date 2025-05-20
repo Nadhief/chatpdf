@@ -720,7 +720,7 @@ const Sidebar = ({
                 </Stack>
               </Box>
               {role === "user" && (
-                <>
+                isAnalyst ? (
                   <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                     <Stack
                       paddingY={0.8}
@@ -750,6 +750,7 @@ const Sidebar = ({
                         setIsAnalyst(false);
                         setHistoryId(null);
                         localStorage.removeItem("chat_responses");
+                        setSelected("personal");
                       }}
                     >
                       <ChatIcon className="hover-color" sx={{ fontSize: 20 }} />
@@ -763,6 +764,7 @@ const Sidebar = ({
                       </Typography>
                     </Stack>
                   </Box>
+                ) : (
                   <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                     <Stack
                       paddingY={0.8}
@@ -792,6 +794,7 @@ const Sidebar = ({
                         setIsAnalyst(true);
                         setHistoryId(null);
                         localStorage.removeItem("chat_responses");
+                        setSelected("departemen");
                       }}
                     >
                       <ChatIcon className="hover-color" sx={{ fontSize: 20 }} />
@@ -805,7 +808,7 @@ const Sidebar = ({
                       </Typography>
                     </Stack>
                   </Box>
-                </>
+                )
               )}
               {/* <Box width={"100%"} paddingRight={3} paddingLeft={1}>
                 <Stack
@@ -843,7 +846,7 @@ const Sidebar = ({
                   </Typography>
                 </Stack>
               </Box> */}
-              {!isAnalyst && (
+              {!(role === 'user' && isAnalyst === true) && (
                 <Box
                   width={"97%"}
                   sx={{
@@ -943,6 +946,9 @@ const Sidebar = ({
                       setHistoryId={setHistoryId}
                       model={model}
                       vectorizer={vectorizer}
+                      isAnalyst={isAnalyst}
+                      setTableName={setTableName}
+                      setTopicName={setTopicName}
                     />
                   ) : role === "operator" || "admin" ? (
                     <DepartemenOperator
@@ -954,6 +960,9 @@ const Sidebar = ({
                       setHistoryId={setHistoryId}
                       model={model}
                       vectorizer={vectorizer}
+                      isAnalyst={isAnalyst}
+                      setTableName={setTableName}
+                      setTopicName={setTopicName}
                     />
                   ) : null
                 ) : null}

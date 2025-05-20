@@ -874,3 +874,49 @@ export const deleteJsonDept = async ({ id, filename }) => {
     throw error;
   }
 };
+
+export const getDatabaseDepartemen = async ({
+  dept_id,
+  keyword,
+  page,
+  per_page,
+}) => {
+  try {
+    const response = await api.get("csv_db/list_database/dept", {
+      params: {
+        dept_id,
+        keyword,
+        page,
+        per_page,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting personal database:", error);
+    throw error;
+  }
+};
+
+export const getTableDepartemen = async ({
+  id,
+  db_name,
+  keyword,
+  page,
+  per_page,
+}) => {
+  try {
+    const response = await api.get("csv_db/list_table/dept", {
+      params: {
+        id,
+        db_name,
+        keyword,
+        page,
+        per_page,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting personal database:", error);
+    throw error;
+  }
+};

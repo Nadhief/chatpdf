@@ -3,9 +3,9 @@ import StorageIcon from '@mui/icons-material/Storage';
 import { Stack, Radio, Typography, Accordion, AccordionSummary, AccordionDetails, Box } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Topics from "../Topics";
-import { getTablePersonal } from "../../../services";
+import { getTableDepartemen, getTablePersonal } from "../../../services";
 
-const Index = ({ id, label, selected, onSelect, status, setTableName }) => {
+const Index = ({ dept_id, id, label, selected, onSelect, status, setTableName }) => {
   const [expanded, setExpanded] = useState(false);
   const [selectedTableIndex, setSelectedTableIndex] = useState(null);
   const [tableList, setTableList] = useState(null);
@@ -33,11 +33,29 @@ const Index = ({ id, label, selected, onSelect, status, setTableName }) => {
       });
   };
 
+    const fetchTableDepartemen = () => {
+    getTableDepartemen({
+      id: String(dept_id),
+      db_name: label,
+      keyword: "",
+      page: 1,
+      per_page: 10,
+    })
+      .then((res) => {
+        setTableList(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   useEffect(() => {
-    if (status === "exist") {
+    if (status === "exist" && id) {
       fetchTablePersonal();
+    } else if (status === "exist" && dept_id) {
+      fetchTableDepartemen();
     }
-  }, [status, id, label]);
+  }, [status, id, dept_id, label]);
 
   useEffect(() => {
     if (!selected) {

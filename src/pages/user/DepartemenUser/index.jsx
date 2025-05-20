@@ -5,7 +5,9 @@ import TrashIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import Documents from "../../../components/Sidebar/Documents";
 import { documents } from "../../../components/Sidebar/Documents/DocumentsConfig";
 import InputSearchBar from "../../../components/Inputs/InputSearchBar";
+import Database from "../../../components/Sidebar/Database";
 import {
+  getDatabaseDepartemen,
   getDepartmentFile,
   getDepartmentList,
   searchFileDepartment,
@@ -21,7 +23,10 @@ const DepartemenUser = ({
   historyId,
   setHistoryId,
   model,
-  vectorizer
+  vectorizer,
+  isAnalyst,
+  setTableName,
+  setTopicName
 }) => {
   const [departmentList, setDepartmentList] = useState([]);
   const departmentOptions = departmentList.map(([id, name, code]) => ({
@@ -33,8 +38,14 @@ const DepartemenUser = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const [databasePage, setDatabasePage] = useState(0);
+  const [databaseRowsPerPage, setDatabaseRowsPerPage] = useState(5);
+
+  const [selectedTopicIndex, setSelectedTopicIndex] = useState(null);
+
   const [departemenSelected, setDepartmenSelected] = useState(false);
   const [departmentFile, setDepartmentFile] = useState([]);
+  const [databaseList, setDatabaseList] = useState(null);
 
   const [checkedItems, setCheckedItems] = useState({});
   const [selectedDepartmentid, setSelectedDepartmentid] = useState(null);
@@ -56,6 +67,15 @@ const DepartemenUser = ({
 
   const selectedFiles = Object.values(checkedItems);
 
+  const handleSelectDatabase = (idx) => {
+    const globalIdx = databasePage * databaseRowsPerPage + idx;
+    setSelectedTopicIndex(globalIdx);
+    
+    if (databaseList?.list_files && databaseList.list_files[idx]) {
+      setTopicName(databaseList.list_files[idx].name);
+    }
+  };
+
   useEffect(() => {
     fetchDepartmentList();
   }, []);
@@ -67,6 +87,22 @@ const DepartemenUser = ({
     } catch (error) {
       console.error("Gagal mengambil file personal:", error);
     }
+  };
+
+  const fetchDatabaseDepartemen = (dept_id, pageNum = 1, perPage = 5) => {
+    getDatabaseDepartemen({
+      dept_id: String(dept_id),
+      keyword: "",
+      page: pageNum,
+      per_page: perPage,
+    })
+      .then((res) => {
+        setDatabaseList(res);
+      })
+      .catch((err) => {
+        setDatabaseList(null);
+        console.log(err);
+      });
   };
 
   const fetchDataFileDepartment = async (dept_id, pageNum = 1, perPage = rowsPerPage) => {
@@ -82,6 +118,19 @@ const DepartemenUser = ({
     }
   };
 
+
+  const handleChangeDatabasePage = (event, newPage) => {
+    setDatabasePage(newPage);
+    fetchDatabaseDepartemen(selectedDepartmentid, newPage + 1, rowsPerPage);
+  };
+  
+  const handleChangeDatabaseRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setDatabaseRowsPerPage(newRowsPerPage);
+    setDatabasePage(0);
+    fetchDatabaseDepartemen(selectedDepartmentid, 1, newRowsPerPage);
+  };    
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
     fetchDataFileDepartment(selectedDepartmentid, newPage + 1, rowsPerPage);
@@ -96,8 +145,13 @@ const DepartemenUser = ({
 
   const getDepartment = (department) => {
     setSelectedDepartmentid(department.id);
-    setPage(0);
-    fetchDataFileDepartment(department.id, 1, rowsPerPage);
+    if (isAnalyst) {
+      setDatabasePage(0);
+      fetchDatabaseDepartemen(department.id, 1, databaseRowsPerPage);
+    } else {
+      setPage(0);
+      fetchDataFileDepartment(department.id, 1, rowsPerPage);
+    }
     setDeptID(department.id);
   };
 
@@ -165,6 +219,8 @@ const DepartemenUser = ({
     debouncedSearchFileDepartment(e.target.value, selectedDepartmentid);
   };
 
+  console.log(databaseList)
+
   return (
     <Stack
       direction="column"
@@ -228,56 +284,90 @@ const DepartemenUser = ({
                 paddingY: 1,
               }}
             >
-              <Typography fontSize={16} fontWeight={600} color="#404040">
-                {" "}
-                File Departemen{" "}
-              </Typography>
+              {isAnalyst ?(
+                <Typography fontSize={16} fontWeight={600} color="#404040">
+                  {" "}
+                  Database Departemen{" "}
+                </Typography>
+              ) : (
+                <Typography fontSize={16} fontWeight={600} color="#404040">
+                  {" "}
+                  File Departemen{" "}
+                </Typography>
+              )}
+                
             </Box>
             {departemenSelected ? (
-              <Stack direction={"column"} padding={1.5} spacing={1}>
-                <InputSearchBar handleSearch={handleSearchFileDepartment} />
-                <Stack direction={"row"} spacing={1} alignItems="center">
-                  <Box
-                    width={"30%"}
-                    display="flex"
-                    justifyContent="center"
-                    paddingY={0.3}
-                    paddingX={0.7}
-                    borderRadius={100}
-                    border={"1px solid #9E9E9E"}
-                    sx={{
-                      backgroundColor: "#FAFBFD",
-                      boxShadow: "none",
-                    }}
-                  >
-                    <Typography fontSize={12} fontWeight={400} color="black">
-                      {" "}
-                      File{" "}
-                    </Typography>
-                  </Box>
-                  <Box
-                    display="flex"
-                    justifyContent="flex-end"
-                    width="100%"
-                    color="white"
-                  ></Box>
+              isAnalyst ? (
+                databaseList?.list_files && databaseList.list_files.length > 0 ? (
+                  <Stack direction={"column"} padding={1.5} spacing={1}>
+                    <Stack direction={"column"} spacing={1}>
+                      {databaseList.list_files.map((item, idx) => {
+                        const globalIdx = databasePage * databaseRowsPerPage + idx;
+                        return (
+                          <Database
+                            key={idx}
+                            dept_id={selectedDepartmentid}
+                            label={item.name}
+                            status={item.status_table}
+                            selected={selectedTopicIndex === globalIdx}
+                            onSelect={() => handleSelectDatabase(idx)}
+                            setTableName={setTableName}
+                          />
+                        );
+                      })}
+                    </Stack>
+                  </Stack>
+                ) : (
+                  <Typography paddingLeft={2} fontSize={14} fontWeight={400} color="#404040" sx={{ py: 2 }}>
+                    Tidak ada database
+                  </Typography>
+                )
+              ) : (
+                <Stack direction={"column"} padding={1.5} spacing={1}>
+                  <InputSearchBar handleSearch={handleSearchFileDepartment} />
+                  <Stack direction={"row"} spacing={1} alignItems="center">
+                    <Box
+                      width={"30%"}
+                      display="flex"
+                      justifyContent="center"
+                      paddingY={0.3}
+                      paddingX={0.7}
+                      borderRadius={100}
+                      border={"1px solid #9E9E9E"}
+                      sx={{
+                        backgroundColor: "#FAFBFD",
+                        boxShadow: "none",
+                      }}
+                    >
+                      <Typography fontSize={12} fontWeight={400} color="black">
+                        {" "}
+                        File{" "}
+                      </Typography>
+                    </Box>
+                    <Box
+                      display="flex"
+                      justifyContent="flex-end"
+                      width="100%"
+                      color="white"
+                    ></Box>
+                  </Stack>
+                  <Stack direction={"column"} spacing={1}>
+                    {departmentFile?.list_files?.map((item, idx) => {
+                      const globalIdx = page * rowsPerPage + idx;
+                      return (
+                        <Documents
+                          key={idx}
+                          label={item.name}
+                          status={item.status}
+                          checked={!!checkedItems[globalIdx]}
+                          onCheck={(val) => handleCheck(idx, val)}
+                        />
+                      );
+                    })}
+                  </Stack>
                 </Stack>
-                <Stack direction={"column"} spacing={1}>
-                  {/*MAPPING FILE PDF*/}
-                  {departmentFile?.list_files?.map((item, idx) => {
-                    const globalIdx = page * rowsPerPage + idx;
-                    return (
-                      <Documents
-                        key={idx}
-                        label={item.name}
-                        status={item.status}
-                        checked={checkedItems[globalIdx] || false}
-                        onCheck={(val) => handleCheck(idx, val)}
-                      />
-                    );
-                  })}
-                </Stack>
-              </Stack>
+              )
             ) : (
               <Typography
                 padding={2}
@@ -291,26 +381,47 @@ const DepartemenUser = ({
           </Stack>
         </Box>
       </Stack>
-      {departmentFile?.list_files && (
-              <TablePagination
-                component="div"
-                count={departmentFile.total_files || 0}
-                page={page}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                rowsPerPageOptions={[5, 10]}
-                labelRowsPerPage="Rows:"
-                sx={{ 
-                  '.MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon': {
-                    fontSize: '12px',
-                  },
-                  '.MuiTablePagination-displayedRows': {
-                    fontSize: '12px',
-                  }
-                }}
-              />
-            )}
+      {(departmentFile?.list_files || databaseList?.list_files) && (
+        isAnalyst ? (
+          <TablePagination
+            component="div"
+            count={databaseList?.total_files || 0}
+            page={databasePage}
+            onPageChange={handleChangeDatabasePage}
+            rowsPerPage={databaseRowsPerPage}
+            onRowsPerPageChange={handleChangeDatabaseRowsPerPage}
+            rowsPerPageOptions={[5, 10]}
+            labelRowsPerPage="Rows:"
+            sx={{ 
+              '.MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon': {
+                fontSize: '12px',
+              },
+              '.MuiTablePagination-displayedRows': {
+                fontSize: '12px',
+              }
+            }}
+          />
+        ) : (
+          <TablePagination
+            component="div"
+            count={departmentFile.total_files || 0}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[5, 10]}
+            labelRowsPerPage="Rows:"
+            sx={{ 
+              '.MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon': {
+                fontSize: '12px',
+              },
+              '.MuiTablePagination-displayedRows': {
+                fontSize: '12px',
+              }
+            }}
+          />
+        )
+      )}
       {selectedFiles.length !== 0 ? 
         <Stack
         width={"100%"}
