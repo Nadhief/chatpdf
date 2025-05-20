@@ -28,7 +28,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-import DataColumn from "../../components/Table/DataColumn";
+import DataColumn from "../../../components/Table/DataColumn";
 import {
   addColumnPersonal,
   addDataPersonal,
@@ -36,8 +36,8 @@ import {
   getColumnPersonal,
   updateDataPersonal,
   uploadCSVtoDbPersonal,
-} from "../../services";
-import DeleteDatabase from "../../components/Dialog/DeleteDatabase";
+} from "../../../services";
+import DeleteDatabase from "../../../components/Dialog/DeleteDatabase";
 
 const TableDetail = ({ id }) => {
   const navigate = useNavigate();
