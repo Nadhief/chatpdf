@@ -43,7 +43,7 @@ const DataColumn = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {data?.list_data.map((row, i) => (
+          {data?.list_data?.map((row, i) => (
             <TableRow key={i}>
               <TableCell padding="checkbox">
                 <input

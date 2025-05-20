@@ -33,8 +33,8 @@ import {
   deleteDatabasePersonal,
   getDatabasePersonal,
   uploadDbPersonal,
-} from "../../services";
-import DeleteDatabase from "../../components/Dialog/DeleteDatabase";
+} from "../../../services";
+import DeleteDatabase from "../../../components/Dialog/DeleteDatabase";
 
 const Database = ({ id, toggleSidebar }) => {
   const navigate = useNavigate();
@@ -224,7 +224,7 @@ const Database = ({ id, toggleSidebar }) => {
             <DeleteIcon />
           </Button>
         </Box>
-        <Typography variant="h5">Database</Typography>
+        <Typography variant="h5">Database Personal</Typography>
         <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
           {/* Kiri: Dropdown Tampilkan */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

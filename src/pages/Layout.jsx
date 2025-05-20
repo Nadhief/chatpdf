@@ -10,9 +10,12 @@ import ManageDepartmen from "./admin/ManageDepartmen";
 import ManageUser from "./admin/ManageUser";
 import PDFViewer from "../components/PdfViewer";
 import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
-import Database from "./admin/Database";
-import Table from "./admin/Table";
-import TableDetail from "./admin/TableDetail";
+import Database from "./admin/DatabasePersonal/Database";
+import Table from "./admin/DatabasePersonal/Table";
+import TableDetail from "./admin/DatabasePersonal/TableDetail";
+import DatabaseDept from "./admin/DatabaseDepartment/Database";
+import TableDept from "./admin/DatabaseDepartment/Table";
+import TableDetailDept from "./admin/DatabaseDepartment/TableDetail";
 import ChatBoxanalyst from "./Chatboxanalyst";
 const Layout = () => {
   const logoUrl = import.meta.env.VITE_API_BASE_URL + "logo";
@@ -411,6 +414,20 @@ const Layout = () => {
               path="/admin/coofisai/database/:name/:nameTable"
               element={
                 <TableDetail id={user?.id} toggleSidebar={toggleSidebar} />
+              }
+            />
+            <Route
+              path="/admin/coofisai/database_dept"
+              element={<DatabaseDept id={user?.id} toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/admin/coofisai/database_dept/:name/:deptId"
+              element={<TableDept id={user?.id} toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/admin/coofisai/database_dept/:name/:deptId/:nameTable"
+              element={
+                <TableDetailDept id={user?.id} toggleSidebar={toggleSidebar} />
               }
             />
           </Routes>

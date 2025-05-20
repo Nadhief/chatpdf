@@ -32,8 +32,8 @@ import {
   addTablePersonal,
   deleteTablePersonal,
   getTablePersonal,
-} from "../../services";
-import DeleteDatabase from "../../components/Dialog/DeleteDatabase";
+} from "../../../services";
+import DeleteDatabase from "../../../components/Dialog/DeleteDatabase";
 
 const DummyData = [
   { id: 1, name: "Nama Table", isDetail: true },

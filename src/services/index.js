@@ -564,6 +564,16 @@ export const addDatabasePersonal = async (payload) => {
   }
 };
 
+export const addDatabaseDepartment = async (payload) => {
+  try {
+    const response = await api.post("csv_db/create_db/dept", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding personal database:", error);
+    throw error;
+  }
+};
+
 export const getDatabasePersonal = async ({
   user_id,
   keyword,
@@ -586,9 +596,43 @@ export const getDatabasePersonal = async ({
   }
 };
 
+export const getDatabaseDepartment = async ({
+  dept_id,
+  keyword,
+  page,
+  per_page,
+}) => {
+  try {
+    const response = await api.get("csv_db/list_database/dept", {
+      params: {
+        dept_id,
+        keyword,
+        page,
+        per_page,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting personal database:", error);
+    throw error;
+  }
+};
+
 export const deleteDatabasePersonal = async (payload) => {
   try {
     const response = await api.delete("csv_db/delete_db/personal", {
+      data: payload,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting personal database:", error);
+    throw error;
+  }
+};
+
+export const deleteDatabaseDepartment = async (payload) => {
+  try {
+    const response = await api.delete("csv_db/delete_db/dept", {
       data: payload,
     });
     return response.data;
@@ -622,9 +666,43 @@ export const getTablePersonal = async ({
   }
 };
 
+export const getTableDepartment = async ({
+  id,
+  db_name,
+  keyword,
+  page,
+  per_page,
+}) => {
+  try {
+    const response = await api.get("csv_db/list_table/dept", {
+      params: {
+        id,
+        db_name,
+        keyword,
+        page,
+        per_page,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting personal database:", error);
+    throw error;
+  }
+};
+
 export const addTablePersonal = async (payload) => {
   try {
     const response = await api.post("csv_db/create_table/personal", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding personal table:", error);
+    throw error;
+  }
+};
+
+export const addTableDepartment = async (payload) => {
+  try {
+    const response = await api.post("csv_db/create_table/dept", payload);
     return response.data;
   } catch (error) {
     console.error("Error adding personal table:", error);
@@ -644,10 +722,34 @@ export const deleteTablePersonal = async (payload) => {
   }
 };
 
+export const deleteTableDepartment = async (payload) => {
+  try {
+    const response = await api.delete("csv_db/delete_table/dept", {
+      data: payload,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting personal database:", error);
+    throw error;
+  }
+};
+
 export const addColumnPersonal = async (payload) => {
   try {
     const response = await api.post(
       "csv_db/create_multiple_field/personal",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addColumnDepartment = async (payload) => {
+  try {
+    const response = await api.post(
+      "csv_db/create_multiple_field/dept",
       payload
     );
     return response.data;
@@ -681,10 +783,47 @@ export const getColumnPersonal = async ({
   }
 }
 
+export const getColumnDepartment = async ({
+  id,
+  db_name,
+  table_name,
+  page,
+  per_page,
+  keyword,
+}) => {
+  try {
+    const response = await api.get("csv_db/get_data/dept", {
+      params: {
+        id,
+        db_name,
+        table_name,
+        page,
+        per_page,
+        keyword,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const addDataPersonal = async (payload) => {
   try {
     const response = await api.post(
       "csv_db/create_data/personal",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const addDataDepartment = async (payload) => {
+  try {
+    const response = await api.post(
+      "csv_db/create_data/dept",
       payload
     );
     return response.data;
@@ -705,10 +844,34 @@ export const updateDataPersonal = async (payload) => {
   }
 }
 
+export const updateDataDepartment = async (payload) => {
+  try {
+    const response = await api.post(
+      "csv_db/update_data/dept",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const deleteDataPersonal = async (payload) => {
   try {
     const response = await api.post(
       "csv_db/delete_data/personal",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const deleteDataDepartment = async (payload) => {
+  try {
+    const response = await api.post(
+      "csv_db/delete_data/dept",
       payload
     );
     return response.data;
@@ -741,6 +904,17 @@ export const uploadCSVtoDbPersonal = async (payload) => {
   }
 }
 
+export const uploadCSVtoDbDepartment = async (payload) => {
+  try {
+    const response = await api.post(
+      "file/csv_to_db/dept",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
 
 export const uploadJsonPersonal = async (formData) => {
   try {
