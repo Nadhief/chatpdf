@@ -209,7 +209,8 @@ const Layout = () => {
                 />
               }
             />
-            <Route path="/coofisanalyst"
+            <Route
+              path="/coofisanalyst"
               element={
                 <ChatBoxanalyst
                   role={"User"}
@@ -275,7 +276,7 @@ const Layout = () => {
                 />
               }
             />
-            <Route 
+            <Route
               path="/operator/coofisanalyst"
               element={
                 <ChatBoxanalyst
@@ -316,6 +317,38 @@ const Layout = () => {
               path="/operator/coofisai/pengaturan"
               element={
                 <LogoSetting id={user?.id} toggleSidebar={toggleSidebar} />
+              }
+            />
+            <Route
+              path="/operator/coofisai/database"
+              element={<Database id={user?.id} toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/operator/coofisai/database/:name"
+              element={<Table id={user?.id} toggleSidebar={toggleSidebar} />}
+            />
+            <Route
+              path="/operator/coofisai/database/:name/:nameTable"
+              element={
+                <TableDetail id={user?.id} toggleSidebar={toggleSidebar} />
+              }
+            />
+            <Route
+              path="/operator/coofisai/database_dept"
+              element={
+                <DatabaseDept id={user?.id} toggleSidebar={toggleSidebar} />
+              }
+            />
+            <Route
+              path="/operator/coofisai/database_dept/:name/:deptId"
+              element={
+                <TableDept id={user?.id} toggleSidebar={toggleSidebar} />
+              }
+            />
+            <Route
+              path="/operator/coofisai/database_dept/:name/:deptId/:nameTable"
+              element={
+                <TableDetailDept id={user?.id} toggleSidebar={toggleSidebar} />
               }
             />
           </Routes>
@@ -419,11 +452,15 @@ const Layout = () => {
             />
             <Route
               path="/admin/coofisai/database_dept"
-              element={<DatabaseDept id={user?.id} toggleSidebar={toggleSidebar} />}
+              element={
+                <DatabaseDept id={user?.id} toggleSidebar={toggleSidebar} />
+              }
             />
             <Route
               path="/admin/coofisai/database_dept/:name/:deptId"
-              element={<TableDept id={user?.id} toggleSidebar={toggleSidebar} />}
+              element={
+                <TableDept id={user?.id} toggleSidebar={toggleSidebar} />
+              }
             />
             <Route
               path="/admin/coofisai/database_dept/:name/:deptId/:nameTable"

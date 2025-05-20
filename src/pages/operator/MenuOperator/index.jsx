@@ -85,17 +85,29 @@ const MenuOperator = ({
         }}
       />
 
-      {/* <MenuItem
-        label="Database"
+      <MenuItem
+        label="Database Personal"
         icon={StorageIcon}
-        selected={itemSelected === 'daatabase'}
+        selected={itemSelected === "database"}
         onClick={() => {
-          setItemSelected('database');
-          localStorage.setItem('itemSelected', 'database');
+          setItemSelected("database");
+          localStorage.setItem("itemSelected", "database");
           setIsSidebarOpen(false);
-          navigate('/operator/coofisai/database');
+          navigate("/operator/coofisai/database");
         }}
-      /> */}
+      />
+
+      <MenuItem
+        label="Database Department"
+        icon={StorageIcon}
+        selected={itemSelected === "database_dept"}
+        onClick={() => {
+          setItemSelected("database_dept");
+          localStorage.setItem("itemSelected", "database_dept");
+          setIsSidebarOpen(false);
+          navigate("/operator/coofisai/database_dept");
+        }}
+      />
 
       <MenuItem
         label="Pengaturan"

@@ -285,7 +285,6 @@ const Sidebar = ({
             setIsAnalyst={setIsAnalyst}
             setHistoryId={setHistoryId}
             setSelected={setSelected}
-
           />
         ) : null
       ) : (
