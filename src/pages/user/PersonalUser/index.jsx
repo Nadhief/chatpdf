@@ -981,11 +981,11 @@ const fetchDatabasePersonal = (pageNum = 1, perPage = 5) => {
           {selected === "file" && (
             <TablePagination
               component="div"
-              count={databaseList?.total_files || 0}
-              page={databasePage}
-              onPageChange={handleDatabaseChangePage}
-              rowsPerPage={databaseRowsPerPage}
-              onRowsPerPageChange={handleDatabaseChangeRowsPerPage}
+              count={personalFiles?.total_files || 0}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
               rowsPerPageOptions={[5, 10]}
               labelRowsPerPage="Rows:"
               sx={{
