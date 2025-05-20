@@ -17,6 +17,7 @@ const DataColumn = ({
   setSelectedItem,
   selectedItem
 }) => {
+  console.log(data)
   const handleCheckboxClick = (row) => {
     setSelectedItem((prev) => {
       const isSelected = prev.some((item) => item.id === row.id);
@@ -42,7 +43,7 @@ const DataColumn = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {data?.list_data.map((row, i) => (
+          {data?.list_data?.map((row, i) => (
             <TableRow key={i}>
               <TableCell padding="checkbox">
                 <input

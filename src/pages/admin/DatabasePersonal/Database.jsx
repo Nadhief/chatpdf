@@ -33,8 +33,8 @@ import {
   deleteDatabasePersonal,
   getDatabasePersonal,
   uploadDbPersonal,
-} from "../../services";
-import DeleteDatabase from "../../components/Dialog/DeleteDatabase";
+} from "../../../services";
+import DeleteDatabase from "../../../components/Dialog/DeleteDatabase";
 
 const Database = ({ id, toggleSidebar }) => {
   const navigate = useNavigate();
@@ -50,6 +50,7 @@ const Database = ({ id, toggleSidebar }) => {
   const [keyword, setKeyword] = useState("");
   const [openDialogDB, setOpenDialogDB] = useState(false);
   const [file, setFile] = useState(null);
+  const [page, setPage] = useState(1);
 
   const handleCheckboxChange = (item) => {
     setSelectedDatabaseDelete((prev) => {
@@ -99,10 +100,11 @@ const Database = ({ id, toggleSidebar }) => {
   };
 
   const fetchDatabasePersonal = () => {
+    console.log("sercing pak eko");
     getDatabasePersonal({
       user_id: String(id),
       keyword: keyword,
-      page: 1,
+      page: page,
       per_page: showEntry,
     })
       .then((res) => {
@@ -146,18 +148,23 @@ const Database = ({ id, toggleSidebar }) => {
     formData.append("db_name", file.name.replace(/\.db$/i, ""));
     formData.append("file", file);
 
-    uploadDbPersonal(formData).then((res) => {
-      console.log(res)
-      fetchDatabasePersonal()
-    }
-    ).catch((err) => {
-      console.log(err)
-    })
+    uploadDbPersonal(formData)
+      .then((res) => {
+        console.log(res);
+        fetchDatabasePersonal();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleChangePage = (event, value) => {
+    setPage(value);
   };
 
   useEffect(() => {
     fetchDatabasePersonal();
-  }, [showEntry, keyword]);
+  }, [showEntry, keyword, page]);
 
   return (
     <Stack
@@ -192,7 +199,7 @@ const Database = ({ id, toggleSidebar }) => {
           >
             Tambah Database
           </Button>
-          <>
+          {/* <>
             <Button
               variant="contained"
               startIcon={<UploadIcon />}
@@ -201,7 +208,7 @@ const Database = ({ id, toggleSidebar }) => {
             >
               Upload Database
             </Button>
-          </>
+          </> */}
           <Button
             variant="contained"
             sx={{
@@ -217,7 +224,7 @@ const Database = ({ id, toggleSidebar }) => {
             <DeleteIcon />
           </Button>
         </Box>
-        <Typography variant="h5">Database</Typography>
+        <Typography variant="h5">Database Personal</Typography>
         <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
           {/* Kiri: Dropdown Tampilkan */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -334,13 +341,14 @@ const Database = ({ id, toggleSidebar }) => {
             }}
           >
             <Typography variant="body2">
-              Menampilkan {databaseList?.page} sampai {databaseList?.per_page}
+              Menampilkan {databaseList?.per_page * (page - 1) + 1} sampai {databaseList?.per_page * page}
             </Typography>
-            {/* <Pagination
-              count={databaseList?.total_pages}
-              page={databaseList?.page}
+            <Pagination
+              count={databaseList?.total_pages || 1}
+              page={page}
+              onChange={handleChangePage}
               size="small"
-            /> */}
+            />
           </Box>
         </Box>
       </Stack>

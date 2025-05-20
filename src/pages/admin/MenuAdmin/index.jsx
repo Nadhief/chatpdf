@@ -111,8 +111,8 @@ const MenuAdmin = ({
         }}
       />
 
-      {/* <MenuItem
-        label="Database"
+      <MenuItem
+        label="Database Personal"
         icon={StorageIcon}
         selected={itemSelected === "database"}
         onClick={() => {
@@ -121,7 +121,19 @@ const MenuAdmin = ({
           setIsSidebarOpen(false);
           navigate("/admin/coofisai/database");
         }}
-      /> */}
+      />
+
+      <MenuItem
+        label="Database Department"
+        icon={StorageIcon}
+        selected={itemSelected === "database_dept"}
+        onClick={() => {
+          setItemSelected("database_dept");
+          localStorage.setItem("itemSelected", "database_dept");
+          setIsSidebarOpen(false);
+          navigate("/admin/coofisai/database_dept");
+        }}
+      />
 
       <MenuItem
         label="Pengaturan"

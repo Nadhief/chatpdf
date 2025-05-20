@@ -403,7 +403,7 @@ const Dokumen = ({ id, toggleSidebar }) => {
   };
 
   const [departmentList, setDepartmentList] = useState([]);
-  const departmentOptions = departmentList.map(([id, name, code]) => ({
+  const departmentOptions = departmentList?.map(([id, name, code]) => ({
     id,
     label: name,
     code,

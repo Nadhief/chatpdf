@@ -28,15 +28,16 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-import DataColumn from "../../components/Table/DataColumn";
+import DataColumn from "../../../components/Table/DataColumn";
 import {
   addColumnPersonal,
   addDataPersonal,
   deleteDataPersonal,
   getColumnPersonal,
   updateDataPersonal,
-} from "../../services";
-import DeleteDatabase from "../../components/Dialog/DeleteDatabase";
+  uploadCSVtoDbPersonal,
+} from "../../../services";
+import DeleteDatabase from "../../../components/Dialog/DeleteDatabase";
 
 const TableDetail = ({ id }) => {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const TableDetail = ({ id }) => {
   const [openDialogAddColumn, setOpenDialogAddColumn] = useState(false);
   const [openDialogCSV, setOpenDialogCSV] = useState(false);
   const [fileName, setFileName] = useState("");
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState([]);
   const dataTypes = ["NUMERIC", "INTEGER", "TEXT", "REAL", "BLOB", "DATETIME"];
   const [editData, setEditData] = useState(false);
@@ -61,6 +62,9 @@ const TableDetail = ({ id }) => {
   const [tableData, setTableData] = useState(data);
   const [showEntry, setShowEntry] = useState(10);
   const [keyword, setKeyword] = useState("");
+
+  const [file, setFile] = useState(null);
+  const [page, setPage] = useState(1);
 
   const handleSubmit = (type) => {
     if (type === "column") {
@@ -114,8 +118,12 @@ const TableDetail = ({ id }) => {
   };
 
   const handleFileChange = (e) => {
-    if (e.target.files.length > 0) {
-      setFileName(e.target.files[0].name);
+    const file = event.target.files[0];
+    if (file && file.name.endsWith(".csv")) {
+      setFile(file);
+      console.log("Selected .db file:", file);
+    } else {
+      alert("Please select a valid .db file");
     }
   };
 
@@ -124,7 +132,7 @@ const TableDetail = ({ id }) => {
       id: String(id),
       db_name: name,
       table_name: nameTable,
-      page: 1,
+      page: page,
       per_page: showEntry,
       keyword: keyword,
     })
@@ -157,6 +165,34 @@ const TableDetail = ({ id }) => {
     setTableData(updatedData);
   };
 
+  const getInputType = (sqliteType) => {
+    const type = sqliteType.toUpperCase();
+    if (type.includes("INT")) return "number";
+    if (type.includes("FLOAT") || type.includes("NUMERIC") || type === "NUMBER")
+      return "number";
+    if (type === "TEXT" || type === "STRING") return "text";
+    if (type === "DATE") return "date";
+    if (type === "BOOLEAN") return "checkbox";
+    return "text";
+  };
+
+  const handleUploadFile = () => {
+    const formData = new FormData();
+    formData.append("id", String(id));
+    formData.append("db_name", name);
+    formData.append("table_name", nameTable);
+    formData.append("files_upload", file);
+
+    uploadCSVtoDbPersonal(formData)
+      .then((res) => {
+        console.log(res);
+        fetchKolomPersonal();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const handleDelete = () => {
     const payload = {
       id: String(id),
@@ -172,20 +208,13 @@ const TableDetail = ({ id }) => {
     });
   };
 
-  const getInputType = (sqliteType) => {
-    const type = sqliteType.toUpperCase();
-    if (type.includes("INT")) return "number";
-    if (type.includes("FLOAT") || type.includes("NUMERIC") || type === "NUMBER")
-      return "number";
-    if (type === "TEXT" || type === "STRING") return "text";
-    if (type === "DATE") return "date";
-    if (type === "BOOLEAN") return "checkbox";
-    return "text";
+  const handleChangePage = (event, value) => {
+    setPage(value);
   };
 
   useEffect(() => {
     fetchKolomPersonal();
-  }, [showEntry, keyword]);
+  }, [showEntry, keyword, page]);
 
   return (
     <Stack
@@ -329,7 +358,6 @@ const TableDetail = ({ id }) => {
             setSelectedItem={setSelectedItem}
             selectedItem={selectedItem}
           />
-          {/* Footer Pagination */}
           <Box
             sx={{
               display: "flex",
@@ -340,11 +368,12 @@ const TableDetail = ({ id }) => {
             }}
           >
             <Typography variant="body2">
-              Menampilkan {data?.page} sampai {data?.per_page}
+              Menampilkan {data?.per_page * (page - 1) + 1} sampai {data?.per_page * page}
             </Typography>
             <Pagination
               count={data?.total_pages}
-              page={data?.page}
+              page={page}
+              onChange={handleChangePage}
               size="small"
             />
           </Box>
@@ -483,9 +512,7 @@ const TableDetail = ({ id }) => {
             alignItems: "center",
           }}
         >
-          <Typography variant="h6" fontWeight="bold">
-            Tambah Kolom
-          </Typography>
+          <Typography fontWeight="bold">Tambah Kolom</Typography>
           <IconButton
             onClick={() => {
               setNewColumns([{ field_name: "", field_type: "" }]);
@@ -510,7 +537,7 @@ const TableDetail = ({ id }) => {
                   fullWidth
                   placeholder="Masukan nama kolom"
                   size="small"
-                  value={col.field_name}
+                  value={col?.field_name ?? ""} // Pastikan nilai default adalah string kosong
                   onChange={(e) =>
                     handleChange(idx, "field_name", e.target.value)
                   }
@@ -521,7 +548,7 @@ const TableDetail = ({ id }) => {
                   fullWidth
                   select
                   size="small"
-                  value={col.field_type}
+                  value={col?.field_type ?? ""}
                   onChange={(e) =>
                     handleChange(idx, "field_type", e.target.value)
                   }
@@ -603,7 +630,7 @@ const TableDetail = ({ id }) => {
               textTransform: "none",
             }}
           >
-            📄 {fileName || "File CSV"}
+            📄 {file?.name || "Pilih File CSV"}
             <input
               type="file"
               accept=".csv"
@@ -618,7 +645,7 @@ const TableDetail = ({ id }) => {
                 fontWeight: 500,
               }}
             >
-              Ubah
+              Pilih
             </Typography>
           </Button>
         </DialogContent>
@@ -634,7 +661,7 @@ const TableDetail = ({ id }) => {
               textTransform: "none",
             }}
             onClick={() => {
-              // upload logic
+              handleUploadFile();
               setOpenDialogCSV(false);
             }}
           >
@@ -647,7 +674,7 @@ const TableDetail = ({ id }) => {
       <DeleteDatabase
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
-        handleDelete={()=> handleDelete()}
+        handleDelete={() => handleDelete()}
         title={"Data"}
       />
     </Stack>

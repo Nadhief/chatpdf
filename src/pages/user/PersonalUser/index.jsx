@@ -62,6 +62,7 @@ const PersonalUser = ({
 
   const [personalFiles, setPersonalFiles] = useState([]);
   const [personalTopics, setPersonalTopics] = useState([]);
+  const [databaseList, setDatabaseList] = useState(null);
 
   const [checkedItems, setCheckedItems] = useState({});
   const [selectedTopicIndex, setSelectedTopicIndex] = useState(null);
@@ -77,6 +78,9 @@ const PersonalUser = ({
 
   const [topicPage, setTopicPage] = useState(0);
   const [topicRowsPerPage, setTopicRowsPerPage] = useState(5);
+
+  const [databasePage, setDatabasePage] = useState(0);
+  const [databaseRowsPerPage, setDatabaseRowsPerPage] = useState(5);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -134,6 +138,18 @@ const PersonalUser = ({
     } else {
       fetchDataTopics(newPage + 1, topicRowsPerPage);
     }
+  };
+
+  const handleDatabaseChangePage = (event, newPage) => {
+    setDatabasePage(newPage);
+    fetchDatabasePersonal(newPage + 1, databaseRowsPerPage);
+  };
+
+  const handleDatabaseChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setDatabaseRowsPerPage(newRowsPerPage);
+    setDatabasePage(0);
+    fetchDatabasePersonal(1, newRowsPerPage);
   };
 
   const handleTopicChangeRowsPerPage = (event) => {
@@ -210,8 +226,10 @@ const handleCheckFile = (idx, value) => {
   };
 
   const handleSelectDatabase = (idx) => {
-    setSelectedTopicIndex(idx);
-    if (databaseList.list_files && databaseList.list_files[idx]) {
+    const globalIdx = databasePage * databaseRowsPerPage + idx;
+    setSelectedTopicIndex(globalIdx);
+    
+    if (databaseList?.list_files && databaseList.list_files[idx]) {
       setTopicName(databaseList.list_files[idx].name);
     }
   };
@@ -268,6 +286,21 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
   } catch (error) {
     console.error("Gagal mengambil topik:", error);
   }
+};
+
+const fetchDatabasePersonal = (pageNum = 1, perPage = 5) => {
+  getDatabasePersonal({
+    user_id: String(id),
+    keyword: "",
+    page: pageNum,
+    per_page: perPage,
+  })
+    .then((res) => {
+      setDatabaseList(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
   const handleSelectUploadFiles = (event) => {
@@ -564,27 +597,10 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
       });
   };
 
-  const [databaseList, setDatabaseList] = useState(null);
-
-  const fetchDatabasePersonal = () => {
-    getDatabasePersonal({
-      user_id: String(id),
-      keyword: "",
-      page: 1,
-      per_page: 10,
-    })
-      .then((res) => {
-        setDatabaseList(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
    useEffect(() => {
     fetchDataFile();
     fetchDataTopics();
-    fetchDatabasePersonal();
+    fetchDatabasePersonal(1, databaseRowsPerPage);
   }, [isAnalyst]);
 
   return (
@@ -625,107 +641,107 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
               mb: 3,
             }}
           >
-            <Stack direction="column" padding={1.5} spacing={1}>
-              <Typography fontSize={14} fontWeight={600} color="#404040">
-                Unggah File
-              </Typography>
-
-          {selectedUploadFiles.length > 0 ? (
-            <Stack spacing={0.5}>
-              {selectedUploadFiles.map((file, index) => (
-                <Typography
-                  key={index}
-                  fontSize={12}
-                  fontWeight={400}
-                  color="#404040"
-                  sx={{
-                    overflowWrap: "anywhere",
-                    wordBreak: "break-word",
-                    whiteSpace: "normal",
-                  }}
-                >
-                  {file.name}
-                </Typography>
-              ))}
-            </Stack>
-          ) : (
-            <Typography fontSize={12} fontWeight={400} color="#404040">
-              Total ukuran berkas yang dapat diproses adalah maksimal 200 MB
-              dengan ekstensi (PDF, JSON ,DOCX, PNG, JPG, JPEG, WEBP)
+          <Stack direction="column" padding={1.5} spacing={1}>
+            <Typography fontSize={14} fontWeight={600} color="#404040">
+              Unggah File
             </Typography>
-          )}
 
-          <Box
-            display="flex"
-            justifyContent="flex-end"
-            width="100%"
-            color="white"
-            gap={1}
-          >
             {selectedUploadFiles.length > 0 ? (
-              <>
-                <Box
-                  component="button"
-                  onClick={handleCancel}
-                  sx={{
-                    backgroundColor: "#fff",
-                    color: "#4C4DDC",
-                    border: "1px solid #4C4DDC",
-                    borderRadius: 1,
-                    fontSize: 12,
-                    padding: "4px 12px",
-                    cursor: "pointer",
-                  }}
-                >
-                  Batal
-                </Box>
-                <Box
-                  component="button"
-                  onClick={handleUploadPersonalFiles}
-                  sx={{
-                    backgroundColor: "#4C4DDC",
-                    color: "#fff",
-                    borderRadius: 1,
-                    fontSize: 12,
-                    padding: "4px 12px",
-                    cursor: "pointer",
-                  }}
-                >
-                  Unggah
-                </Box>
-              </>
+              <Stack spacing={0.5}>
+                {selectedUploadFiles.map((file, index) => (
+                  <Typography
+                    key={index}
+                    fontSize={12}
+                    fontWeight={400}
+                    color="#404040"
+                    sx={{
+                      overflowWrap: "anywhere",
+                      wordBreak: "break-word",
+                      whiteSpace: "normal",
+                    }}
+                  >
+                    {file.name}
+                  </Typography>
+                ))}
+              </Stack>
             ) : (
-              <Box
-                component="label"
-                htmlFor="upload-file"
-                display="flex"
-                justifyContent="flex-end"
-                paddingY={0.5}
-                paddingX={1}
-                borderRadius={1}
-                alignItems="center"
-                sx={{
-                  cursor: "pointer",
-                  backgroundColor: "#4C4DDC",
-                }}
-              >
-                <FolderPlusIcon
-                  sx={{ color: "white", marginRight: 1, fontSize: 18 }}
-                />
-                <Typography fontSize={12} fontWeight={400}>
-                  Pilih Berkas
-                </Typography>
-                <input
-                  id="upload-file"
-                  type="file"
-                  accept=".pdf, .json, .docx, .png, .jpg, .jpeg, .webp"
-                  hidden
-                  onChange={handleSelectUploadFiles}
-                />
-              </Box>
+              <Typography fontSize={12} fontWeight={400} color="#404040">
+                Total ukuran berkas yang dapat diproses adalah maksimal 200 MB
+                dengan ekstensi (PDF, JSON ,DOCX, PNG, JPG, JPEG, WEBP)
+              </Typography>
             )}
-          </Box>
-        </Stack>
+
+            <Box
+              display="flex"
+              justifyContent="flex-end"
+              width="100%"
+              color="white"
+              gap={1}
+            >
+              {selectedUploadFiles.length > 0 ? (
+                <>
+                  <Box
+                    component="button"
+                    onClick={handleCancel}
+                    sx={{
+                      backgroundColor: "#fff",
+                      color: "#4C4DDC",
+                      border: "1px solid #4C4DDC",
+                      borderRadius: 1,
+                      fontSize: 12,
+                      padding: "4px 12px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Batal
+                  </Box>
+                  <Box
+                    component="button"
+                    onClick={handleUploadPersonalFiles}
+                    sx={{
+                      backgroundColor: "#4C4DDC",
+                      color: "#fff",
+                      borderRadius: 1,
+                      fontSize: 12,
+                      padding: "4px 12px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Unggah
+                  </Box>
+                </>
+              ) : (
+                <Box
+                  component="label"
+                  htmlFor="upload-file"
+                  display="flex"
+                  justifyContent="flex-end"
+                  paddingY={0.5}
+                  paddingX={1}
+                  borderRadius={1}
+                  alignItems="center"
+                  sx={{
+                    cursor: "pointer",
+                    backgroundColor: "#4C4DDC",
+                  }}
+                >
+                  <FolderPlusIcon
+                    sx={{ color: "white", marginRight: 1, fontSize: 18 }}
+                  />
+                  <Typography fontSize={12} fontWeight={400}>
+                    Pilih Berkas
+                  </Typography>
+                  <input
+                    id="upload-file"
+                    type="file"
+                    accept=".pdf, .json, .docx, .png, .jpg, .jpeg, .webp"
+                    hidden
+                    onChange={handleSelectUploadFiles}
+                  />
+                </Box>
+              )}
+            </Box>
+          </Stack>
           </Box>
         </>
       )}
@@ -810,7 +826,7 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
                       setCheckedItems({});
                       setSelectedTopic(true);
                       setSelected("topik");
-                      setSearchQuery(""); // Clear search when switching tabs
+                      setSearchQuery("");
                       fetchDataTopics();
                     }}
                     sx={{
@@ -899,22 +915,33 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
             )}
             <Stack direction={"column"} spacing={1}>
               {isAnalyst ? (
-                <>
-                  {databaseList?.list_files?.map((item, idx) => (
-                    <Database
-                      key={idx}
-                      id = {id}
-                      label={item.name}
-                      status={item.status_table}
-                      selected={selectedTopicIndex === idx}
-                      onSelect={() => handleSelectDatabase(idx)}
-                      setTableName={setTableName}
-                    />
-                  ))}
-                </>
+                databaseList?.list_files && databaseList.list_files.length > 0 ? (
+                  <Stack direction={"column"} padding={1.5} spacing={1}>
+                    <Stack direction={"column"} spacing={1}>
+                      {databaseList.list_files.map((item, idx) => {
+                        const globalIdx = databasePage * databaseRowsPerPage + idx;
+                        return (
+                          <Database
+                            key={idx}
+                            id={id}
+                            label={item.name}
+                            status={item.status_table}
+                            selected={selectedTopicIndex === globalIdx}
+                            onSelect={() => handleSelectDatabase(idx)}
+                            setTableName={setTableName}
+                          />
+                        );
+                      })}
+                    </Stack>
+                  </Stack>
+                ) : (
+                  <Typography paddingLeft={0.5} fontSize={14} fontWeight={400} color="#404040" >
+                    Tidak ada database
+                  </Typography>
+                )
               ) : (
                 <>
-                  {/*MAPPING FILE PDF*/}
+              {/*MAPPING FILE PDF*/}
               {selected === "file"
                 ? personalFiles?.list_files?.map((item, idx) => {
                     const globalIdx = page * rowsPerPage + idx;
@@ -949,7 +976,7 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
         </Stack>
       </Box>
 
-      {!isAnalyst && (
+      {!isAnalyst ? (
         <>
           {selected === "file" && (
             <TablePagination
@@ -962,10 +989,9 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
               rowsPerPageOptions={[5, 10]}
               labelRowsPerPage="Rows:"
               sx={{
-                ".MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon":
-                  {
-                    fontSize: "12px",
-                  },
+                ".MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon": {
+                  fontSize: "12px",
+                },
                 ".MuiTablePagination-displayedRows": {
                   fontSize: "12px",
                 },
@@ -995,6 +1021,7 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
             />
           )}
 
+          {/*Tombol +Topik dan Summarize*/}
           <Stack
             width={"100%"}
             direction={"row"}
@@ -1027,50 +1054,73 @@ const fetchDataTopics = async (pageNum = 1, perPage = 5) => {
               </Box>
             )}
 
-        {selectedTopicc === false && selected === "file" && selectedFiles.length > 0 && selectedFiles.every(file => {
-            const extension = file?.name?.split('.').pop().toLowerCase();
-            return ['pdf', 'docx'].includes(extension);
-          }) && (
-          <Box
-            onClick={() => {
-              handleSummarize();
-              setIsSummarize(true);
-            }}
-            color="white"
-            paddingY={0.5}
-            paddingX={1}
-            borderRadius={1}
-            alignItems={"center"}
-            sx={{
-              cursor: "pointer",
-              backgroundColor: "#CB3A31",
-            }}
-          >
-            <Typography fontSize={12} fontWeight={400}>
-              Summarize
-            </Typography>
-          </Box>
-        )}
-      </Stack>
-      <AddTopic
-        open={openPaper}
-        onClose={() => setOpenPaper(false)}
-        handleSubmit={handleSubmitTopic}
-      />
-      {selected === "file" ? (
-        <DeleteFile
-          open={openTrash}
-          onClose={() => setOpenTrash(false)}
-          handleDelete={handleDeleteFile}
-        />
-      ) : (
-        <DeleteFile
-          open={openTrash}
-          onClose={() => setOpenTrash(false)}
-          handleDelete={handleDeleteTopic}
-        />
-      )}
+            {selectedTopicc === false && selected === "file" && selectedFiles.length > 0 && selectedFiles.every(file => {
+                const extension = file?.name?.split('.').pop().toLowerCase();
+                return ['pdf', 'docx'].includes(extension);
+              }) && (
+              <Box
+                onClick={() => {
+                  handleSummarize();
+                  setIsSummarize(true);
+                }}
+                color="white"
+                paddingY={0.5}
+                paddingX={1}
+                borderRadius={1}
+                alignItems={"center"}
+                sx={{
+                  cursor: "pointer",
+                  backgroundColor: "#CB3A31",
+                }}
+              >
+                <Typography fontSize={12} fontWeight={400}>
+                  Summarize
+                </Typography>
+              </Box>
+            )}
+          </Stack>
+
+          <AddTopic
+            open={openPaper}
+            onClose={() => setOpenPaper(false)}
+            handleSubmit={handleSubmitTopic}
+          />
+          {selected === "file" ? (
+            <DeleteFile
+              open={openTrash}
+              onClose={() => setOpenTrash(false)}
+              handleDelete={handleDeleteFile}
+            />
+          ) : (
+            <DeleteFile
+              open={openTrash}
+              onClose={() => setOpenTrash(false)}
+              handleDelete={handleDeleteTopic}
+            />
+          )}
         </>
+      ) : (
+        databaseList && (
+          <TablePagination
+          component="div"
+          count={databaseList?.total_files || 0}
+          page={databasePage}
+          onPageChange={handleDatabaseChangePage}
+          rowsPerPage={databaseRowsPerPage}
+          onRowsPerPageChange={handleDatabaseChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10]}
+          labelRowsPerPage="Rows:"
+          sx={{
+            ".MuiTablePagination-selectLabel, .MuiTablePagination-select, .MuiTablePagination-selectIcon":
+              {
+                fontSize: "12px",
+              },
+            ".MuiTablePagination-displayedRows": {
+              fontSize: "12px",
+            },
+          }}
+        />
+        )
       )}
 
       <Dialog
