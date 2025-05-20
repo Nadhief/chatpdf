@@ -26,7 +26,7 @@ import {
   TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import DataColumn from "../../../components/Table/DataColumn";
 import {
@@ -57,7 +57,7 @@ const TableDetail = ({ id }) => {
     { field_name: "", field_type: "" },
   ]);
   const [newData, setNewData] = useState({});
-
+  const location = useLocation();
   const [data, setData] = useState(null);
 
   const [tableData, setTableData] = useState(data);
@@ -249,9 +249,15 @@ const TableDetail = ({ id }) => {
               textTransform: "none",
               color: "#EA001E",
             }}
-            onClick={() =>
-              navigate(`/admin/coofisai/database_dept/${name}/${deptId}`)
-            }
+            onClick={() => {
+              const pathSegments = location.pathname.split("/").filter(Boolean);
+              if (pathSegments.length > 1) {
+                const prevPath = `/${pathSegments.slice(0, -1).join("/")}`;
+                navigate(prevPath);
+              } else {
+                navigate("/");
+              }
+            }}
           >
             Kembali
           </Button>

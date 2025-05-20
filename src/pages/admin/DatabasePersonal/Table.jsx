@@ -26,7 +26,7 @@ import {
   TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   addColumnPersonal,
   addTablePersonal,
@@ -141,6 +141,7 @@ const Table = ({ id, toggleSidebar }) => {
   const handleChangePage = (event, value) => {
     setPage(value);
   };
+  const location = useLocation();
 
   useEffect(() => {
     fetchTablePersonal();
@@ -178,7 +179,15 @@ const Table = ({ id, toggleSidebar }) => {
               textTransform: "none",
               color: "#EA001E",
             }}
-            onClick={() => navigate("/admin/coofisai/database")}
+            onClick={() => {
+              const pathSegments = location.pathname.split("/").filter(Boolean);
+              if (pathSegments.length > 1) {
+                const prevPath = `/${pathSegments.slice(0, -1).join("/")}`;
+                navigate(prevPath);
+              } else {
+                navigate("/");
+              }
+            }}
           >
             Kembali
           </Button>
@@ -287,7 +296,8 @@ const Table = ({ id, toggleSidebar }) => {
                     }}
                     onClick={() => {
                       setSelectedItem(item);
-                      navigate(`/admin/coofisai/database/${name}/${item.name}`);
+                      const currentPath = location.pathname;
+                      navigate(`${currentPath}/${item.name}`);
                     }}
                   >
                     <VisibilityIcon fontSize="small" />
@@ -323,7 +333,8 @@ const Table = ({ id, toggleSidebar }) => {
             }}
           >
             <Typography variant="body2">
-              Menampilkan {tableList?.per_page * (page - 1) + 1} sampai {tableList?.per_page * page}
+              Menampilkan {tableList?.per_page * (page - 1) + 1} sampai{" "}
+              {tableList?.per_page * page}
             </Typography>
             <Pagination
               count={tableList?.total_pages}

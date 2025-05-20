@@ -25,7 +25,7 @@ import {
   TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { add } from "lodash";
 import {
   addDatabasePersonal,
@@ -161,6 +161,7 @@ const Database = ({ id, toggleSidebar }) => {
   const handleChangePage = (event, value) => {
     setPage(value);
   };
+  const location = useLocation();
 
   useEffect(() => {
     fetchDatabasePersonal();
@@ -305,7 +306,8 @@ const Database = ({ id, toggleSidebar }) => {
                       "&:hover": { backgroundColor: "#1565c0" },
                     }}
                     onClick={() => {
-                      navigate(`/admin/coofisai/database/${item.name}`);
+                      const currentPath = location.pathname;
+                      navigate(`${currentPath}/${item.name}`);
                     }}
                   >
                     <VisibilityIcon fontSize="small" />
@@ -341,7 +343,8 @@ const Database = ({ id, toggleSidebar }) => {
             }}
           >
             <Typography variant="body2">
-              Menampilkan {databaseList?.per_page * (page - 1) + 1} sampai {databaseList?.per_page * page}
+              Menampilkan {databaseList?.per_page * (page - 1) + 1} sampai{" "}
+              {databaseList?.per_page * page}
             </Typography>
             <Pagination
               count={databaseList?.total_pages || 1}

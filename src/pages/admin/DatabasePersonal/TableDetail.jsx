@@ -248,7 +248,15 @@ const TableDetail = ({ id }) => {
               textTransform: "none",
               color: "#EA001E",
             }}
-            onClick={() => navigate(`/admin/coofisai/database/${name}`)}
+            onClick={() => {
+              const pathSegments = location.pathname.split("/").filter(Boolean);
+              if (pathSegments.length > 1) {
+                const prevPath = `/${pathSegments.slice(0, -1).join("/")}`;
+                navigate(prevPath);
+              } else {
+                navigate("/");
+              }
+            }}
           >
             Kembali
           </Button>
@@ -368,7 +376,8 @@ const TableDetail = ({ id }) => {
             }}
           >
             <Typography variant="body2">
-              Menampilkan {data?.per_page * (page - 1) + 1} sampai {data?.per_page * page}
+              Menampilkan {data?.per_page * (page - 1) + 1} sampai{" "}
+              {data?.per_page * page}
             </Typography>
             <Pagination
               count={data?.total_pages}

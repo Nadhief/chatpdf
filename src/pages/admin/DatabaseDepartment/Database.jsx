@@ -27,7 +27,7 @@ import {
   TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { add } from "lodash";
 import {
   addDatabaseDepartment,
@@ -197,6 +197,7 @@ const Database = ({ id, toggleSidebar }) => {
       console.error("Gagal mengambil file personal:", error);
     }
   };
+  const location = useLocation();
 
   useEffect(() => {
     fetchDatabaseDept(departmen);
@@ -367,9 +368,8 @@ const Database = ({ id, toggleSidebar }) => {
                           "&:hover": { backgroundColor: "#1565c0" },
                         }}
                         onClick={() => {
-                          navigate(
-                            `/admin/coofisai/database_dept/${item.name}/${departmen}`
-                          );
+                          const currentPath = location.pathname;
+                          navigate(`${currentPath}/${item.name}/${departmen}`);
                         }}
                       >
                         <VisibilityIcon fontSize="small" />

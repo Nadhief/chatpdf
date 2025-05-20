@@ -26,7 +26,7 @@ import {
   TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   addColumnDepartment,
   addColumnPersonal,
@@ -61,7 +61,7 @@ const Table = ({ id, toggleSidebar }) => {
   const [showEntry, setShowEntry] = useState(10);
   const [keyword, setKeyword] = useState("");
   const [page, setPage] = useState(1);
-
+  const location = useLocation();
   const handleAddRow = () => {
     setColumns([...columns, { field_name: "", field_type: "" }]);
   };
@@ -182,7 +182,16 @@ const Table = ({ id, toggleSidebar }) => {
               textTransform: "none",
               color: "#EA001E",
             }}
-            onClick={() => navigate("/admin/coofisai/database_dept")}
+            onClick={() => {
+              const pathSegments = location.pathname.split("/").filter(Boolean);
+              if (pathSegments.length > 4) {
+                const prevPath = `/${pathSegments.slice(0, -2).join("/")}`;
+                navigate(prevPath);
+              } else {
+                const prevPath = `/${pathSegments.slice(0, -1).join("/")}`;
+                navigate(prevPath);
+              }
+            }}
           >
             Kembali
           </Button>
@@ -291,7 +300,8 @@ const Table = ({ id, toggleSidebar }) => {
                     }}
                     onClick={() => {
                       setSelectedItem(item);
-                      navigate(`/admin/coofisai/database_dept/${name}/${deptId}/${item.name}`);
+                      const currentPath = location.pathname;
+                      navigate(`${currentPath}/${item.name}`);
                     }}
                   >
                     <VisibilityIcon fontSize="small" />
