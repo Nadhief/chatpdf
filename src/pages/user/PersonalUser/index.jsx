@@ -923,7 +923,7 @@ const fetchDatabasePersonal = (pageNum = 1, perPage = 5) => {
                         return (
                           <Database
                             key={idx}
-                            dept_id={selectedDepartmentid}
+                            id={id}
                             label={item.name}
                             status={item.status_table}
                             selected={selectedTopicIndex === globalIdx}
