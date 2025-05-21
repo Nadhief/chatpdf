@@ -2,7 +2,7 @@ import api from "./api";
 
 export const chatPersonal = async (payload) => {
   try {
-    const response = await api.post("chat/personal_v3/", payload);
+    const response = await api.post("chat/personal_v3", payload);
     return response.data;
   } catch (error) {
     console.error("Error adding department:", error);
@@ -52,7 +52,7 @@ export const chatDepartmentAnalystSpesific = async (payload) => {
 
 export const chatDepartemen = async (payload) => {
   try {
-    const response = await api.post("chat/department_v2/", payload);
+    const response = await api.post("chat/department_v2", payload);
     return response.data;
   } catch (error) {
     console.error("Error adding department:", error);
@@ -62,7 +62,7 @@ export const chatDepartemen = async (payload) => {
 
 export const chatTopic = async (payload) => {
   try {
-    const response = await api.post("chat/topic_v2/", payload);
+    const response = await api.post("chat/topic_v2", payload);
     return response.data;
   } catch (error) {
     console.error("Error adding department:", error);
