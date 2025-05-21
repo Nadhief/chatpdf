@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const API_BASE_URL = "https://192.168.1.65:8001/";
+export const API_BASE_URL = "https://chatalize.247go.app/";
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
