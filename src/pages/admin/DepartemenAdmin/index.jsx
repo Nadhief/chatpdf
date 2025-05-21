@@ -115,4 +115,4 @@ const DepartemenAdmin = () => {
     );
 }
 
-export default DepartemenAdmin; 
+export default DepartemenAdmin;
